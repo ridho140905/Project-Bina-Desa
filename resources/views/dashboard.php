@@ -95,7 +95,7 @@
         <div class="container">
             <a class="navbar-brand" href="#">🌾 Profil Bina Desa</a>
             <div class="d-flex align-items-center">
-                <span class="text-white me-3 fw-semibold">👤 Admin </span>
+                <span class="text-white me-3 fw-semibold">👤 AdminBaru </span>
                 <a href="/auth" class="btn btn-outline-light btn-sm">Logout</a>
             </div>
         </div>
