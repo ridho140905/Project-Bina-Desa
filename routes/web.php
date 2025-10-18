@@ -2,7 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\WargaController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\DashboardController;
+
+
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,5 +23,11 @@ Route::get('/dashboard', function () {
         return redirect('/auth')->with('error', 'Silakan login terlebih dahulu.');
     }
 
-    return view('dashboard');
+    return view('dashboard')->name('dashboard');
 });
+
+Route::resource('profil', ProfilController::class);
+Route::resource('berita', BeritaController::class);
+
+Route::resource('warga', WargaController::class);
+

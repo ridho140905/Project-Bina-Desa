@@ -3,17 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\profil;
 
-class ProfilController extends Controller
+class BeritaController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $data['dataProfil'] = Profil::all();
-        return view('admin.profil.index', $data);
+        //
     }
 
     /**
@@ -21,7 +19,7 @@ class ProfilController extends Controller
      */
     public function create()
     {
-       return view('admin.profil.create');
+        //
     }
 
     /**
@@ -29,10 +27,7 @@ class ProfilController extends Controller
      */
     public function store(Request $request)
     {
-          $data = $request->all();
-        Profil::create($data);
-
-        return redirect()->route('profil.index')->with('success', 'Penambahan Data Berhasil!');
+        //
     }
 
     /**
@@ -48,8 +43,7 @@ class ProfilController extends Controller
      */
     public function edit(string $id)
     {
-       $data['dataProfil'] = Profil::findOrFail($id);
-        return view('admin.profil.edit', $data);
+        //
     }
 
     /**
@@ -57,10 +51,7 @@ class ProfilController extends Controller
      */
     public function update(Request $request, string $id)
     {
-         $profil = Profil::findOrFail($id);
-        $profil->update($request->all());
-
-        return redirect()->route('profil.index')->with('success','Data Berhasil Diupdate!');
+        //
     }
 
     /**
@@ -68,9 +59,6 @@ class ProfilController extends Controller
      */
     public function destroy(string $id)
     {
-        $profil = Profil::findOrFail($id);
-        $profil->delete();
-
-        return redirect()->route('profil.index')->with('success', 'Data berhasil dihapus');
-}
+        //
+    }
 }
