@@ -6,11 +6,11 @@
         {{-- Header --}}
         <div class="page-header-primary">
             <div>
-                <h1>👨‍👩‍👧‍👦 Data Warga</h1>
-                <p>Daftar warga desa</p>
+                <h1>👥 Data User</h1>
+                <p>List data seluruh User</p>
             </div>
-            <a href="{{ route('warga.create') }}" class="btn btn-light-universal btn-universal">
-                ➕ Tambah Warga
+            <a href="{{ route('user.create') }}" class="btn btn-light-universal btn-universal">
+                ➕ Tambah User
             </a>
         </div>
 
@@ -29,40 +29,28 @@
                         <thead>
                             <tr>
                                 <th class="text-center">#</th>
-                                <th>No KTP</th>
-                                <th>Nama</th>
-                                <th>Jenis Kelamin</th>
-                                <th>Agama</th>
-                                <th>Pekerjaan</th>
-                                <th>Telepon</th>
+                                <th>Nama Lengkap</th>
                                 <th>Email</th>
+                                <th>Password</th>
                                 <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($warga as $item)
+                            @forelse($dataUser as $item)
                                 <tr>
                                     <td class="text-center text-muted-universal">{{ $loop->iteration }}</td>
-                                    <td><span class="universal-badge badge-secondary">{{ $item->no_ktp }}</span></td>
-                                    <td class="fw-semibold-universal">{{ $item->nama }}</td>
-                                    <td>
-                                        <span class="universal-badge {{ $item->jenis_kelamin == 'L' ? 'badge-primary' : 'badge-danger' }}">
-                                            {{ $item->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}
-                                        </span>
-                                    </td>
-                                    <td><span class="universal-badge badge-info">{{ $item->agama }}</span></td>
-                                    <td><span class="universal-badge badge-warning">{{ $item->pekerjaan }}</span></td>
-                                    <td>{{ $item->telp }}</td>
+                                    <td class="fw-semibold-universal">{{ $item->name }}</td>
                                     <td>{{ $item->email }}</td>
+                                    <td><span class="universal-badge badge-secondary">{{ Str::limit($item->password, 15) }}</span></td>
                                     <td class="text-center">
-                                        <div class="btn-action-warga">
-                                            <a href="{{ route('warga.edit', $item->warga_id) }}" class="btn btn-edit-warga">
+                                        <div class="btn-action-user">
+                                            <a href="{{ route('user.edit', $item->id) }}" class="btn btn-edit-user">
                                                 ✏️ Edit
                                             </a>
-                                            <form action="{{ route('warga.destroy', $item->warga_id) }}" method="POST">
+                                            <form action="{{ route('user.destroy', $item->id) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-delete-warga" onclick="return confirm('Yakin ingin menghapus data warga?')">
+                                                <button type="submit" class="btn btn-delete-user" onclick="return confirm('Yakin ingin menghapus?')">
                                                     🗑️ Hapus
                                                 </button>
                                             </form>
@@ -71,7 +59,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="empty-state-universal">Belum ada data warga.</td>
+                                    <td colspan="5" class="empty-state-universal">Belum ada data user.</td>
                                 </tr>
                             @endforelse
                         </tbody>

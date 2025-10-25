@@ -1,94 +1,129 @@
 <?php
-
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display login form
      */
     public function index()
     {
-        return view('form-login'); 
+        return view('admin.form-login');
     }
 
-    // 🔹 Memproses data login
+    /**
+     * Proses login
+     */
     public function login(Request $request)
     {
-        // Validasi input
+        // Validasi input form login
         $request->validate([
-            'username' => 'required',
-            'password' => [
-                'required',
-                'min:3',
-                'regex:/[A-Z]/' // harus mengandung huruf kapital
-            ],
+            'email'    => 'required|email',
+            'password' => 'required',
         ], [
-            'username.required' => 'Username wajib diisi.',
+            'email.required'    => 'Email wajib diisi.',
+            'email.email'       => 'Format email tidak valid.',
             'password.required' => 'Password wajib diisi.',
-            'password.min' => 'Password minimal 3 karakter.',
-            'password.regex' => 'Password harus mengandung minimal satu huruf kapital.'
         ]);
 
-        $username = $request->username;
-        $password = $request->password;
+        // Cek credentials di database
+        $user = User::where('email', $request->email)->first();
 
-        // Logika login sederhana
-        if ($username === $password) {
-            // Simpan session username
-            session(['username' => $username]);
-            // Arahkan ke halaman sukses (dashboard)
-            return redirect('/dashboard');
-        } else {
-            // Jika username dan password tidak cocok
-            return redirect('/auth')->with('error', 'Username dan password tidak cocok.');
+        if ($user && Hash::check($request->password, $user->password)) {
+            // Simpan session
+            session(['user_id' => $user->id, 'username' => $user->name]);
+
+            // Redirect ke dashboard dengan flash message
+            return redirect('dashboard')->with('success', 'Selamat Datang ke halaman dasboard');
         }
+
+        // Jika gagal login
+        return back()->with('error', 'Email atau password salah!');
     }
 
+    /**
+     * Tampilkan halaman register (GET)
+     */
+    public function showRegister()
+    {
+        return view('admin.form-register');
+    }
 
+    /**
+     * Proses pendaftaran (POST)
+     */
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name'     => 'required|min:3',
+            'email'    => 'required|email|unique:users',
+            'password' => 'required|min:6|confirmed',
+        ], [
+            'name.required'      => 'Nama wajib diisi.',
+            'name.min'           => 'Nama minimal 3 karakter.',
+            'email.required'     => 'Email wajib diisi.',
+            'email.email'        => 'Format email tidak valid.',
+            'email.unique'       => 'Email sudah terdaftar.',
+            'password.required'  => 'Password wajib diisi.',
+            'password.min'       => 'Password minimal 6 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+        ]);
 
+        // Create user baru
+        $user = User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        if ($user) {
+            // Jika berhasil
+            return redirect()
+                ->route('auth.index')
+                ->with('success', 'Registrasi berhasil! Silakan login.');
+        } else {
+            // Jika gagal
+            return redirect()
+                ->route('auth.showRegister')
+                ->with('error', 'Registrasi gagal. Silakan coba lagi.');
+        }
+    }
+    public function logout()
+    {
+        session()->flush();
+        return redirect()->route('auth.index')->with('success', 'Anda telah logout!');
+    }
+
+    // Method lainnya tetap sama...
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         //

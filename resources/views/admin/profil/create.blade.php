@@ -1,8 +1,4 @@
-@extends('layouts.admin')
-
-@section('title', 'Tambah Profil Desa')
-@section('page-title', 'Profil Desa')
-@section('hero-title', 'Tambah Profil')
+@extends('layouts.admin.app')
 
 @section('content')
 <div class="py-4">

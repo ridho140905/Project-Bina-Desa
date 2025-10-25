@@ -1,8 +1,4 @@
-@extends('layouts.admin')
-
-@section('title', 'Edit Data Warga')
-@section('page-title', 'Data Warga')
-@section('hero-title', 'Edit Warga')
+@extends('layouts.admin.app')
 
 @section('content')
 <div class="py-4">

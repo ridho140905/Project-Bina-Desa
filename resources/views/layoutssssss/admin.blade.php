@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>@yield('title', 'Admin Dashboard')</title>
 
+  <!-- START CSS -->
   <!-- Tailwind is included -->
   <link rel="stylesheet" href="{{ asset('assets-admin/css/main.css') }}?v=1628755089081">
 
@@ -15,14 +16,6 @@
   <link rel="mask-icon" href="{{ asset('assets-admin/safari-pinned-tab.svg') }}" color="#00b4b6"/>
 
   <meta name="description" content="Admin Dashboard">
-
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-130795909-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-130795909-1');
-  </script>
 
   <style>
    .button {
@@ -329,11 +322,23 @@
     }
 }
   </style>
+  <!-- END CSS -->
+
+  <!-- START JS -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-130795909-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-130795909-1');
+  </script>
+  <!-- END JS -->
 </head>
 <body>
 
 <div id="app">
 
+<!-- START HEADER -->
 <nav id="navbar-main" class="navbar is-fixed-top">
   <div class="navbar-brand">
     <a class="navbar-item mobile-aside-button">
@@ -421,7 +426,9 @@
     </div>
   </div>
 </nav>
+<!-- END HEADER -->
 
+<!-- START SIDEBAR -->
 <aside class="aside is-placed-left is-expanded">
   <div class="aside-tools">
     <div>
@@ -490,7 +497,9 @@
     </ul>
   </div>
 </aside>
+<!-- END SIDEBAR -->
 
+<!-- START MAIN CONTENT -->
 <section class="is-title-bar">
   <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
     <ul>
@@ -516,7 +525,9 @@
 <section class="section main-section">
   @yield('content')
 </section>
+<!-- END MAIN CONTENT -->
 
+<!-- START FOOTER -->
 <footer class="footer">
   <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
     <div class="flex items-center justify-start space-x-3">
@@ -532,7 +543,16 @@
     </div>
   </div>
 </footer>
+<!-- END FOOTER -->
 
 </div>
+
+<!-- START JS BOTTOM -->
+<!-- Scripts below are for demo only -->
+<script type="text/javascript" src="js/main.min.js?v=1628755089081"></script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+<script type="text/javascript" src="js/chart.sample.min.js"></script>
+<!-- END JS BOTTOM -->
 </body>
 </html>

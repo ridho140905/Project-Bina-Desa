@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.admin.app')
 
 @section('title', 'Edit Profil Desa')
 @section('description', 'Form untuk mengedit data profil desa yang sudah ada')
