@@ -11,7 +11,7 @@ use App\Http\Controllers\DashboardController;
 
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('pages.auth.form-login');
 });
 
 Route::get('profil',[ProfilController::class,'index']);
@@ -23,7 +23,7 @@ Route::post('/register', [AuthController::class, 'register'])->name('auth.regist
 Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('pages.dashboard');
 })->name('dashboard');
 
 Route::resource('profil', ProfilController::class);

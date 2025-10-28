@@ -13,7 +13,7 @@ class ProfilController extends Controller
     public function index()
     {
         $data['dataProfil'] = Profil::all();
-        return view('admin.profil.index', $data);
+        return view('pages.profil.index', $data);
     }
 
     /**
@@ -21,7 +21,7 @@ class ProfilController extends Controller
      */
     public function create()
     {
-       return view('admin.profil.create');
+       return view('pages.profil.create');
     }
 
     /**
@@ -49,7 +49,7 @@ class ProfilController extends Controller
     public function edit(string $id)
     {
        $data['dataProfil'] = Profil::findOrFail($id);
-        return view('admin.profil.edit', $data);
+        return view('pages.profil.edit', $data);
     }
 
     /**

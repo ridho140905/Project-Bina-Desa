@@ -12,7 +12,7 @@ class AuthController extends Controller
      */
     public function index()
     {
-        return view('admin.form-login');
+        return view('pages.auth.form-login');
     }
 
     /**
@@ -50,7 +50,7 @@ class AuthController extends Controller
      */
     public function showRegister()
     {
-        return view('admin.form-register');
+        return view('pages.auth.form-register');
     }
 
     /**
