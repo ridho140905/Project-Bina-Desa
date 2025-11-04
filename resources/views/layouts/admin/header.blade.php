@@ -74,25 +74,33 @@
             <span>Settings</span>
           </a>
           <hr class="navbar-divider">
-          <a href="{{ route('auth.logout') }}" class="navbar-item">
-            <span class="icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-              </svg>
-            </span>
-            <span>Log Out</span>
-          </a>
+          <!-- PERBAIKAN: Gunakan form untuk logout -->
+          <form action="{{ route('auth.logout') }}" method="POST" class="navbar-item-form">
+            @csrf
+            <button type="submit" class="navbar-item-button">
+              <span class="icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                </svg>
+              </span>
+              <span>Log Out</span>
+            </button>
+          </form>
         </div>
       </div>
 
-      <a href="{{ route('auth.logout') }}" class="navbar-item has-divider desktop-icon-only">
-        <span class="icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-          </svg>
-        </span>
-        <span>Logout</span>
-      </a>
+      <!-- PERBAIKAN: Desktop icon logout juga pakai form -->
+      <form action="{{ route('auth.logout') }}" method="POST" class="desktop-icon-only">
+        @csrf
+        <button type="submit" class="navbar-item has-divider desktop-icon-only" style="background: none; border: none; cursor: pointer;">
+          <span class="icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+            </svg>
+          </span>
+          <span>Logout</span>
+        </button>
+      </form>
 
       @else
       <!-- Tampilan ketika user belum login -->
@@ -114,7 +122,7 @@
       </a>
       @endif
 
-      <!-- Menu lainnya -->
+      <!-- Menu lainnya (tetap sama) -->
       <div class="navbar-item dropdown has-divider">
         <a class="navbar-link">
           <span class="icon">

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -18,7 +19,7 @@
 
         body {
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #eaffe4 0%, #3fbe54 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             align-items: center;
@@ -342,6 +343,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -376,22 +378,49 @@
             .card-header-title {
                 font-size: 1.5rem;
             }
+
+            .hero-image-container {
+                position: relative;
+                width: 100%;
+                height: 250px;
+                border-radius: 8px;
+                overflow: hidden;
+                margin-bottom: 30px;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            }
+
+            .image-placeholder {
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(45deg, #374151, #4b5563);
+                display: none;
+                /* Default hidden */
+                align-items: center;
+                justify-content: center;
+                color: #9ca3af;
+                font-size: 0.9rem;
+                text-align: center;
+                padding: 20px;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="login-wrapper">
         <!-- Hero Section dengan Gambar dan Deskripsi -->
         <div class="login-hero">
             <div class="hero-image-container">
                 <!-- GANTI SRC GAMBAR DI BAWAH INI JIKA PERLU -->
-                <img src="/images/desa.JPEG" alt="Desa Binaan" class="hero-image"
-                     onerror="this.style.display='none'; document.getElementById('image-placeholder').style.display='flex';">
-                <div id="image-placeholder" class="image-placeholder" style="display: none;">
+<img src="{{ asset('assets-admin/img/warga.png') }}" alt="Desa Binaan" class="hero-image"
+     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">                <div id="image-placeholder" class="image-placeholder" style="display: none;">
                     <div>
                         <i class="mdi mdi-image-off" style="font-size: 3rem; margin-bottom: 10px; display: block;"></i>
                         Gambar Desa<br>
-                        <small>Silakan tambahkan gambar di folder /public/images/desa.jpg</small>
+                        <small></small>
                     </div>
                 </div>
             </div>
@@ -415,7 +444,7 @@
                     </li>
                     <li>
                         <i class="mdi mdi-check-circle icon"></i>
-                        Sistem administrasi yang efisien
+                        Menampilkan berita yang terjadu
                     </li>
                     <li>
                         <i class="mdi mdi-check-circle icon"></i>
@@ -436,18 +465,18 @@
 
                 <div class="card-content">
                     <!-- Flash Messages -->
-                    @if(session('success'))
-                    <div class="notification is-success">
-                        <i class="mdi mdi-check-circle"></i>
-                        {{ session('success') }}
-                    </div>
+                    @if (session('success'))
+                        <div class="notification is-success">
+                            <i class="mdi mdi-check-circle"></i>
+                            {{ session('success') }}
+                        </div>
                     @endif
 
-                    @if(session('error'))
-                    <div class="notification is-danger">
-                        <i class="mdi mdi-alert-circle"></i>
-                        {{ session('error') }}
-                    </div>
+                    @if (session('error'))
+                        <div class="notification is-danger">
+                            <i class="mdi mdi-alert-circle"></i>
+                            {{ session('error') }}
+                        </div>
                     @endif
 
                     <form method="POST" action="{{ route('auth.login') }}">
@@ -457,13 +486,14 @@
                             <label class="form-label">Alamat Email</label>
                             <div class="input-group">
                                 <i class="mdi mdi-email input-icon"></i>
-                                <input class="form-input" type="email" name="email" placeholder="Masukkan email Anda" value="{{ old('email') }}" required>
+                                <input class="form-input" type="email" name="email"
+                                    placeholder="Masukkan email Anda" value="{{ old('email') }}" required>
                             </div>
                             @error('email')
-                            <div class="error-message">
-                                <i class="mdi mdi-alert"></i>
-                                {{ $message }}
-                            </div>
+                                <div class="error-message">
+                                    <i class="mdi mdi-alert"></i>
+                                    {{ $message }}
+                                </div>
                             @enderror
                         </div>
 
@@ -471,13 +501,14 @@
                             <label class="form-label">Password</label>
                             <div class="input-group">
                                 <i class="mdi mdi-lock input-icon"></i>
-                                <input class="form-input" type="password" name="password" placeholder="Masukkan password Anda" required>
+                                <input class="form-input" type="password" name="password"
+                                    placeholder="Masukkan password Anda" required>
                             </div>
                             @error('password')
-                            <div class="error-message">
-                                <i class="mdi mdi-alert"></i>
-                                {{ $message }}
-                            </div>
+                                <div class="error-message">
+                                    <i class="mdi mdi-alert"></i>
+                                    {{ $message }}
+                                </div>
                             @enderror
                         </div>
 
@@ -510,4 +541,5 @@
     <!-- Scripts -->
     <script src="/admin/js/main.min.js"></script>
 </body>
+
 </html>

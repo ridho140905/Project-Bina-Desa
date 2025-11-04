@@ -54,7 +54,7 @@
                                     <td class="fw-semibold-universal">{{ $item->name }}</td>
                                     <td>{{ $item->email }}</td>
                                     <td><span class="universal-badge badge-secondary">{{ Str::limit($item->password, 15) }}</span></td>
-                                    <td class="text-center">
+                                    <td class="">
                                         <div class="action-buttons">
                                             <a href="{{ route('user.edit', $item->id) }}" class="btn btn-edit">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
