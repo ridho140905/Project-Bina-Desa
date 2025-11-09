@@ -316,5 +316,67 @@
     .table-responsive-universal .universal-table {
         min-width: 100%;
     }
+
+/* ===== PERBAIKAN TOMBOL AKSI ===== */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    min-height: 40px;
+}
+
+.action-buttons form {
+    display: flex !important;
+    margin: 0 !important;
+}
+
+.btn-edit, .btn-delete {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.btn-edit {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.btn-edit:hover {
+    background-color: #e0a800;
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+}
+
+/* Memastikan kolom aksi memiliki width yang konsisten */
+.universal-table th.text-center:last-child,
+.universal-table td.text-center:last-child {
+    width: 120px;
+    min-width: 120px;
+    max-width: 120px;
+}
+
+/* Memastikan tombol tetap sejajar di semua kondisi */
+.universal-table tbody td.text-center {
+    vertical-align: middle !important;
+}
 </style>
 <!-- END CSS -->
