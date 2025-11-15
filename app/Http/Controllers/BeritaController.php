@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Berita;
+
 
 use Illuminate\Http\Request;
 use App\Models\KategoriBerita;
+use App\Models\Berita;
 
 class BeritaController extends Controller
 {
