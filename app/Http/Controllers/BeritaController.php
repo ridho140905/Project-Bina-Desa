@@ -81,7 +81,7 @@ class BeritaController extends Controller
 
         $request->validate([
             'kategori_id' => 'required|exists:kategori_berita,kategori_id',
-            'judul' => 'required|string|max:255',
+            'judul' => 'required|string|max:250',
             'slug' => 'required|string|max:300|unique:berita,slug,' . $id . ',berita_id',
             'isi_html' => 'required|string',
             'penulis' => 'required|string|max:100',
