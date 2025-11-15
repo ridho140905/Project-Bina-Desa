@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class warga extends Model
+class Warga extends Model
 {
     protected $primaryKey = 'warga_id';
     protected $table = 'warga';
