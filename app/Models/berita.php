@@ -11,22 +11,27 @@ class Berita extends Model
 
     protected $table = 'berita';
     protected $primaryKey = 'berita_id';
+    public $timestamps = true;
+
     protected $fillable = [
         'kategori_id',
         'judul',
         'slug',
-        'cover_foto',
         'isi_html',
         'penulis',
+        'cover_foto',
         'status',
-        'terbit_at',
+        'terbit_at'
     ];
 
-    public $timestamps = true;
+    protected $casts = [
+        'terbit_at' => 'datetime'
+    ];
 
-    // Relasi ke tabel kategori_berita
     public function kategori()
     {
         return $this->belongsTo(KategoriBerita::class, 'kategori_id', 'kategori_id');
     }
 }
+
+
