@@ -6,16 +6,12 @@ use Faker\Factory;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class CreateKategoriBeritaDummy extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $faker = \Faker\Factory::create('id_ID'); // Pastikan menggunakan 'id_ID'
+        $faker = Factory::create('id_ID');
 
         $kategoriData = [
             [
