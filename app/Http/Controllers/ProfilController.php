@@ -10,9 +10,17 @@ class ProfilController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data['dataProfil'] = Profil::all();
+          // Daftar kolom yang bisa difilter sesuai name pada form
+    $filterableColumns = ['provinsi'];
+    $searchableColumns = ['nama_desa', 'kecamatan', 'kabupaten'];
+
+    // Gunakan scope filter untuk memproses query
+    $data['dataProfil'] = Profil::filter($request, $filterableColumns)
+        ->search($request, $searchableColumns)
+        ->paginate(10)
+        ->withQueryString();
         return view('pages.profil.index', $data);
     }
 

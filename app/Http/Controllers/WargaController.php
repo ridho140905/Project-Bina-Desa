@@ -9,9 +9,17 @@ class WargaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-         $data['warga'] = Warga::all();
+        // Daftar kolom yang bisa difilter sesuai name pada form
+        $filterableColumns = ['jenis_kelamin'];
+        $searchableColumns = ['nama', 'no_ktp', 'email'];
+
+        // Gunakan scope filter untuk memproses query
+        $data['warga'] = Warga::filter($request, $filterableColumns)
+            ->search($request, $searchableColumns)
+            ->paginate(10)
+            ->withQueryString();
         return view('pages.warga.index', $data);
     }
 

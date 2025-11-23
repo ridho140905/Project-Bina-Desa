@@ -36,12 +36,63 @@
         {{-- Card Table --}}
         <div class="card-universal">
             <div class="card-body-universal">
+                {{-- Form Filter dan Search --}}
+                <form method="GET" action="{{ route('profil.index') }}" class="mb-4">
+                    <div class="row g-3 align-items-end">
+                        {{-- Filter Provinsi --}}
+                        <div class="col-md-4">
+                            <label class="form-label-universal">Provinsi</label>
+                            <select name="provinsi" class="form-select-universal" onchange="this.form.submit()">
+                                <option value="">Semua Provinsi</option>
+                                <option value="Riau" {{ request('provinsi') == 'Riau' ? 'selected' : '' }}>Riau</option>
+                                <option value="Sumatera Barat" {{ request('provinsi') == 'Sumatera Barat' ? 'selected' : '' }}>Sumatera Barat</option>
+                                <option value="Sumatera Utara" {{ request('provinsi') == 'Sumatera Utara' ? 'selected' : '' }}>Sumatera Utara</option>
+                            </select>
+                        </div>
+
+                        {{-- Search --}}
+                        <div class="col-md-6">
+                            <label class="form-label-universal">Cari Data</label>
+                            <div class="input-group-universal">
+                                <input type="text" name="search" class="form-control-universal"
+                                       value="{{ request('search') }}" placeholder="Cari nama desa, kecamatan, atau kabupaten...">
+                                <button type="submit" class="btn btn-search-universal">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                                    </svg>
+                                </button>
+                                @if(request('search'))
+                                    <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}"
+                                       class="btn btn-clear-universal" title="Clear Search">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                        </svg>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                {{-- Info Filter Aktif --}}
+                @if(request('search') || request('provinsi'))
+                <div class="alert alert-info mb-3">
+                    <strong>Filter Aktif:</strong>
+                    @if(request('search'))
+                        Pencarian: "{{ request('search') }}"
+                    @endif
+                    @if(request('provinsi'))
+                        {{ request('search') ? ' | ' : '' }}
+                        Provinsi: {{ request('provinsi') }}
+                    @endif
+                </div>
+                @endif
+
                 <div class="table-responsive table-responsive-universal">
                     <table class="table universal-table">
                         <thead>
                             <tr>
                                 <th class="text-center">#</th>
-                                <th>ID</th>
                                 <th>Nama Desa</th>
                                 <th>Kecamatan</th>
                                 <th>Kabupaten</th>
@@ -49,16 +100,15 @@
                                 <th>Alamat Kantor</th>
                                 <th>Email</th>
                                 <th>Telepon</th>
-                                <th>Visi</th>
-                                <th>Misi</th>
                                 <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($dataProfil as $item)
                                 <tr>
-                                    <td class="text-center text-muted-universal">{{ $loop->iteration }}</td>
-                                    <td><span class="universal-badge badge-secondary">{{ $item->profil_id }}</span></td>
+                                    <td class="text-center text-muted-universal">
+                                        {{ ($dataProfil->currentPage() - 1) * $dataProfil->perPage() + $loop->iteration }}
+                                    </td>
                                     <td class="fw-semibold-universal">{{ $item->nama_desa }}</td>
                                     <td><span class="universal-badge badge-info">{{ $item->kecamatan }}</span></td>
                                     <td><span class="universal-badge badge-warning">{{ $item->kabupaten }}</span></td>
@@ -66,8 +116,6 @@
                                     <td>{{ Str::limit($item->alamat_kantor, 25) }}</td>
                                     <td>{{ $item->email }}</td>
                                     <td>{{ $item->telepon }}</td>
-                                    <td>{{ Str::limit($item->visi, 25) }}</td>
-                                    <td>{{ Str::limit($item->misi, 25) }}</td>
                                     <td class="text-center">
                                         <div class="action-buttons">
                                             <a href="{{ route('profil.edit', $item->profil_id) }}" class="btn btn-edit">
@@ -89,19 +137,30 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="12" class="empty-state-universal">
+                                    <td colspan="9" class="empty-state-universal">
                                         <span class="icon">
                                             <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
                                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                                             </svg>
                                         </span>
-                                        Belum ada data profil.
+                                        @if(request('search') || request('provinsi'))
+                                            Data profil tidak ditemukan dengan filter yang dipilih.
+                                        @else
+                                            Belum ada data profil.
+                                        @endif
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
+
+                {{-- Pagination --}}
+                @if($dataProfil->hasPages())
+                    <div class="mt-4">
+                        {{ $dataProfil->links('pagination::bootstrap-5') }}
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -156,19 +215,6 @@
     transform: translateY(-1px);
 }
 
-/* Memastikan kolom aksi memiliki width yang konsisten */
-.universal-table th.text-center:last-child,
-.universal-table td.text-center:last-child {
-    width: 120px;
-    min-width: 120px;
-    max-width: 120px;
-}
-
-/* Memastikan tombol tetap sejajar di semua kondisi */
-.universal-table tbody td.text-center {
-    vertical-align: middle !important;
-}
-
 .empty-state-universal {
     display: flex;
     flex-direction: column;
@@ -183,6 +229,124 @@
     display: inline-flex;
     align-items: center;
     margin-right: 8px;
+}
+
+.universal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-secondary { background-color: #6c757d; color: white; }
+.badge-primary { background-color: #007bff; color: white; }
+.badge-danger { background-color: #dc3545; color: white; }
+.badge-info { background-color: #17a2b8; color: white; }
+.badge-warning { background-color: #ffc107; color: #000; }
+.badge-success { background-color: #28a745; color: white; }
+
+.form-select-universal, .form-control-universal {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+.input-group-universal {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-search-universal, .btn-clear-universal {
+    background: #3b82f6;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: white;
+    cursor: pointer;
+}
+
+.btn-clear-universal {
+    background: #ef4444;
+}
+
+.form-label-universal {
+    font-weight: 500;
+    margin-bottom: 4px;
+    display: block;
+    color: #374151;
+}
+
+/* ========================= */
+/* PERBAIKAN CSS PAGINATION */
+/* ========================= */
+.pagination {
+    display: flex;
+    padding-left: 0;
+    list-style: none;
+    border-radius: 0.375rem;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.page-link {
+    position: relative;
+    display: block;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #3b82f6;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+}
+
+.page-link:hover {
+    z-index: 2;
+    color: #1e40af;
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+}
+
+.page-item.active .page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    font-weight: 600;
+}
+
+.page-item.disabled .page-link {
+    color: #9ca3af;
+    pointer-events: none;
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+}
+
+/* Responsive pagination */
+@media (max-width: 640px) {
+    .pagination {
+        gap: 4px;
+    }
+
+    .page-link {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+}
+
+/* Info Filter */
+.alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
 }
 </style>
 @endsection

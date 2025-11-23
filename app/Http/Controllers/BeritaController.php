@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
-
 use Illuminate\Http\Request;
 use App\Models\KategoriBerita;
 use App\Models\Berita;
@@ -13,9 +11,20 @@ class BeritaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data['dataBerita'] = Berita::with('kategori')->get();
+        // Daftar kolom yang bisa difilter sesuai name pada form
+        $filterableColumns = ['status']; // Filter berdasarkan status
+        $searchableColumns = ['judul', 'penulis']; // Search berdasarkan judul dan penulis
+
+        // Gunakan scope filter untuk memproses query dengan eager loading
+        $data['dataBerita'] = Berita::with('kategori')
+            ->filter($request, $filterableColumns)
+            ->search($request, $searchableColumns)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
         return view('pages.berita.index', $data);
     }
 

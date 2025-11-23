@@ -14,7 +14,7 @@
                     </span>
                     Data User
                 </h1>
-                <p>List data seluruh User</p>
+                <p>Management data user system</p>
             </div>
             <a href="{{ route('user.create') }}" class="btn btn-light-universal btn-universal">
                 <span class="icon">
@@ -36,25 +36,86 @@
         {{-- Card Table --}}
         <div class="card-universal">
             <div class="card-body-universal">
+                {{-- Form Filter dan Search --}}
+                <form method="GET" action="{{ route('user.index') }}" class="mb-4">
+                    <div class="row g-3 align-items-end">
+                        {{-- Filter User --}}
+                        <div class="col-md-3">
+                            <label class="form-label-universal">Filter User</label>
+                            <select name="filter_user" class="form-select-universal" onchange="this.form.submit()">
+                                <option value="">Semua User</option>
+                                <option value="a" {{ request('filter_user') == 'a' ? 'selected' : '' }}>User A-M</option>
+                                <option value="n" {{ request('filter_user') == 'n' ? 'selected' : '' }}>User N-Z</option>
+                            </select>
+                        </div>
+
+                        {{-- Search --}}
+                        <div class="col-md-4">
+                            <label class="form-label-universal">Cari Data</label>
+                            <div class="input-group-universal">
+                                <input type="text" name="search" class="form-control-universal"
+                                       value="{{ request('search') }}" placeholder="Cari nama atau email...">
+                                <button type="submit" class="btn btn-search-universal">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                                    </svg>
+                                </button>
+                                @if(request('search') || request('filter_user'))
+                                    <a href="{{ route('user.index') }}"
+                                       class="btn btn-clear-universal" title="Clear All">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                        </svg>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                {{-- Info Filter Aktif --}}
+                @if(request('search') || request('filter_user'))
+                <div class="alert alert-info mb-3">
+                    <strong>Filter Aktif:</strong>
+                    @if(request('search'))
+                        Pencarian: "{{ request('search') }}"
+                    @endif
+                    @if(request('filter_user'))
+                        {{ request('search') ? ' | ' : '' }}
+                        @if(request('filter_user') == 'a')
+                            User A-M
+                        @elseif(request('filter_user') == 'n')
+                            User N-Z
+                        @endif
+                    @endif
+                </div>
+                @endif
+
                 <div class="table-responsive table-responsive-universal">
                     <table class="table universal-table">
                         <thead>
                             <tr>
                                 <th class="text-center">#</th>
-                                <th>Nama Lengkap</th>
-                                <th>Email</th>
-                                <th>Password</th>
-                                <th class="text-center">Aksi</th>
+                                <th>NAMA</th>
+                                <th>EMAIL</th>
+                                <th>PASSWORD</th>
+                                <th class="text-center">AKSI</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($dataUser as $item)
                                 <tr>
-                                    <td class="text-center text-muted-universal">{{ $loop->iteration }}</td>
+                                    <td class="text-center text-muted-universal">
+                                        {{ ($dataUser->currentPage() - 1) * $dataUser->perPage() + $loop->iteration }}
+                                    </td>
                                     <td class="fw-semibold-universal">{{ $item->name }}</td>
                                     <td>{{ $item->email }}</td>
-                                    <td><span class="universal-badge badge-secondary">{{ Str::limit($item->password, 15) }}</span></td>
-                                    <td class="">
+                                    <td>
+                                        <span class="universal-badge badge-secondary">
+                                            {{ Str::limit($item->password, 15) }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
                                         <div class="action-buttons">
                                             <a href="{{ route('user.edit', $item->id) }}" class="btn btn-edit">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -64,7 +125,7 @@
                                             <form action="{{ route('user.destroy', $item->id) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-delete" onclick="return confirm('Yakin ingin menghapus?')">
+                                                <button type="submit" class="btn btn-delete" onclick="return confirm('Yakin ingin menghapus data user?')">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                                         <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                                                     </svg>
@@ -81,13 +142,24 @@
                                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                                             </svg>
                                         </span>
-                                        Belum ada data user.
+                                        @if(request('search') || request('filter_user'))
+                                            Data user tidak ditemukan dengan filter yang dipilih.
+                                        @else
+                                            Belum ada data user.
+                                        @endif
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
+
+                {{-- Pagination --}}
+                @if($dataUser->hasPages())
+                    <div class="mt-4">
+                        {{ $dataUser->links('pagination::bootstrap-5') }}
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -149,6 +221,156 @@
     display: inline-flex;
     align-items: center;
     margin-right: 8px;
+}
+
+.universal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-secondary { background-color: #6c757d; color: white; }
+.badge-primary { background-color: #007bff; color: white; }
+.badge-danger { background-color: #dc3545; color: white; }
+.badge-info { background-color: #17a2b8; color: white; }
+.badge-warning { background-color: #ffc107; color: #000; }
+.badge-success { background-color: #28a745; color: white; }
+
+.form-select-universal, .form-control-universal {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+.input-group-universal {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-search-universal, .btn-clear-universal {
+    background: #3b82f6;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-search-universal:hover {
+    background: #2563eb;
+}
+
+.btn-clear-universal {
+    background: #ef4444;
+}
+
+.btn-clear-universal:hover {
+    background: #dc2626;
+}
+
+.form-label-universal {
+    font-weight: 500;
+    margin-bottom: 4px;
+    display: block;
+    color: #374151;
+}
+
+/* ========================= */
+/* PERBAIKAN CSS PAGINATION */
+/* ========================= */
+.pagination {
+    display: flex;
+    padding-left: 0;
+    list-style: none;
+    border-radius: 0.375rem;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.page-link {
+    position: relative;
+    display: block;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #3b82f6;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+}
+
+.page-link:hover {
+    z-index: 2;
+    color: #1e40af;
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+}
+
+.page-item.active .page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    font-weight: 600;
+}
+
+.page-item.disabled .page-link {
+    color: #9ca3af;
+    pointer-events: none;
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+}
+
+/* Responsive pagination */
+@media (max-width: 640px) {
+    .pagination {
+        gap: 4px;
+    }
+
+    .page-link {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+}
+
+/* Info Filter */
+.alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .input-group-universal {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-search-universal, .btn-clear-universal {
+        width: 100%;
+        margin-top: 8px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+    }
 }
 </style>
 @endsection

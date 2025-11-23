@@ -12,9 +12,39 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+     public function index(Request $request)
     {
-         $data['dataUser'] = User::all();
+       // Inisialisasi query
+        $query = User::query();
+
+        // Search functionality (nama dan email)
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'LIKE', '%' . $request->search . '%')
+                  ->orWhere('email', 'LIKE', '%' . $request->search . '%');
+            });
+        }
+
+        // Filter functionality dengan dropdown huruf saja
+        if ($request->filled('filter_user')) {
+            if ($request->filter_user == 'a') {
+                // User dengan nama A-M
+                $query->whereRaw('LOWER(SUBSTRING(name, 1, 1)) BETWEEN "a" AND "m"');
+            } elseif ($request->filter_user == 'n') {
+                // User dengan nama N-Z
+                $query->whereRaw('LOWER(SUBSTRING(name, 1, 1)) BETWEEN "n" AND "z"');
+            }
+        }
+
+        // Default order by name
+        $query->orderBy('name', 'asc');
+
+        $data['dataUser'] = $query->paginate(10);
+
+        // Untuk menjaga filter di pagination
+        $data['dataUser']->appends($request->query());
+
+
         return view('pages.user.index', $data);
     }
 

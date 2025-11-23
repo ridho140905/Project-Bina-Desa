@@ -10,9 +10,24 @@ class KategoriBeritaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data['dataKategori'] = KategoriBerita::all();
+        // Daftar kolom yang bisa difilter sesuai name pada form
+        $filterableColumns = ['slug']; // Filter berdasarkan slug
+        $searchableColumns = ['nama', 'deskripsi']; // Search berdasarkan nama dan deskripsi
+
+        // Gunakan scope filter untuk memproses query
+        $data['dataKategori'] = KategoriBerita::filter($request, $filterableColumns)
+            ->search($request, $searchableColumns)
+            ->paginate(10)
+            ->withQueryString();
+            // Ambil semua slug untuk dropdown filter (unik)
+    $data['allSlugs'] = KategoriBerita::select('slug')
+        ->distinct()
+        ->orderBy('slug')
+        ->get();
+
+
         return view('pages.kategori.index', $data);
     }
 
