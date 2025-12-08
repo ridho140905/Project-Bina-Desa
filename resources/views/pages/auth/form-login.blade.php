@@ -415,8 +415,9 @@
         <div class="login-hero">
             <div class="hero-image-container">
                 <!-- GANTI SRC GAMBAR DI BAWAH INI JIKA PERLU -->
-<img src="{{ asset('assets-admin/img/warga.png') }}" alt="Desa Binaan" class="hero-image"
-     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">                <div id="image-placeholder" class="image-placeholder" style="display: none;">
+                <img src="{{ asset('assets-admin/img/warga.png') }}" alt="Desa Binaan" class="hero-image"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div id="image-placeholder" class="image-placeholder" style="display: none;">
                     <div>
                         <i class="mdi mdi-image-off" style="font-size: 3rem; margin-bottom: 10px; display: block;"></i>
                         Gambar Desa<br>
@@ -477,6 +478,17 @@
                             <i class="mdi mdi-alert-circle"></i>
                             {{ session('error') }}
                         </div>
+                    @endif
+
+                    @if ($errors->any())
+                        <div class="notification is-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li class="mdi mdi-alert-circle">{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+
                     @endif
 
                     <form method="POST" action="{{ route('auth.login') }}">

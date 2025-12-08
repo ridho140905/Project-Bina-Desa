@@ -93,6 +93,7 @@
                         <thead>
                             <tr>
                                 <th class="text-center">#</th>
+                                <th>Foto</th>
                                 <th>Nama Desa</th>
                                 <th>Kecamatan</th>
                                 <th>Kabupaten</th>
@@ -109,6 +110,20 @@
                                     <td class="text-center text-muted-universal">
                                         {{ ($dataProfil->currentPage() - 1) * $dataProfil->perPage() + $loop->iteration }}
                                     </td>
+                                    <td>
+                                        @if($item->foto_utama_url)
+                                            <img src="{{ $item->foto_utama_url }}"
+                                                 alt="{{ $item->nama_desa }}"
+                                                 class="profile-img-table"
+                                                 onerror="this.src='https://via.placeholder.com/50x50?text=No+Image'">
+                                        @else
+                                            <div class="no-image-table">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                                </svg>
+                                            </div>
+                                        @endif
+                                    </td>
                                     <td class="fw-semibold-universal">{{ $item->nama_desa }}</td>
                                     <td><span class="universal-badge badge-info">{{ $item->kecamatan }}</span></td>
                                     <td><span class="universal-badge badge-warning">{{ $item->kabupaten }}</span></td>
@@ -118,15 +133,37 @@
                                     <td>{{ $item->telepon }}</td>
                                     <td class="text-center">
                                         <div class="action-buttons">
-                                            <a href="{{ route('profil.edit', $item->profil_id) }}" class="btn btn-edit">
+                                            {{-- Tombol Detail --}}
+                                            <a href="{{ route('profil.show', $item->profil_id) }}"
+                                               class="btn btn-primary btn-sm mb-1"
+                                               title="Detail Profil">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                </svg>
+                                            </a>
+
+                                            {{-- Tombol Edit --}}
+                                            <a href="{{ route('profil.edit', $item->profil_id) }}"
+                                               class="btn btn-edit"
+                                               title="Edit Profil">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                                     <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                                                 </svg>
                                             </a>
-                                            <form action="{{ route('profil.destroy', $item->profil_id) }}" method="POST" class="d-inline">
+
+                                            {{-- Tombol Delete --}}
+                                            <form action="{{ route('profil.destroy', $item->profil_id) }}"
+                                                  method="POST"
+                                                  class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-delete" onclick="return confirm('Yakin ingin menghapus?')">
+                                                <button type="submit"
+                                                        class="btn btn-delete"
+                                                        onclick="return confirm('Yakin ingin menghapus profil {{ $item->nama_desa }}?')"
+                                                        title="Hapus Profil">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                                         <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                                                     </svg>
@@ -137,7 +174,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="empty-state-universal">
+                                    <td colspan="10" class="empty-state-universal">
                                         <span class="icon">
                                             <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
                                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
@@ -180,7 +217,7 @@
     margin: 0 !important;
 }
 
-.btn-edit, .btn-delete {
+.btn-edit, .btn-delete, .btn-primary {
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
@@ -193,6 +230,16 @@
     cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
 }
 
 .btn-edit {
@@ -279,6 +326,27 @@
     margin-bottom: 4px;
     display: block;
     color: #374151;
+}
+
+/* Style untuk foto profil di tabel */
+.profile-img-table {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 2px solid #e2e8f0;
+}
+
+.no-image-table {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    border: 2px dashed #dee2e6;
 }
 
 /* ========================= */

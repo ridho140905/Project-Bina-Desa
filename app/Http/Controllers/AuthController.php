@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -12,6 +13,9 @@ class AuthController extends Controller
      */
     public function index()
     {
+       if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
         return view('pages.auth.form-login');
     }
 
@@ -34,11 +38,14 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if ($user && Hash::check($request->password, $user->password)) {
-            // Simpan session
+            // Gunakan Auth::login() untuk login dengan Laravel Auth System
+            Auth::login($user);
+
+            // Simpan session tambahan jika diperlukan
             session(['user_id' => $user->id, 'username' => $user->name]);
 
             // Redirect ke dashboard dengan flash message
-            return redirect('dashboard')->with('success', 'Selamat Datang ke halaman dasboard');
+            return redirect('dashboard')->with('success', 'Selamat Datang ke halaman dashboard');
         }
 
         // Jika gagal login
@@ -62,6 +69,7 @@ class AuthController extends Controller
             'name'     => 'required|min:3',
             'email'    => 'required|email|unique:users',
             'password' => 'required|min:6|confirmed',
+            'role'     => 'required' // Tambahkan validasi untuk role
         ], [
             'name.required'      => 'Nama wajib diisi.',
             'name.min'           => 'Nama minimal 3 karakter.',
@@ -71,6 +79,7 @@ class AuthController extends Controller
             'password.required'  => 'Password wajib diisi.',
             'password.min'       => 'Password minimal 6 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'role.required'      => 'Role wajib dipilih.',
         ]);
 
         // Create user baru
@@ -78,6 +87,7 @@ class AuthController extends Controller
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
+            'role'     => $request->role
         ]);
 
         if ($user) {
@@ -92,9 +102,13 @@ class AuthController extends Controller
                 ->with('error', 'Registrasi gagal. Silakan coba lagi.');
         }
     }
-    public function logout()
+
+    public function logout(Request $request)
     {
-        session()->flush();
+        Auth::logout();
+        $request->session()->invalidate();      // Hapus semua session
+        $request->session()->regenerateToken(); // Cegah CSRF
+
         return redirect()->route('auth.index')->with('success', 'Anda telah logout!');
     }
 

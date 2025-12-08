@@ -5,58 +5,58 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
-class Profil extends Model
+class Galeri extends Model
 {
-    protected $table = 'profil';
-    protected $primaryKey = 'profil_id';
+    protected $table = 'galeri';
+    protected $primaryKey = 'galeri_id';
     protected $fillable = [
-        'nama_desa',
-        'kecamatan',
-        'kabupaten',
-        'provinsi',
-        'alamat_kantor',
-        'email',
-        'telepon',
-        'visi',
-        'misi',
+        'judul',
+        'deskripsi',
     ];
 
     /**
-     * Relationship dengan media - PERBAIKAN!
+     * Relationship dengan media
      */
     public function media()
     {
-        return $this->hasMany(Media::class, 'ref_id', 'profil_id')
-                    ->where('ref_table', 'profil')
+        return $this->hasMany(Media::class, 'ref_id', 'galeri_id')
+                    ->where('ref_table', 'galeri')
                     ->orderBy('sort_order')
                     ->orderBy('media_id');
     }
 
     /**
-     * Accessor untuk foto utama - PERBAIKAN!
-     * Sekarang menggunakan file_name bukan path
+     * Accessor untuk foto utama
      */
     public function getFotoUtamaAttribute()
     {
-        $foto = $this->media->where('sort_order', 1)->first();
+        $foto = $this->media->first();
         return $foto ? $foto->file_name : null;
     }
 
     /**
-     * Accessor untuk URL foto utama - TAMBAHAN BARU!
+     * Accessor untuk URL foto utama
      */
     public function getFotoUtamaUrlAttribute()
     {
-        $foto = $this->media->where('sort_order', 1)->first();
-        return $foto ? asset('storage/media/profil/' . $foto->file_name) : null;
+        $foto = $this->media->first();
+        return $foto ? asset('storage/media/galeri/' . $foto->file_name) : null;
     }
 
     /**
-     * Accessor untuk file pendukung - TAMBAHAN BARU!
+     * Accessor untuk semua foto
      */
-    public function getFilePendukungAttribute()
+    public function getSemuaFotoAttribute()
     {
-        return $this->media->where('sort_order', '>', 1);
+        return $this->media;
+    }
+
+    /**
+     * Accessor untuk jumlah foto
+     */
+    public function getJumlahFotoAttribute()
+    {
+        return $this->media->count();
     }
 
     /**

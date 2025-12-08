@@ -9,20 +9,20 @@
                 <h1>
                     <span class="icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
                         </svg>
                     </span>
-                    Data Berita
+                    Data Galeri
                 </h1>
-                <p>Manajemen data berita desa</p>
+                <p>Manajemen foto galeri kegiatan</p>
             </div>
-            <a href="{{ route('berita.create') }}" class="btn btn-light-universal btn-universal">
+            <a href="{{ route('galeri.create') }}" class="btn btn-light-universal btn-universal">
                 <span class="icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                     </svg>
                 </span>
-                Tambah Berita
+                Tambah Galeri
             </a>
         </div>
 
@@ -36,25 +36,15 @@
         {{-- Card Table --}}
         <div class="card-universal">
             <div class="card-body-universal">
-                {{-- Form Filter dan Search --}}
-                <form method="GET" action="{{ route('berita.index') }}" class="mb-4">
+                {{-- Form Search --}}
+                <form method="GET" action="{{ route('galeri.index') }}" class="mb-4">
                     <div class="row g-3 align-items-end">
-                        {{-- Filter Status --}}
-                        <div class="col-md-4">
-                            <label class="form-label-universal">Status</label>
-                            <select name="status" class="form-select-universal" onchange="this.form.submit()">
-                                <option value="">Semua Status</option>
-                                <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
-                                <option value="terbit" {{ request('status') == 'terbit' ? 'selected' : '' }}>Terbit</option>
-                            </select>
-                        </div>
-
                         {{-- Search --}}
                         <div class="col-md-6">
-                            <label class="form-label-universal">Cari Berita</label>
+                            <label class="form-label-universal">Cari Data</label>
                             <div class="input-group-universal">
                                 <input type="text" name="search" class="form-control-universal"
-                                       value="{{ request('search') }}" placeholder="Cari judul atau penulis...">
+                                       value="{{ request('search') }}" placeholder="Cari judul atau deskripsi galeri...">
                                 <button type="submit" class="btn btn-search-universal">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
@@ -74,16 +64,10 @@
                 </form>
 
                 {{-- Info Filter Aktif --}}
-                @if(request('search') || request('status'))
+                @if(request('search'))
                 <div class="alert alert-info mb-3">
                     <strong>Filter Aktif:</strong>
-                    @if(request('search'))
-                        Pencarian: "{{ request('search') }}"
-                    @endif
-                    @if(request('status'))
-                        {{ request('search') ? ' | ' : '' }}
-                        Status: {{ request('status') == 'terbit' ? 'Terbit' : 'Draft' }}
-                    @endif
+                    Pencarian: "{{ request('search') }}"
                 </div>
                 @endif
 
@@ -92,27 +76,26 @@
                         <thead>
                             <tr>
                                 <th class="text-center">#</th>
-                                <th>Cover</th>
-                                <th>Judul Berita</th>
-                                <th>Kategori</th>
-                                <th>Penulis</th>
-                                <th>Status</th>
-                                <th>Tanggal Terbit</th>
+                                <th>Foto Utama</th>
+                                <th>Judul</th>
+                                <th>Deskripsi</th>
                                 <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($dataBerita as $item)
+                            @forelse($dataGaleri as $item)
                                 <tr>
                                     <td class="text-center text-muted-universal">
-                                        {{ ($dataBerita->currentPage() - 1) * $dataBerita->perPage() + $loop->iteration }}
+                                        {{ ($dataGaleri->currentPage() - 1) * $dataGaleri->perPage() + $loop->iteration }}
                                     </td>
                                     <td>
-                                        @if($item->cover_foto_url)
-                                            <img src="{{ $item->cover_foto_url }}"
-                                                 alt="{{ $item->judul }}"
-                                                 class="cover-img-table"
-                                                 onerror="this.src='https://via.placeholder.com/50x50?text=No+Image'">
+                                        @if($item->foto_utama_url)
+                                            <div class="galeri-thumbnail">
+                                                <img src="{{ $item->foto_utama_url }}"
+                                                     alt="{{ $item->judul }}"
+                                                     class="thumbnail-img"
+                                                     onclick="showImage('{{ $item->foto_utama_url }}', '{{ $item->judul }}')">
+                                            </div>
                                         @else
                                             <div class="no-image-table">
                                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -121,28 +104,10 @@
                                             </div>
                                         @endif
                                     </td>
+                                    <td class="fw-semibold-universal">{{ $item->judul }}</td>
                                     <td>
-                                        <div>
-                                            <div class="fw-semibold-universal">{{ Str::limit($item->judul, 50) }}</div>
-                                            <small class="text-muted-universal">{{ $item->slug }}</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="universal-badge badge-primary">
-                                            {{ $item->kategori->nama ?? 'Tidak ada kategori' }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $item->penulis }}</td>
-                                    <td>
-                                        @if($item->status == 'terbit')
-                                            <span class="universal-badge badge-success">Terbit</span>
-                                        @else
-                                            <span class="universal-badge badge-secondary">Draft</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($item->terbit_at)
-                                            {{ \Carbon\Carbon::parse($item->terbit_at)->format('d M Y H:i') }}
+                                        @if($item->deskripsi)
+                                            <span class="text-muted-universal">{{ Str::limit($item->deskripsi, 50) }}</span>
                                         @else
                                             <span class="text-muted-universal">-</span>
                                         @endif
@@ -150,9 +115,9 @@
                                     <td class="text-center">
                                         <div class="action-buttons">
                                             {{-- Tombol Detail --}}
-                                            <a href="{{ route('berita.show', $item->berita_id) }}"
+                                            <a href="{{ route('galeri.show', $item->galeri_id) }}"
                                                class="btn btn-primary btn-sm mb-1"
-                                               title="Detail Berita">
+                                               title="Detail Galeri">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                           d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -162,24 +127,24 @@
                                             </a>
 
                                             {{-- Tombol Edit --}}
-                                            <a href="{{ route('berita.edit', $item->berita_id) }}"
+                                            <a href="{{ route('galeri.edit', $item->galeri_id) }}"
                                                class="btn btn-edit"
-                                               title="Edit Berita">
+                                               title="Edit Galeri">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                                     <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                                                 </svg>
                                             </a>
 
                                             {{-- Tombol Delete --}}
-                                            <form action="{{ route('berita.destroy', $item->berita_id) }}"
+                                            <form action="{{ route('galeri.destroy', $item->galeri_id) }}"
                                                   method="POST"
                                                   class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
                                                         class="btn btn-delete"
-                                                        onclick="return confirm('Yakin ingin menghapus berita {{ $item->judul }}?')"
-                                                        title="Hapus Berita">
+                                                        onclick="return confirm('Yakin ingin menghapus galeri {{ $item->judul }}?')"
+                                                        title="Hapus Galeri">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                                         <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                                                     </svg>
@@ -190,16 +155,16 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="empty-state-universal">
+                                    <td colspan="5" class="empty-state-universal">
                                         <span class="icon">
                                             <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M20 6h-2.18c.11-.31.18-.65.18-1a2.996 2.996 0 0 0-5.5-1.65l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/>
+                                                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
                                             </svg>
                                         </span>
-                                        @if(request('search') || request('status'))
-                                            Data berita tidak ditemukan dengan filter yang dipilih.
+                                        @if(request('search'))
+                                            Data galeri tidak ditemukan dengan pencarian "{{ request('search') }}".
                                         @else
-                                            Belum ada data berita.
+                                            Belum ada data galeri.
                                         @endif
                                     </td>
                                 </tr>
@@ -209,13 +174,22 @@
                 </div>
 
                 {{-- Pagination --}}
-                @if($dataBerita->hasPages())
+                @if($dataGaleri->hasPages())
                     <div class="mt-4">
-                        {{ $dataBerita->links('pagination::bootstrap-5') }}
+                        {{ $dataGaleri->links('pagination::bootstrap-5') }}
                     </div>
                 @endif
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Modal untuk preview gambar -->
+<div id="imageModal" class="modal-universal">
+    <div class="modal-content-universal">
+        <span class="close-modal">&times;</span>
+        <img id="modalImage" src="" alt="">
+        <div id="modalCaption"></div>
     </div>
 </div>
 
@@ -294,49 +268,6 @@
     margin-right: 8px;
 }
 
-.universal-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.badge-secondary { background-color: #6c757d; color: white; }
-.badge-primary { background-color: #007bff; color: white; }
-.badge-success { background-color: #28a745; color: white; }
-
-.text-muted-universal {
-    color: #6c757d !important;
-}
-
-.fw-semibold-universal {
-    font-weight: 600 !important;
-}
-
-/* Style untuk cover berita di tabel */
-.cover-img-table {
-    width: 50px;
-    height: 50px;
-    border-radius: 8px;
-    object-fit: cover;
-    border: 2px solid #e2e8f0;
-}
-
-.no-image-table {
-    width: 50px;
-    height: 50px;
-    border-radius: 8px;
-    background-color: #f8f9fa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6c757d;
-    border: 2px dashed #dee2e6;
-}
-
 .form-select-universal, .form-control-universal {
     border: 1px solid #e2e8f0;
     border-radius: 8px;
@@ -368,6 +299,96 @@
     margin-bottom: 4px;
     display: block;
     color: #374151;
+}
+
+/* Galeri Thumbnail */
+.galeri-thumbnail {
+    display: inline-block;
+}
+
+.thumbnail-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    border: 2px solid #e2e8f0;
+}
+
+.thumbnail-img:hover {
+    transform: scale(1.1);
+    border-color: #3b82f6;
+}
+
+.no-image-table {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    border: 2px dashed #dee2e6;
+}
+
+/* Modal Styles */
+.modal-universal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    padding-top: 60px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    animation: fadeIn 0.3s;
+}
+
+.modal-content-universal {
+    margin: auto;
+    display: block;
+    max-width: 80%;
+    max-height: 80%;
+    animation: zoomIn 0.3s;
+}
+
+#modalCaption {
+    margin: auto;
+    display: block;
+    width: 80%;
+    text-align: center;
+    color: #fff;
+    padding: 10px 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.close-modal:hover {
+    color: #bbb;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.8); }
+    to { transform: scale(1); }
 }
 
 /* Pagination Styles */
@@ -417,36 +438,29 @@
     border-color: #d1d5db;
 }
 
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-content-universal {
+        max-width: 95%;
+        max-height: 70%;
+    }
+
+    .thumbnail-img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+    }
+}
+
 /* Info Filter */
 .alert-info {
     background-color: #d1ecf1;
     border-color: #bee5eb;
     color: #0c5460;
-}
-
-/* Memastikan kolom aksi memiliki width yang konsisten */
-.universal-table th.text-center:last-child,
-.universal-table td.text-center:last-child {
-    width: 140px;
-    min-width: 140px;
-    max-width: 140px;
-}
-
-/* Memastikan tombol tetap sejajar di semua kondisi */
-.universal-table tbody td.text-center {
-    vertical-align: middle !important;
-}
-
-/* Responsive pagination */
-@media (max-width: 640px) {
-    .pagination {
-        gap: 4px;
-    }
-
-    .page-link {
-        padding: 6px 12px;
-        font-size: 13px;
-    }
 }
 </style>
 @endsection

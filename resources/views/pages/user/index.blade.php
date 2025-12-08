@@ -99,6 +99,7 @@
                                 <th>NAMA</th>
                                 <th>EMAIL</th>
                                 <th>PASSWORD</th>
+                                <th>ROLE</th>
                                 <th class="text-center">AKSI</th>
                             </tr>
                         </thead>
@@ -112,9 +113,10 @@
                                     <td>{{ $item->email }}</td>
                                     <td>
                                         <span class="universal-badge badge-secondary">
-                                            {{ Str::limit($item->password, 15) }}
+                                            {{ \Str::limit($item->password, 15) }}
                                         </span>
                                     </td>
+                                    <td>{{ $item->role }}</td> <!-- ✅ PERBAIKAN DI SINI -->
                                     <td class="text-center">
                                         <div class="action-buttons">
                                             <a href="{{ route('user.edit', $item->id) }}" class="btn btn-edit">
@@ -136,7 +138,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="empty-state-universal">
+                                    <td colspan="6" class="empty-state-universal"> <!-- ✅ colspan="6" bukan "5" -->
                                         <span class="icon">
                                             <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
                                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
