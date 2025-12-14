@@ -38,37 +38,41 @@
             <div class="card-body-universal">
                 {{-- Form Filter dan Search --}}
                 <form method="GET" action="{{ route('profil.index') }}" class="mb-4">
-                    <div class="row g-3 align-items-end">
+                    <div class="row g-3">
                         {{-- Filter Provinsi --}}
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="form-label-universal">Provinsi</label>
-                            <select name="provinsi" class="form-select-universal" onchange="this.form.submit()">
-                                <option value="">Semua Provinsi</option>
-                                <option value="Riau" {{ request('provinsi') == 'Riau' ? 'selected' : '' }}>Riau</option>
-                                <option value="Sumatera Barat" {{ request('provinsi') == 'Sumatera Barat' ? 'selected' : '' }}>Sumatera Barat</option>
-                                <option value="Sumatera Utara" {{ request('provinsi') == 'Sumatera Utara' ? 'selected' : '' }}>Sumatera Utara</option>
-                            </select>
+                            <div class="filter-container">
+                                <select name="provinsi" class="form-select-universal" onchange="this.form.submit()">
+                                    <option value="">Semua Provinsi</option>
+                                    <option value="Riau" {{ request('provinsi') == 'Riau' ? 'selected' : '' }}>Riau</option>
+                                    <option value="Sumatera Barat" {{ request('provinsi') == 'Sumatera Barat' ? 'selected' : '' }}>Sumatera Barat</option>
+                                    <option value="Sumatera Utara" {{ request('provinsi') == 'Sumatera Utara' ? 'selected' : '' }}>Sumatera Utara</option>
+                                </select>
+                            </div>
                         </div>
 
                         {{-- Search --}}
                         <div class="col-md-6">
                             <label class="form-label-universal">Cari Data</label>
-                            <div class="input-group-universal">
-                                <input type="text" name="search" class="form-control-universal"
-                                       value="{{ request('search') }}" placeholder="Cari nama desa, kecamatan, atau kabupaten...">
-                                <button type="submit" class="btn btn-search-universal">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                                    </svg>
-                                </button>
-                                @if(request('search'))
-                                    <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}"
-                                       class="btn btn-clear-universal" title="Clear Search">
+                            <div class="search-container">
+                                <div class="input-group-universal">
+                                    <input type="text" name="search" class="form-control-universal"
+                                           value="{{ request('search') }}" placeholder="Cari nama desa, kecamatan, atau kabupaten...">
+                                    <button type="submit" class="btn btn-search-universal">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                                         </svg>
-                                    </a>
-                                @endif
+                                    </button>
+                                    @if(request('search'))
+                                        <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}"
+                                           class="btn btn-clear-universal" title="Clear Search">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                            </svg>
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -138,10 +142,8 @@
                                                class="btn btn-primary btn-sm mb-1"
                                                title="Detail Profil">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                                 </svg>
                                             </a>
 
@@ -192,10 +194,63 @@
                     </table>
                 </div>
 
-                {{-- Pagination --}}
+                {{-- Pagination tanpa teks Next/Previous --}}
                 @if($dataProfil->hasPages())
                     <div class="mt-4">
-                        {{ $dataProfil->links('pagination::bootstrap-5') }}
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center mb-0">
+                                {{-- Previous Page Link --}}
+                                @if ($dataProfil->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <span class="page-link page-link-arrow">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
+                                            </svg>
+                                        </span>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link page-link-arrow" href="{{ $dataProfil->previousPageUrl() }}">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
+                                            </svg>
+                                        </a>
+                                    </li>
+                                @endif
+
+                                {{-- Pagination Elements --}}
+                                @foreach ($dataProfil->getUrlRange(1, $dataProfil->lastPage()) as $page => $url)
+                                    @if ($page == $dataProfil->currentPage())
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ $page }}</span>
+                                        </li>
+                                    @else
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                                        </li>
+                                    @endif
+                                @endforeach
+
+                                {{-- Next Page Link --}}
+                                @if ($dataProfil->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link page-link-arrow" href="{{ $dataProfil->nextPageUrl() }}">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                                            </svg>
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <span class="page-link page-link-arrow">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                                            </svg>
+                                        </span>
+                                    </li>
+                                @endif
+                            </ul>
+                        </nav>
                     </div>
                 @endif
             </div>
@@ -295,37 +350,12 @@
 .badge-warning { background-color: #ffc107; color: #000; }
 .badge-success { background-color: #28a745; color: white; }
 
-.form-select-universal, .form-control-universal {
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 14px;
+.text-muted-universal {
+    color: #6c757d !important;
 }
 
-.input-group-universal {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-search-universal, .btn-clear-universal {
-    background: #3b82f6;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 12px;
-    color: white;
-    cursor: pointer;
-}
-
-.btn-clear-universal {
-    background: #ef4444;
-}
-
-.form-label-universal {
-    font-weight: 500;
-    margin-bottom: 4px;
-    display: block;
-    color: #374151;
+.fw-semibold-universal {
+    font-weight: 600 !important;
 }
 
 /* Style untuk foto profil di tabel */
@@ -349,31 +379,108 @@
     border: 2px dashed #dee2e6;
 }
 
-/* ========================= */
-/* PERBAIKAN CSS PAGINATION */
-/* ========================= */
+/* FORM STYLES - LEBAR DISAMAKAN SESUAI SEARCH */
+.form-select-universal, .form-control-universal {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    height: 42px;
+    box-sizing: border-box;
+}
+
+/* Filter container */
+.filter-container {
+    width: 100%;
+    max-width: 400px; /* SAMA DENGAN SEARCH */
+}
+
+.form-select-universal {
+    width: 100%;
+}
+
+/* Search container */
+.search-container {
+    width: 100%;
+    max-width: 400px; /* SAMA DENGAN FILTER */
+}
+
+.input-group-universal {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.form-control-universal {
+    flex: 1;
+    min-width: 0;
+}
+
+.btn-search-universal, .btn-clear-universal {
+    background: #3b82f6;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: white;
+    cursor: pointer;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.btn-clear-universal {
+    background: #ef4444;
+}
+
+.form-label-universal {
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: block;
+    color: #374151;
+    font-size: 14px;
+}
+
+/* Grid layout untuk filter dan search */
+.row.g-3 > .col-md-6 {
+    display: flex;
+    flex-direction: column;
+}
+
+/* PAGINATION STYLES - TANPA TEKS NEXT/PREVIOUS */
 .pagination {
     display: flex;
     padding-left: 0;
     list-style: none;
     border-radius: 0.375rem;
-    gap: 8px;
+    gap: 4px;
     justify-content: center;
     flex-wrap: wrap;
+    margin: 0;
+}
+
+.page-item {
+    margin: 0;
 }
 
 .page-link {
     position: relative;
-    display: block;
-    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
     font-size: 14px;
     color: #3b82f6;
     text-decoration: none;
     background-color: #fff;
     border: 1px solid #d1d5db;
-    border-radius: 8px;
+    border-radius: 6px;
     transition: all 0.2s ease-in-out;
     font-weight: 500;
+    min-width: 40px;
+    height: 40px;
 }
 
 .page-link:hover {
@@ -396,18 +503,18 @@
     pointer-events: none;
     background-color: #f9fafb;
     border-color: #d1d5db;
+    opacity: 0.6;
 }
 
-/* Responsive pagination */
-@media (max-width: 640px) {
-    .pagination {
-        gap: 4px;
-    }
+/* Style untuk panah pagination (tanpa teks) */
+.page-link-arrow {
+    padding: 8px;
+    min-width: 40px;
+}
 
-    .page-link {
-        padding: 6px 12px;
-        font-size: 13px;
-    }
+.page-link-arrow svg {
+    width: 16px;
+    height: 16px;
 }
 
 /* Info Filter */
@@ -415,6 +522,67 @@
     background-color: #d1ecf1;
     border-color: #bee5eb;
     color: #0c5460;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+}
+
+/* Memastikan kolom aksi memiliki width yang konsisten */
+.universal-table th.text-center:last-child,
+.universal-table td.text-center:last-child {
+    width: 140px;
+    min-width: 140px;
+    max-width: 140px;
+}
+
+/* Memastikan tombol tetap sejajar di semua kondisi */
+.universal-table tbody td.text-center {
+    vertical-align: middle !important;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .row.g-3 > .col-md-6 {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .filter-container,
+    .search-container {
+        max-width: 100%;
+    }
+
+    .input-group-universal {
+        flex-wrap: wrap;
+    }
+
+    .form-control-universal {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    .btn-search-universal,
+    .btn-clear-universal {
+        flex: 1;
+        min-width: 45%;
+    }
+
+    .pagination {
+        gap: 2px;
+    }
+
+    .page-link {
+        padding: 6px 10px;
+        min-width: 36px;
+        height: 36px;
+        font-size: 13px;
+    }
+
+    .page-link-arrow {
+        min-width: 36px;
+        height: 36px;
+        padding: 6px;
+    }
 }
 </style>
 @endsection

@@ -37,47 +37,46 @@
         <div class="card-universal">
             <div class="card-body-universal">
                 {{-- Form Filter dan Search --}}
-                <form method="GET" action="{{ route('agenda.index') }}" class="mb-3">
-                    <div class="row g-2 align-items-center">
+                <form method="GET" action="{{ route('agenda.index') }}" class="mb-4">
+                    <div class="row g-3">
                         {{-- Filter Penyelenggara --}}
-                        <div class="col-auto">
-                            <select name="penyelenggara" class="form-select-compact" onchange="this.form.submit()">
-                                <option value="">Semua Penyelenggara</option>
-                                @php
-                                    $penyelenggaraList = App\Models\Agenda::distinct()->pluck('penyelenggara');
-                                @endphp
-                                @foreach($penyelenggaraList as $penyelenggara)
-                                    <option value="{{ $penyelenggara }}" {{ request('penyelenggara') == $penyelenggara ? 'selected' : '' }}>
-                                        {{ $penyelenggara }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        {{-- Search --}}
-                        <div class="col-auto flex-grow-1">
-                            <div class="search-box-compact">
-                                <input type="text" name="search" class="search-input-compact"
-                                       value="{{ request('search') }}" placeholder="Cari agenda...">
-                                <button type="submit" class="search-btn-compact">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                                    </svg>
-                                </button>
-                                @if(request('search') || request('penyelenggara'))
-                                    <a href="{{ route('agenda.index') }}" class="clear-btn-compact" title="Clear All">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                                        </svg>
-                                    </a>
-                                @endif
+                        <div class="col-md-6">
+                            <label class="form-label-universal">Penyelenggara</label>
+                            <div class="filter-container">
+                                <select name="penyelenggara" class="form-select-universal" onchange="this.form.submit()">
+                                    <option value="">Semua Penyelenggara</option>
+                                    @php
+                                        $penyelenggaraList = App\Models\Agenda::distinct()->pluck('penyelenggara');
+                                    @endphp
+                                    @foreach($penyelenggaraList as $penyelenggara)
+                                        <option value="{{ $penyelenggara }}" {{ request('penyelenggara') == $penyelenggara ? 'selected' : '' }}>
+                                            {{ $penyelenggara }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
 
-                        {{-- Info Jumlah Data --}}
-                        <div class="col-auto">
-                            <div class="data-count-compact">
-                                <small>{{ $dataAgenda->total() }} data</small>
+                        {{-- Search --}}
+                        <div class="col-md-6">
+                            <label class="form-label-universal">Cari Agenda</label>
+                            <div class="search-container">
+                                <div class="input-group-universal">
+                                    <input type="text" name="search" class="form-control-universal"
+                                           value="{{ request('search') }}" placeholder="Cari agenda...">
+                                    <button type="submit" class="btn btn-search-universal">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                                        </svg>
+                                    </button>
+                                    @if(request('search') || request('penyelenggara'))
+                                        <a href="{{ route('agenda.index') }}" class="btn btn-clear-universal" title="Clear All">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                            </svg>
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -85,31 +84,22 @@
 
                 {{-- Info Filter Aktif --}}
                 @if(request('search') || request('penyelenggara'))
-                <div class="filter-active-compact">
-                    <div class="filter-badges-compact">
-                        @if(request('search'))
-                            <span class="filter-badge-compact">
-                                "{{ request('search') }}"
-                                <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}" class="filter-remove-compact">
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                                    </svg>
-                                </a>
-                            </span>
-                        @endif
-                        @if(request('penyelenggara'))
-                            <span class="filter-badge-compact">
-                                {{ request('penyelenggara') }}
-                                <a href="{{ request()->fullUrlWithQuery(['penyelenggara' => null]) }}" class="filter-remove-compact">
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                                    </svg>
-                                </a>
-                            </span>
-                        @endif
-                    </div>
+                <div class="alert alert-info mb-3">
+                    <strong>Filter Aktif:</strong>
+                    @if(request('search'))
+                        Pencarian: "{{ request('search') }}"
+                    @endif
+                    @if(request('penyelenggara'))
+                        {{ request('search') ? ' | ' : '' }}
+                        Penyelenggara: {{ request('penyelenggara') }}
+                    @endif
                 </div>
                 @endif
+
+                {{-- Info Jumlah Data --}}
+                <div class="data-count-info mb-3">
+                    <small class="text-muted-universal">Total: {{ $dataAgenda->total() }} data agenda</small>
+                </div>
 
                 <div class="table-responsive table-responsive-universal">
                     <table class="table universal-table">
@@ -155,9 +145,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <div class="agenda-title-compact">
-                                            <div class="fw-semibold-universal">{{ Str::limit($item->judul, 40) }}</div>
-                                        </div>
+                                        <div class="fw-semibold-universal">{{ Str::limit($item->judul, 40) }}</div>
                                     </td>
                                     <td><span class="universal-badge badge-info">{{ Str::limit($item->lokasi, 12) }}</span></td>
                                     <td>
@@ -191,21 +179,21 @@
                                         <span class="universal-badge {{ $badgeClass }}">{{ $status }}</span>
                                     </td>
                                     <td class="text-center">
-                                        <div class="action-buttons-compact">
+                                        <div class="action-buttons">
                                             {{-- Tombol Detail --}}
                                             <a href="{{ route('agenda.show', $item->agenda_id) }}"
-                                               class="btn btn-primary btn-xs"
+                                               class="btn btn-primary"
                                                title="Detail Agenda">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                                     <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                                                 </svg>
                                             </a>
 
                                             {{-- Tombol Edit --}}
                                             <a href="{{ route('agenda.edit', $item->agenda_id) }}"
-                                               class="btn btn-edit btn-xs"
+                                               class="btn btn-edit"
                                                title="Edit Agenda">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                                     <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                                                 </svg>
                                             </a>
@@ -217,10 +205,10 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
-                                                        class="btn btn-delete btn-xs"
+                                                        class="btn btn-delete"
                                                         onclick="return confirm('Yakin ingin menghapus agenda {{ $item->judul }}?')"
                                                         title="Hapus Agenda">
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                                         <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                                                     </svg>
                                                 </button>
@@ -232,14 +220,14 @@
                                 <tr>
                                     <td colspan="9" class="empty-state-universal">
                                         <span class="icon">
-                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                                            <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
                                                 <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
                                             </svg>
                                         </span>
                                         @if(request('search') || request('penyelenggara'))
-                                            Data tidak ditemukan
+                                            Data agenda tidak ditemukan dengan filter yang dipilih.
                                         @else
-                                            Belum ada data agenda
+                                            Belum ada data agenda.
                                         @endif
                                     </td>
                                 </tr>
@@ -248,10 +236,63 @@
                     </table>
                 </div>
 
-                {{-- Pagination --}}
+                {{-- Pagination tanpa teks Next/Previous --}}
                 @if($dataAgenda->hasPages())
-                    <div class="mt-3">
-                        {{ $dataAgenda->links('pagination::bootstrap-5') }}
+                    <div class="mt-4">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center mb-0">
+                                {{-- Previous Page Link --}}
+                                @if ($dataAgenda->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <span class="page-link page-link-arrow">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
+                                            </svg>
+                                        </span>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link page-link-arrow" href="{{ $dataAgenda->previousPageUrl() }}">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
+                                            </svg>
+                                        </a>
+                                    </li>
+                                @endif
+
+                                {{-- Pagination Elements --}}
+                                @foreach ($dataAgenda->getUrlRange(1, $dataAgenda->lastPage()) as $page => $url)
+                                    @if ($page == $dataAgenda->currentPage())
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ $page }}</span>
+                                        </li>
+                                    @else
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                                        </li>
+                                    @endif
+                                @endforeach
+
+                                {{-- Next Page Link --}}
+                                @if ($dataAgenda->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link page-link-arrow" href="{{ $dataAgenda->nextPageUrl() }}">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                                            </svg>
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <span class="page-link page-link-arrow">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                                            </svg>
+                                        </span>
+                                    </li>
+                                @endif
+                            </ul>
+                        </nav>
                     </div>
                 @endif
             </div>
@@ -260,124 +301,15 @@
 </div>
 
 <style>
-/* COMPACT FORM STYLES */
-.form-select-compact {
-    border: 1px solid #d1d5db;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 12px;
-    height: 28px;
-    width: 150px;
-    background-color: white;
-}
-
-.search-box-compact {
+.action-buttons {
     display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 250px;
-}
-
-.search-input-compact {
-    border: 1px solid #d1d5db;
-    border-radius: 4px 0 0 4px;
-    border-right: none;
-    padding: 4px 8px;
-    font-size: 12px;
-    height: 28px;
-    flex: 1;
-}
-
-.search-btn-compact {
-    background: #3b82f6;
-    border: 1px solid #3b82f6;
-    border-left: none;
-    border-radius: 0 4px 4px 0;
-    padding: 4px 8px;
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 28px;
-    transition: all 0.2s ease;
-}
-
-.search-btn-compact:hover {
-    background: #2563eb;
-}
-
-.clear-btn-compact {
-    background: #6b7280;
-    border: 1px solid #6b7280;
-    border-left: none;
-    border-radius: 0;
-    padding: 4px 6px;
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 28px;
-    margin-left: 1px;
-    transition: all 0.2s ease;
-}
-
-.clear-btn-compact:hover {
-    background: #4b5563;
-}
-
-.data-count-compact {
-    font-size: 11px;
-    color: #6b7280;
-    white-space: nowrap;
-}
-
-/* COMPACT FILTER BADGES */
-.filter-active-compact {
-    margin-bottom: 12px;
-}
-
-.filter-badges-compact {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-}
-
-.filter-badge-compact {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background: #f3f4f6;
-    border: 1px solid #d1d5db;
-    border-radius: 12px;
-    padding: 2px 6px;
-    font-size: 11px;
-    color: #374151;
-}
-
-.filter-remove-compact {
-    display: flex;
-    align-items: center;
-    color: #6b7280;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.filter-remove-compact:hover {
-    color: #ef4444;
-}
-
-/* COMPACT ACTION BUTTONS */
-.action-buttons-compact {
-    display: flex;
-    gap: 4px;
+    gap: 8px;
     justify-content: center;
     align-items: center;
+    min-height: 40px;
 }
 
-.action-buttons-compact form {
+.action-buttons form {
     display: flex !important;
     margin: 0 !important;
 }
@@ -386,11 +318,11 @@
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     padding: 0;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     text-decoration: none;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -427,73 +359,186 @@
     transform: translateY(-1px);
 }
 
-/* COMPACT TABLE STYLES */
-.profile-img-table {
-    width: 30px;
-    height: 30px;
-    border-radius: 4px;
-    object-fit: cover;
-    border: 1px solid #e2e8f0;
-}
-
-.no-image-table {
-    width: 30px;
-    height: 30px;
-    border-radius: 4px;
-    background-color: #f8f9fa;
+.empty-state-universal {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    gap: 12px;
+    padding: 40px !important;
     color: #6c757d;
-    border: 1px dashed #dee2e6;
+    text-align: center;
 }
 
-.agenda-title-compact .fw-semibold-universal {
-    font-size: 12px;
-    font-weight: 600;
-    color: #374151;
-    line-height: 1.2;
+.icon {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 8px;
 }
 
 .universal-badge {
     display: inline-flex;
     align-items: center;
-    gap: 2px;
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-size: 10px;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
     font-weight: 500;
-    white-space: nowrap;
 }
 
 .badge-secondary { background-color: #6c757d; color: white; }
 .badge-primary { background-color: #007bff; color: white; }
+.badge-danger { background-color: #dc3545; color: white; }
 .badge-info { background-color: #17a2b8; color: white; }
 .badge-warning { background-color: #ffc107; color: #000; }
 .badge-success { background-color: #28a745; color: white; }
 
-/* COMPACT PAGINATION */
+.text-muted-universal {
+    color: #6c757d !important;
+}
+
+.fw-semibold-universal {
+    font-weight: 600 !important;
+}
+
+/* Style untuk foto profil di tabel */
+.profile-img-table {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 2px solid #e2e8f0;
+}
+
+.no-image-table {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    border: 2px dashed #dee2e6;
+}
+
+/* FORM STYLES - LEBAR DISAMAKAN SESUAI SEARCH */
+.form-select-universal, .form-control-universal {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    height: 42px;
+    box-sizing: border-box;
+}
+
+/* Filter container */
+.filter-container {
+    width: 100%;
+    max-width: 400px; /* SAMA DENGAN SEARCH */
+}
+
+.form-select-universal {
+    width: 100%;
+}
+
+/* Search container */
+.search-container {
+    width: 100%;
+    max-width: 400px; /* SAMA DENGAN FILTER */
+}
+
+.input-group-universal {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.form-control-universal {
+    flex: 1;
+    min-width: 0;
+}
+
+.btn-search-universal, .btn-clear-universal {
+    background: #3b82f6;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: white;
+    cursor: pointer;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.btn-clear-universal {
+    background: #ef4444;
+}
+
+.btn-search-universal:hover {
+    background: #2563eb;
+}
+
+.btn-clear-universal:hover {
+    background: #dc2626;
+}
+
+.form-label-universal {
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: block;
+    color: #374151;
+    font-size: 14px;
+}
+
+/* Grid layout untuk filter dan search */
+.row.g-3 > .col-md-6 {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Info jumlah data */
+.data-count-info {
+    text-align: right;
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 16px;
+}
+
+/* PAGINATION STYLES - TANPA TEKS NEXT/PREVIOUS */
 .pagination {
     display: flex;
     padding-left: 0;
     list-style: none;
-    gap: 2px;
+    border-radius: 0.375rem;
+    gap: 4px;
     justify-content: center;
     flex-wrap: wrap;
+    margin: 0;
+}
+
+.page-item {
+    margin: 0;
 }
 
 .page-link {
     position: relative;
-    display: block;
-    padding: 4px 8px;
-    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    font-size: 14px;
     color: #3b82f6;
     text-decoration: none;
     background-color: #fff;
     border: 1px solid #d1d5db;
-    border-radius: 4px;
+    border-radius: 6px;
     transition: all 0.2s ease-in-out;
     font-weight: 500;
+    min-width: 40px;
+    height: 40px;
 }
 
 .page-link:hover {
@@ -516,55 +561,104 @@
     pointer-events: none;
     background-color: #f9fafb;
     border-color: #d1d5db;
+    opacity: 0.6;
 }
 
-/* COMPACT EMPTY STATE */
-.empty-state-universal {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 20px !important;
-    color: #6c757d;
-    text-align: center;
-    font-size: 12px;
+/* Style untuk panah pagination (tanpa teks) */
+.page-link-arrow {
+    padding: 8px;
+    min-width: 40px;
 }
 
-/* RESPONSIVE */
+.page-link-arrow svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Info Filter */
+.alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+}
+
+/* Memastikan kolom aksi memiliki width yang konsisten */
+.universal-table th.text-center:last-child,
+.universal-table td.text-center:last-child {
+    width: 140px;
+    min-width: 140px;
+    max-width: 140px;
+}
+
+/* Memastikan tombol tetap sejajar di semua kondisi */
+.universal-table tbody td.text-center {
+    vertical-align: middle !important;
+}
+
+/* Responsive styles */
 @media (max-width: 768px) {
-    .form-select-compact {
-        width: 120px;
+    .row.g-3 > .col-md-6 {
+        width: 100%;
+        max-width: 100%;
     }
 
-    .search-box-compact {
-        max-width: 200px;
+    .filter-container,
+    .search-container {
+        max-width: 100%;
     }
 
-    .table-responsive-universal {
-        font-size: 11px;
+    .input-group-universal {
+        flex-wrap: wrap;
     }
 
-    .universal-badge {
-        font-size: 9px;
-        padding: 1px 4px;
+    .form-control-universal {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    .btn-search-universal,
+    .btn-clear-universal {
+        flex: 1;
+        min-width: 45%;
+    }
+
+    .pagination {
+        gap: 2px;
+    }
+
+    .page-link {
+        padding: 6px 10px;
+        min-width: 36px;
+        height: 36px;
+        font-size: 13px;
+    }
+
+    .page-link-arrow {
+        min-width: 36px;
+        height: 36px;
+        padding: 6px;
     }
 }
 
-@media (max-width: 576px) {
-    .row.g-2.align-items-center {
-        gap: 8px !important;
+/* Responsive Design */
+@media (max-width: 768px) {
+    .input-group-universal {
+        flex-direction: row;
+        flex-wrap: wrap;
     }
 
-    .col-auto {
-        margin-bottom: 4px;
+    .btn-search-universal, .btn-clear-universal {
+        width: auto;
+        margin-top: 0;
+        flex: 1;
     }
 
-    .form-select-compact {
-        width: 100px;
-    }
-
-    .search-box-compact {
-        max-width: 150px;
+    .action-buttons {
+        flex-direction: row;
+        gap: 8px;
     }
 }
 </style>

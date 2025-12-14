@@ -127,28 +127,43 @@
             margin: 0 auto;
         }
 
+        /* MODIFIKASI: Card Header dengan Logo Vertikal */
         .card-header {
             text-align: center;
             margin-bottom: 40px;
         }
 
-        .card-header .icon {
-            font-size: 2.5rem;
-            color: #374151;
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
             margin-bottom: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .card-header-title {
             font-size: 1.8rem;
             font-weight: 700;
             color: #1f2937;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
 
         .card-header-subtitle {
             font-size: 1rem;
             color: #6b7280;
+            margin-top: 5px;
         }
+
+        /* END MODIFIKASI */
 
         .notification {
             margin-bottom: 20px;
@@ -368,6 +383,15 @@
             .login-container {
                 padding: 40px 30px;
             }
+
+            .login-logo {
+                width: 70px;
+                height: 70px;
+            }
+
+            .card-header-title {
+                font-size: 1.6rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -375,8 +399,17 @@
                 padding: 30px 20px;
             }
 
+            .login-logo {
+                width: 60px;
+                height: 60px;
+            }
+
             .card-header-title {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
+            }
+
+            .card-header-subtitle {
+                font-size: 0.9rem;
             }
 
             .hero-image-container {
@@ -394,7 +427,6 @@
                 height: 100%;
                 background: linear-gradient(45deg, #374151, #4b5563);
                 display: none;
-                /* Default hidden */
                 align-items: center;
                 justify-content: center;
                 color: #9ca3af;
@@ -458,11 +490,16 @@
         <!-- Login Form Section -->
         <div class="login-container">
             <div class="login-card">
+                <!-- MODIFIKASI: Card Header dengan Logo Vertikal -->
                 <div class="card-header">
-                    <i class="mdi mdi-lock icon"></i>
-                    <h1 class="card-header-title">Bina Desa</h1>
-                    <p class="card-header-subtitle">Masuk ke akun Anda</p>
+                    <div class="logo-container">
+                        <!-- Logo Profil Desa -->
+                        <img src="{{ asset('assets-admin/img/logoprofildesa.png') }}" alt="Logo Profil Desa" class="login-logo">
+                        <!-- Judul dan Subtitle -->
+                        <h1 class="card-header-title">Profil Desa</h1>
+                    </div>
                 </div>
+                <!-- END MODIFIKASI -->
 
                 <div class="card-content">
                     <!-- Flash Messages -->
@@ -488,7 +525,6 @@
                                 @endforeach
                             </ul>
                         </div>
-
                     @endif
 
                     <form method="POST" action="{{ route('auth.login') }}">

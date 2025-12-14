@@ -27,15 +27,81 @@ class CreateUsersDummy extends Seeder
             // Email yang guaranteed unique dengan format yang konsisten
             $email = 'user' . $index . '@example.com';
 
+            // Tentukan role berdasarkan index
+            $role = $this->determineRole($index);
+
             DB::table('users')->insert([
                 'name' => $fullName,
                 'email' => $email,
                 'email_verified_at' => $faker->randomElement([now(), null]),
                 'password' => Hash::make('password123'),
+                'role' => $role, // Tambahkan kolom role
                 'remember_token' => $faker->randomElement([null, \Illuminate\Support\Str::random(10)]),
                 'created_at' => $faker->dateTimeBetween('-2 years', 'now'),
                 'updated_at' => now(),
             ]);
+        }
+
+        // Tambahkan beberapa user khusus dengan role tertentu
+        $this->createSpecialUsers();
+    }
+
+    /**
+     * Determine role based on index
+     */
+    private function determineRole(int $index): string
+    {
+        // User 1-2 sebagai Super Admin
+        if ($index <= 2) {
+            return 'Super Admin';
+        }
+
+        // User 3-30 sebagai Pelanggan (28 user)
+        if ($index <= 30) {
+            return 'Pelanggan';
+        }
+
+        // User 31-100 sebagai Mitra (70 user)
+        return 'Mitra';
+    }
+
+    /**
+     * Create special users with specific emails and roles
+     */
+    private function createSpecialUsers(): void
+    {
+        $specialUsers = [
+            [
+                'name' => 'Super Administrator',
+                'email' => 'admin@example.com',
+                'password' => Hash::make('admin123'),
+                'role' => 'Super Admin',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Pelanggan Premium',
+                'email' => 'pelanggan@example.com',
+                'password' => Hash::make('pelanggan123'),
+                'role' => 'Pelanggan',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Mitra Utama',
+                'email' => 'mitra@example.com',
+                'password' => Hash::make('mitra123'),
+                'role' => 'Mitra',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ];
+
+        foreach ($specialUsers as $user) {
+            DB::table('users')->insert($user);
         }
     }
 

@@ -7,8 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Admin Dashboard')</title>
 
+    <!-- MATERIAL DESIGN ICONS - HARUS DILOAD DI SINI -->
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+
     <!-- START CSS -->
-    <!-- Tailwind is included -->
     @include('layouts.admin.css')
     <!-- END CSS -->
 

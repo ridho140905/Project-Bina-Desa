@@ -9,6 +9,7 @@ use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\GaleriController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DeveloperController;
 use App\Http\Controllers\KategoriBeritaController;
 
 
@@ -80,3 +81,5 @@ Route::group(['middleware' => ['checkrole:Super Admin']], function () {
 //      route::get('galeri', [GaleriController::class, 'index'])->name('galeri.index');
 // });
 
+// Identitas Pengembang - menggunakan Controller
+Route::get('/developer', [DeveloperController::class, 'index'])->name('developer');

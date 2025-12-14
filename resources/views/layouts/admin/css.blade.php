@@ -378,5 +378,88 @@
 .universal-table tbody td.text-center {
     vertical-align: middle !important;
 }
+/* ===== FIX UNTUK NAVBAR DROPDOWN ===== */
+.navbar-item.dropdown .navbar-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  min-width: 200px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  z-index: 9999;
+  margin-top: 5px;
+}
+
+.navbar-item.dropdown.is-active .navbar-dropdown {
+  display: block;
+}
+
+.navbar-dropdown {
+  padding: 0.5rem 0;
+}
+
+.navbar-dropdown .navbar-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: #4a5568;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.navbar-dropdown .navbar-item:hover {
+  background: #f7fafc;
+}
+
+.navbar-dropdown .navbar-item .icon {
+  margin-right: 0.75rem;
+  width: 20px;
+}
+
+/* Fix untuk user avatar */
+.has-user-avatar .user-avatar {
+  margin-right: 0.75rem;
+}
+
+.has-user-avatar .user-avatar img {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+}
+
+/* Fix untuk desktop icon only */
+@media (max-width: 1023px) {
+  .desktop-icon-only {
+    display: none !important;
+  }
+}
+
+/* Fix untuk navbar menu mobile */
+@media (max-width: 1023px) {
+  .navbar-menu {
+    display: none;
+  }
+
+  .navbar-menu.is-active {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    z-index: 9998;
+  }
+}
+
+/* Fix untuk chevron icon */
+.navbar-link .icon:last-child {
+  margin-left: 0.5rem;
+}
+
+/* Ensure Material Icons are loaded */
+@import url('https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css');
 </style>
 <!-- END CSS -->

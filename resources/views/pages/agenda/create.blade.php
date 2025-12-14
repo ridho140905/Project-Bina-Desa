@@ -1,346 +1,482 @@
 @extends('layouts.admin.app')
 
 @section('content')
-<div class="content-wrapper-full">
-    <div class="container-full py-4">
-        {{-- Header --}}
-        <div class="page-header-primary">
-            <div>
-                <h1>
-                    <span class="icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                        </svg>
-                    </span>
-                    Tambah Data Agenda
-                </h1>
-                <p>Form untuk menambahkan data agenda baru</p>
-            </div>
-            <a href="{{ route('agenda.index') }}" class="btn btn-light-universal btn-universal">
-                <span class="icon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                    </svg>
-                </span>
-                Kembali
-            </a>
-        </div>
 
-        {{-- Notifikasi --}}
-        @if (session('success'))
-            <div class="alert alert-success alert-universal">
-                {{ session('success') }}
-            </div>
-        @endif
+<section class="is-title-bar">
+  <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+    <ul>
+      <li>Admin</li>
+      <li>Agenda</li>
+      <li>Tambah Agenda</li>
+    </ul>
+    <a href="https://justboil.me/" onclick="alert('Coming soon'); return false" target="_blank" class="button blue">
+      <span class="icon"><i class="mdi mdi-credit-card-outline"></i></span>
+      <span>Premium Demo</span>
+    </a>
+  </div>
+</section>
 
-        @if ($errors->any())
-            <div class="alert alert-danger alert-universal">
-                <strong>Error!</strong> Terdapat kesalahan dalam pengisian form:
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+<section class="is-hero-bar">
+  <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+    <h1 class="title">
+      Tambah Agenda Baru
+    </h1>
+    <a href="{{ route('agenda.index') }}" class="button light">
+      <span class="icon"><i class="mdi mdi-arrow-left"></i></span>
+      <span>Kembali</span>
+    </a>
+  </div>
+</section>
 
-        {{-- Card Form --}}
-        <div class="card-universal">
-            <div class="card-body-universal">
-                <form action="{{ route('agenda.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-
-                    <div class="row g-4">
-                        <!-- Kolom Kiri - Informasi Dasar Agenda -->
-                        <div class="col-md-6">
-                            <div class="field-group">
-                                <label class="form-label-universal">Judul Agenda <span class="text-danger">*</span></label>
-                                <div class="control icons-left">
-                                    <input class="input-universal @error('judul') is-danger @enderror"
-                                           type="text"
-                                           name="judul"
-                                           value="{{ old('judul') }}"
-                                           placeholder="Masukkan judul agenda"
-                                           required>
-                                    <span class="icon left"><i class="mdi mdi-format-title"></i></span>
-                                </div>
-                                @error('judul')
-                                    <p class="help is-danger">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="field-group">
-                                <label class="form-label-universal">Lokasi <span class="text-danger">*</span></label>
-                                <div class="control icons-left">
-                                    <input class="input-universal @error('lokasi') is-danger @enderror"
-                                           type="text"
-                                           name="lokasi"
-                                           value="{{ old('lokasi') }}"
-                                           placeholder="Masukkan lokasi agenda"
-                                           required>
-                                    <span class="icon left"><i class="mdi mdi-map-marker"></i></span>
-                                </div>
-                                @error('lokasi')
-                                    <p class="help is-danger">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="field-group">
-                                <label class="form-label-universal">Penyelenggara <span class="text-danger">*</span></label>
-                                <div class="control icons-left">
-                                    <input class="input-universal @error('penyelenggara') is-danger @enderror"
-                                           type="text"
-                                           name="penyelenggara"
-                                           value="{{ old('penyelenggara') }}"
-                                           placeholder="Masukkan nama penyelenggara"
-                                           required>
-                                    <span class="icon left"><i class="mdi mdi-account-group"></i></span>
-                                </div>
-                                @error('penyelenggara')
-                                    <p class="help is-danger">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Kolom Kanan - Informasi Waktu & Upload -->
-                        <div class="col-md-6">
-                            <div class="field-group">
-                                <label class="form-label-universal">Tanggal Mulai <span class="text-danger">*</span></label>
-                                <div class="control icons-left">
-                                    <input class="input-universal @error('tanggal_mulai') is-danger @enderror"
-                                           type="datetime-local"
-                                           name="tanggal_mulai"
-                                           value="{{ old('tanggal_mulai') }}"
-                                           required>
-                                    <span class="icon left"><i class="mdi mdi-calendar-clock"></i></span>
-                                </div>
-                                @error('tanggal_mulai')
-                                    <p class="help is-danger">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="field-group">
-                                <label class="form-label-universal">Tanggal Selesai <span class="text-danger">*</span></label>
-                                <div class="control icons-left">
-                                    <input class="input-universal @error('tanggal_selesai') is-danger @enderror"
-                                           type="datetime-local"
-                                           name="tanggal_selesai"
-                                           value="{{ old('tanggal_selesai') }}"
-                                           required>
-                                    <span class="icon left"><i class="mdi mdi-calendar-check"></i></span>
-                                </div>
-                                @error('tanggal_selesai')
-                                    <p class="help is-danger">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Upload Poster -->
-                            <div class="field-group">
-                                <label class="form-label-universal">Poster Agenda</label>
-                                <div class="control">
-                                    <input class="input-universal @error('poster') is-danger @enderror"
-                                           type="file"
-                                           name="poster"
-                                           accept="image/*">
-                                </div>
-                                <small class="form-text text-muted">
-                                    Format: JPG, JPEG, PNG, GIF, WebP. Maksimal 2MB.
-                                </small>
-                                @error('poster')
-                                    <p class="help is-danger">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Deskripsi - Full Width -->
-                        <div class="col-12">
-                            <div class="field-group">
-                                <label class="form-label-universal">Deskripsi Agenda</label>
-                                <div class="control icons-left">
-                                    <textarea class="textarea-universal @error('deskripsi') is-danger @enderror"
-                                              name="deskripsi"
-                                              rows="4"
-                                              placeholder="Masukkan deskripsi lengkap agenda (opsional)">{{ old('deskripsi') }}</textarea>
-                                    <span class="icon left"><i class="mdi mdi-text"></i></span>
-                                </div>
-                                @error('deskripsi')
-                                    <p class="help is-danger">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Upload Gambar Pendukung Multiple -->
-                        <div class="col-12">
-                            <div class="field-group">
-                                <label class="form-label-universal">Gambar Pendukung</label>
-                                <div class="control">
-                                    <input class="input-universal @error('gambar_pendukung') is-danger @enderror"
-                                           type="file"
-                                           name="gambar_pendukung[]"
-                                           multiple
-                                           accept="image/*">
-                                </div>
-                                <small class="form-text text-muted">
-                                    Upload gambar tambahan selain poster. Format: JPG, JPEG, PNG, GIF, WebP. Maksimal 5 file, 2MB per file.
-                                </small>
-                                @error('gambar_pendukung')
-                                    <p class="help is-danger">{{ $message }}</p>
-                                @enderror
-                                @error('gambar_pendukung.*')
-                                    <p class="help is-danger">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Tombol Aksi -->
-                        <div class="col-12">
-                            <div class="field grouped">
-                                <div class="control">
-                                    <button type="submit" class="btn btn-success-universal btn-universal">
-                                        <span class="icon">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
-                                            </svg>
-                                        </span>
-                                        Simpan Agenda
-                                    </button>
-                                </div>
-                                <div class="control">
-                                    <a href="{{ route('agenda.index') }}" class="btn btn-danger-universal btn-universal">
-                                        <span class="icon">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                                            </svg>
-                                        </span>
-                                        Batal
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+<section class="section main-section">
+  @if ($errors->any())
+    <div class="notification is-danger">
+      <strong>Error!</strong> Terdapat kesalahan dalam pengisian form:
+      <ul>
+        @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
     </div>
-</div>
+  @endif
+
+  @if (session('success'))
+    <div class="notification is-success">
+      <i class="mdi mdi-check-circle"></i>
+      {{ session('success') }}
+    </div>
+  @endif
+
+  <div class="card">
+    <header class="card-header">
+      <p class="card-header-title">
+        <span class="icon"><i class="mdi mdi-calendar-plus"></i></span>
+        Form Tambah Agenda
+      </p>
+    </header>
+    <div class="card-content">
+      <form action="{{ route('agenda.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+
+        <div class="row">
+          <!-- Kolom Kiri - Informasi Dasar Agenda -->
+          <div class="col-md-6">
+            <div class="field">
+              <label class="label">Judul Agenda <span class="text-danger">*</span></label>
+              <div class="control icons-left">
+                <input class="input @error('judul') is-danger @enderror"
+                       type="text"
+                       name="judul"
+                       value="{{ old('judul') }}"
+                       placeholder="Masukkan judul agenda"
+                       required>
+                <span class="icon left"><i class="mdi mdi-format-title"></i></span>
+              </div>
+              @error('judul')
+                <p class="help is-danger">{{ $message }}</p>
+              @enderror
+            </div>
+
+            <div class="field">
+              <label class="label">Lokasi <span class="text-danger">*</span></label>
+              <div class="control icons-left">
+                <input class="input @error('lokasi') is-danger @enderror"
+                       type="text"
+                       name="lokasi"
+                       value="{{ old('lokasi') }}"
+                       placeholder="Masukkan lokasi agenda"
+                       required>
+                <span class="icon left"><i class="mdi mdi-map-marker"></i></span>
+              </div>
+              @error('lokasi')
+                <p class="help is-danger">{{ $message }}</p>
+              @enderror
+            </div>
+
+            <div class="field">
+              <label class="label">Penyelenggara <span class="text-danger">*</span></label>
+              <div class="control icons-left">
+                <input class="input @error('penyelenggara') is-danger @enderror"
+                       type="text"
+                       name="penyelenggara"
+                       value="{{ old('penyelenggara') }}"
+                       placeholder="Masukkan nama penyelenggara"
+                       required>
+                <span class="icon left"><i class="mdi mdi-account-group"></i></span>
+              </div>
+              @error('penyelenggara')
+                <p class="help is-danger">{{ $message }}</p>
+              @enderror
+            </div>
+          </div>
+
+          <!-- Kolom Kanan - Informasi Waktu & Upload -->
+          <div class="col-md-6">
+            <div class="field">
+              <label class="label">Tanggal Mulai <span class="text-danger">*</span></label>
+              <div class="control icons-left">
+                <input class="input @error('tanggal_mulai') is-danger @enderror"
+                       type="datetime-local"
+                       name="tanggal_mulai"
+                       value="{{ old('tanggal_mulai') }}"
+                       required>
+                <span class="icon left"><i class="mdi mdi-calendar-clock"></i></span>
+              </div>
+              @error('tanggal_mulai')
+                <p class="help is-danger">{{ $message }}</p>
+              @enderror
+            </div>
+
+            <div class="field">
+              <label class="label">Tanggal Selesai <span class="text-danger">*</span></label>
+              <div class="control icons-left">
+                <input class="input @error('tanggal_selesai') is-danger @enderror"
+                       type="datetime-local"
+                       name="tanggal_selesai"
+                       value="{{ old('tanggal_selesai') }}"
+                       required>
+                <span class="icon left"><i class="mdi mdi-calendar-check"></i></span>
+              </div>
+              @error('tanggal_selesai')
+                <p class="help is-danger">{{ $message }}</p>
+              @enderror
+            </div>
+
+            <!-- Upload Poster -->
+            <div class="field">
+              <label class="label">Poster Agenda</label>
+              <div class="control">
+                <input class="input @error('poster') is-danger @enderror"
+                       type="file"
+                       name="poster"
+                       accept="image/*">
+              </div>
+              <p class="help">Format: JPG, JPEG, PNG, GIF, WebP. Maksimal 2MB.</p>
+              @error('poster')
+                <p class="help is-danger">{{ $message }}</p>
+              @enderror
+            </div>
+
+            <!-- Upload Gambar Pendukung Multiple -->
+            <div class="field">
+              <label class="label">Gambar Pendukung</label>
+              <div class="control">
+                <input class="input @error('gambar_pendukung') is-danger @enderror"
+                       type="file"
+                       name="gambar_pendukung[]"
+                       multiple
+                       accept="image/*">
+              </div>
+              <p class="help">Upload gambar tambahan selain poster. Format: JPG, JPEG, PNG, GIF, WebP. Maksimal 5 file, 2MB per file.</p>
+              @error('gambar_pendukung')
+                <p class="help is-danger">{{ $message }}</p>
+              @enderror
+              @error('gambar_pendukung.*')
+                <p class="help is-danger">{{ $message }}</p>
+              @enderror
+            </div>
+          </div>
+
+          <!-- Deskripsi - Full Width -->
+          <div class="col-12">
+            <div class="field">
+              <label class="label">Deskripsi Agenda</label>
+              <div class="control">
+                <textarea class="textarea @error('deskripsi') is-danger @enderror"
+                          name="deskripsi"
+                          rows="4"
+                          placeholder="Masukkan deskripsi lengkap agenda (opsional)">{{ old('deskripsi') }}</textarea>
+              </div>
+              @error('deskripsi')
+                <p class="help is-danger">{{ $message }}</p>
+              @enderror
+            </div>
+          </div>
+
+          <!-- Tombol Aksi -->
+          <div class="col-12">
+            <div class="field grouped">
+              <div class="control">
+                <button type="submit" class="button green">
+                  <span class="icon"><i class="mdi mdi-content-save"></i></span>
+                  <span>Simpan Agenda</span>
+                </button>
+              </div>
+              <div class="control">
+                <button type="reset" class="button light">
+                  <span class="icon"><i class="mdi mdi-refresh"></i></span>
+                  <span>Reset Form</span>
+                </button>
+              </div>
+              <div class="control">
+                <a href="{{ route('agenda.index') }}" class="button light">
+                  <span class="icon"><i class="mdi mdi-close"></i></span>
+                  <span>Batal</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
 
 <style>
-.field-group {
+  /* Style dasar untuk form */
+  .field {
     margin-bottom: 1.5rem;
-}
+  }
 
-.input-universal, .textarea-universal {
+  .label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-size: 0.875rem;
+  }
+
+  .input,
+  .textarea,
+  select {
     width: 100%;
-    padding: 10px 12px;
+    padding: 0.75rem 1rem;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     font-size: 14px;
     transition: all 0.3s ease;
-}
+    background-color: white;
+    font-family: inherit;
+  }
 
-.input-universal:focus, .textarea-universal:focus {
+  .input:focus,
+  .textarea:focus,
+  select:focus {
     outline: none;
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
+  }
 
-.textarea-universal {
+  /* Style khusus untuk input file */
+  input[type="file"] {
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border: 1px dashed #dee2e6;
+  }
+
+  input[type="file"]:focus {
+    border-color: #3b82f6;
+    border-style: solid;
+  }
+
+  /* Style khusus untuk input datetime */
+  input[type="datetime-local"] {
+    font-family: inherit;
+  }
+
+  /* Textarea styling */
+  .textarea {
+    min-height: 120px;
     resize: vertical;
-    min-height: 100px;
-}
+  }
 
-.control.icons-left {
+  /* Icons styling untuk input */
+  .control.icons-left {
     position: relative;
-}
+  }
 
-.control.icons-left .icon.left {
+  .control.icons-left .icon.left {
     position: absolute;
-    left: 12px;
+    left: 1rem;
     top: 50%;
     transform: translateY(-50%);
     color: #6b7280;
-}
+    z-index: 2;
+    pointer-events: none;
+  }
 
-.control.icons-left input,
-.control.icons-left textarea {
-    padding-left: 40px;
-}
+  .control.icons-left input {
+    padding-left: 3rem;
+  }
 
-.form-text.text-muted {
-    font-size: 12px;
+  /* Error styling */
+  .help.is-danger {
+    color: #dc2626;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: block;
+  }
+
+  .input.is-danger,
+  .textarea.is-danger {
+    border-color: #dc2626;
+  }
+
+  .help {
     color: #6b7280;
-    margin-top: 4px;
-}
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: block;
+  }
 
-.help.is-danger {
-    color: #dc3545;
-    font-size: 12px;
-    margin-top: 4px;
-}
-
-.input-universal.is-danger,
-.textarea-universal.is-danger {
-    border-color: #dc3545;
-}
-
-.field.grouped {
+  /* Button styling */
+  .field.grouped {
     display: flex;
-    gap: 12px;
+    gap: 1rem;
     align-items: center;
-}
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+  }
 
-.btn-success-universal {
-    background-color: #28a745;
+  .button.green {
+    background-color: #10b981;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    transition: all 0.3s ease;
-}
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    font-size: 0.875rem;
+  }
 
-.btn-danger-universal {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    text-decoration: none;
+  .button.light {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    font-weight: 500;
     transition: all 0.3s ease;
-}
+    font-size: 0.875rem;
+  }
 
-.btn-success-universal:hover {
-    background-color: #218838;
-    transform: translateY(-1px);
-}
+  .button.green:hover {
+    background-color: #059669;
+  }
 
-.btn-danger-universal:hover {
-    background-color: #c82333;
-    transform: translateY(-1px);
-}
+  .button.light:hover {
+    background-color: #e5e7eb;
+  }
 
-/* Style khusus untuk input datetime */
-input[type="datetime-local"] {
-    font-family: inherit;
-}
+  /* Row and column styling */
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+  }
 
-/* Style untuk file input */
-.input-universal[type="file"] {
-    padding: 8px;
+  .col-md-6 {
+    padding-right: 15px;
+    padding-left: 15px;
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  .col-12 {
+    padding-right: 15px;
+    padding-left: 15px;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  /* Card styling */
+  .card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .card-header {
     background-color: #f8f9fa;
-    border: 1px dashed #dee2e6;
-}
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+  }
 
-.input-universal[type="file"]:focus {
-    border-color: #3b82f6;
-    border-style: solid;
-}
+  .card-header-title {
+    font-weight: 600;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-content {
+    padding: 1.5rem;
+  }
+
+  /* Required field indicator */
+  .text-danger {
+    color: #dc2626;
+  }
+
+  /* Notification styling */
+  .notification {
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  .notification.is-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+
+  .notification.is-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+
+  .notification.is-success i {
+    margin-right: 0.5rem;
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .col-md-6 {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+
+    .field.grouped {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .field.grouped .control {
+      width: 100%;
+    }
+
+    .field.grouped .button {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .card-content {
+      padding: 1rem;
+    }
+
+    .control.icons-left input {
+      padding-left: 2.5rem;
+    }
+
+    .control.icons-left .icon.left {
+      left: 0.75rem;
+    }
+  }
 </style>
 
 <script>
@@ -389,6 +525,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 const maxSize = 2 * 1024 * 1024; // 2MB
                 if (file.size > maxSize) {
                     alert('Ukuran file poster maksimal 2MB');
+                    this.value = '';
+                }
+
+                // Validasi tipe file harus gambar
+                if (!file.type.startsWith('image/')) {
+                    alert('File harus berupa gambar');
                     this.value = '';
                 }
             }

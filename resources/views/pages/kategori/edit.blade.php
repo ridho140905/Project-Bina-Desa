@@ -30,21 +30,21 @@
 
 <section class="section main-section">
   @if ($errors->any())
-  <div class="notification is-danger">
-    <strong>Error!</strong> Terdapat kesalahan dalam pengisian form:
-    <ul>
-      @foreach ($errors->all() as $error)
-        <li>{{ $error }}</li>
-      @endforeach
-    </ul>
-  </div>
+    <div class="notification is-danger">
+      <strong>Error!</strong> Terdapat kesalahan dalam pengisian form:
+      <ul>
+        @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
+    </div>
   @endif
 
   @if (session('success'))
-  <div class="notification is-success">
-    <i class="mdi mdi-check-circle"></i>
-    {{ session('success') }}
-  </div>
+    <div class="notification is-success">
+      <i class="mdi mdi-check-circle"></i>
+      {{ session('success') }}
+    </div>
   @endif
 
   <div class="card">
@@ -59,9 +59,9 @@
         @csrf
         @method('PUT')
 
-        <div class="columns is-multiline">
+        <div class="row">
           <!-- Kolom Kiri -->
-          <div class="column is-half">
+          <div class="col-md-6">
             <div class="field">
               <label class="label">Nama Kategori <span class="text-danger">*</span></label>
               <div class="control icons-left">
@@ -80,7 +80,7 @@
           </div>
 
           <!-- Kolom Kanan -->
-          <div class="column is-half">
+          <div class="col-md-6">
             <div class="field">
               <label class="label">Slug <span class="text-danger">*</span></label>
               <div class="control icons-left">
@@ -100,7 +100,7 @@
           </div>
 
           <!-- Deskripsi - Full Width -->
-          <div class="column is-full">
+          <div class="col-12">
             <div class="field">
               <label class="label">Deskripsi</label>
               <div class="control">
@@ -114,166 +114,301 @@
               @enderror
             </div>
           </div>
-        </div>
 
-        <hr>
-
-        <div class="field grouped">
-          <div class="control">
-            <button type="submit" class="button green">
-              <span class="icon"><i class="mdi mdi-content-save"></i></span>
-              <span>Update Kategori</span>
-            </button>
-          </div>
-          <div class="control">
-            <button type="reset" class="button yellow">
-              <span class="icon"><i class="mdi mdi-refresh"></i></span>
-              <span>Reset Form</span>
-            </button>
-          </div>
-          <div class="control">
-            <a href="{{ route('kategoriberita.index') }}" class="button red">
-              <span class="icon"><i class="mdi mdi-close"></i></span>
-              <span>Batal</span>
-            </a>
+          <!-- Tombol Aksi -->
+          <div class="col-12">
+            <div class="field grouped">
+              <div class="control">
+                <button type="submit" class="button green">
+                  <span class="icon"><i class="mdi mdi-content-save"></i></span>
+                  <span>Update Kategori</span>
+                </button>
+              </div>
+              <div class="control">
+                <button type="reset" class="button light">
+                  <span class="icon"><i class="mdi mdi-refresh"></i></span>
+                  <span>Reset Form</span>
+                </button>
+              </div>
+              <div class="control">
+                <a href="{{ route('kategoriberita.index') }}" class="button light">
+                  <span class="icon"><i class="mdi mdi-close"></i></span>
+                  <span>Batal</span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </form>
     </div>
   </div>
-
-  <!-- Additional Information -->
-  <div class="columns is-multiline mt-6">
-    <div class="column is-full">
-      <div class="card">
-        <header class="card-header">
-          <p class="card-header-title">
-            <span class="icon"><i class="mdi mdi-information"></i></span>
-            Informasi Kategori
-          </p>
-        </header>
-        <div class="card-content">
-          <div class="content">
-            <p><strong>Detail Kategori:</strong></p>
-            <ul>
-              <li>Dibuat: {{ $kategori->created_at->format('d M Y H:i') }}</li>
-              <li>Diupdate: {{ $kategori->updated_at->format('d M Y H:i') }}</li>
-              <li>Jumlah Berita: {{ $kategori->berita->count() }} berita</li>
-              <li>Slug: <code>{{ $kategori->slug }}</code></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <style>
-.text-danger {
-  color: #ff3860;
-}
+  /* Style dasar untuk form */
+  .field {
+    margin-bottom: 1.5rem;
+  }
 
-.help.is-danger {
-  color: #ff3860;
-}
+  .label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-size: 0.875rem;
+  }
 
-.input.is-danger, .textarea.is-danger, .select.is-danger select {
-  border-color: #ff3860;
-}
+  .input,
+  .textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background-color: white;
+    font-family: inherit;
+  }
 
-.notification.is-danger {
-  background-color: #ff3860;
-  color: #fff;
-}
+  .input:focus,
+  .textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
 
-.notification.is-success {
-  background-color: #48c78e;
-  color: #fff;
-}
+  /* Textarea styling */
+  .textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
 
-.field.grouped {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
+  /* Icons styling untuk input */
+  .control.icons-left {
+    position: relative;
+  }
 
-.card {
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
+  .control.icons-left .icon.left {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    z-index: 2;
+    pointer-events: none;
+  }
 
-.card-header {
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
-}
+  .control.icons-left input {
+    padding-left: 3rem;
+  }
 
-.field {
-  margin-bottom: 1.5rem;
-}
+  /* Error styling */
+  .help.is-danger {
+    color: #dc2626;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: block;
+  }
 
-.label {
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 0.5rem;
-}
+  .input.is-danger,
+  .textarea.is-danger {
+    border-color: #dc2626;
+  }
 
-.textarea {
-  resize: vertical;
-  min-height: 80px;
-}
+  .help {
+    color: #6b7280;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: block;
+  }
 
-.button.green {
-  background-color: #10b981;
-  color: white;
-  border: none;
-}
-
-.button.green:hover {
-  background-color: #059669;
-}
-
-.button.red {
-  background-color: #ef4444;
-  color: white;
-  border: none;
-}
-
-.button.red:hover {
-  background-color: #dc2626;
-}
-
-.button.yellow {
-  background-color: #f59e0b;
-  color: white;
-  border: none;
-}
-
-.button.yellow:hover {
-  background-color: #d97706;
-}
-
-code {
-  background-color: #f5f5f5;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-family: monospace;
-}
-
-@media (max-width: 768px) {
+  /* Button styling */
   .field.grouped {
-    flex-direction: column;
-    align-items: flex-start;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
   }
 
-  .field.grouped .control {
-    width: 100%;
+  .button.green {
+    background-color: #10b981;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    font-size: 0.875rem;
   }
 
-  .field.grouped .button {
-    width: 100%;
-    justify-content: center;
+  .button.light {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
   }
-}
+
+  .button.green:hover {
+    background-color: #059669;
+  }
+
+  .button.light:hover {
+    background-color: #e5e7eb;
+  }
+
+  /* Row and column styling */
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+  }
+
+  .col-md-6 {
+    padding-right: 15px;
+    padding-left: 15px;
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  .col-12 {
+    padding-right: 15px;
+    padding-left: 15px;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  /* Card styling */
+  .card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+  }
+
+  .card-header-title {
+    font-weight: 600;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-content {
+    padding: 1.5rem;
+  }
+
+  /* Required field indicator */
+  .text-danger {
+    color: #dc2626;
+  }
+
+  /* Notification styling */
+  .notification {
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  .notification.is-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+
+  .notification.is-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+
+  .notification.is-success i {
+    margin-right: 0.5rem;
+  }
+
+  /* Code styling */
+  code {
+    background-color: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 0.875rem;
+  }
+
+  /* Content styling */
+  .content ul {
+    list-style-type: disc;
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .content li {
+    margin-bottom: 0.5rem;
+    color: #4b5563;
+  }
+
+  .content p strong {
+    color: #111827;
+    font-size: 1rem;
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .col-md-6 {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+
+    .field.grouped {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .field.grouped .control {
+      width: 100%;
+    }
+
+    .field.grouped .button {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .card-content {
+      padding: 1rem;
+    }
+
+    .control.icons-left input {
+      padding-left: 2.5rem;
+    }
+
+    .control.icons-left .icon.left {
+      left: 0.75rem;
+    }
+
+    .mt-6 {
+      margin-top: 1.5rem !important;
+    }
+  }
 </style>
 
 <script>
