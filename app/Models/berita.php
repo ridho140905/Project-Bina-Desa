@@ -1,7 +1,6 @@
 <?php
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -71,13 +70,14 @@ class Berita extends Model
         return $this->media->where('sort_order', '>', 1);
     }
 
-    public function scopeFilter(Builder $query, $request, array $filterableColumns)
+    public function scopeFilter($query, $request, array $filterableColumns)
     {
         foreach ($filterableColumns as $column) {
             if ($request->filled($column)) {
                 $query->where($column, $request->input($column));
             }
         }
+
         return $query;
     }
 
