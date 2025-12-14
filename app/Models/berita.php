@@ -71,7 +71,7 @@ class Berita extends Model
         return $this->media->where('sort_order', '>', 1);
     }
 
-    public function scopeFilter(Builder $query, $request, array $filterableColumns): Builder
+    public function scopeFilter(Builder $query, $request, array $filterableColumns)
     {
         foreach ($filterableColumns as $column) {
             if ($request->filled($column)) {
