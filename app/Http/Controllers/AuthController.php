@@ -13,7 +13,7 @@ class AuthController extends Controller
      */
     public function index()
     {
-       if (Auth::check()) {
+        if (Auth::check()) {
             return redirect()->route('dashboard.index');
         }
         return view('pages.auth.form-login');
@@ -42,7 +42,11 @@ class AuthController extends Controller
             Auth::login($user);
 
             // Simpan session tambahan jika diperlukan
-            session(['user_id' => $user->id, 'username' => $user->name]);
+            session([
+                'user_id' => $user->id,
+                'username' => $user->name,
+                'user_profile_picture' => $user->profile_picture // ← TAMBAHKAN INI SATU BARIS
+            ]);
 
             // Redirect ke dashboard dengan flash message
             return redirect('dashboard')->with('success', 'Selamat Datang ke halaman dashboard');
@@ -69,7 +73,8 @@ class AuthController extends Controller
             'name'     => 'required|min:3',
             'email'    => 'required|email|unique:users',
             'password' => 'required|min:6|confirmed',
-            'role'     => 'required' // Tambahkan validasi untuk role
+            'role'     => 'required', // Tambahkan validasi untuk role
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' // ← OPSIONAL: tambah validasi untuk gambar
         ], [
             'name.required'      => 'Nama wajib diisi.',
             'name.min'           => 'Nama minimal 3 karakter.',
@@ -80,15 +85,27 @@ class AuthController extends Controller
             'password.min'       => 'Password minimal 6 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'role.required'      => 'Role wajib dipilih.',
+            'profile_picture.image' => 'File harus berupa gambar.',
+            'profile_picture.max' => 'Ukuran gambar maksimal 2MB.',
         ]);
 
-        // Create user baru
-        $user = User::create([
+        // Data user baru
+        $userData = [
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
             'role'     => $request->role
-        ]);
+        ];
+
+        // Handle upload profile picture jika ada
+        if ($request->hasFile('profile_picture')) {
+            $fileName = time() . '_' . $request->file('profile_picture')->getClientOriginalName();
+            $request->file('profile_picture')->storeAs('public/profile_pictures', $fileName);
+            $userData['profile_picture'] = $fileName;
+        }
+
+        // Create user baru
+        $user = User::create($userData);
 
         if ($user) {
             // Jika berhasil

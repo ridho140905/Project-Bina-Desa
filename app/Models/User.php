@@ -23,7 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'profile_picture'
+        'profile_picture'  // <- CUKUP INI SAJA
     ];
 
     /**
@@ -48,7 +48,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-public function scopeFilter(Builder $query, $request, array $filterableColumns): Builder
+
+    // JAGA SCOPES YANG SUDAH ADA
+    public function scopeFilter(Builder $query, $request, array $filterableColumns): Builder
     {
         foreach ($filterableColumns as $column) {
             if ($request->filled($column)) {

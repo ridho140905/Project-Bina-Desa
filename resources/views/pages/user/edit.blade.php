@@ -28,6 +28,12 @@
 </section>
 
 <section class="section main-section">
+  @if (session('success'))
+    <div class="notification is-success">
+      {{ session('success') }}
+    </div>
+  @endif
+
   @if ($errors->any())
     <div class="notification is-danger">
       <strong>Error!</strong> Terdapat kesalahan dalam pengisian form:
@@ -47,9 +53,10 @@
       </p>
     </header>
     <div class="card-content">
-      <form action="{{ route('user.update', $dataUser->id) }}" method="POST">
-        @method('PUT')
+      <!-- TAMBAHKAN enctype="multipart/form-data" DI SINI -->
+      <form action="{{ route('user.update', $dataUser->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
+        @method('PUT')
 
         <div class="row">
           <!-- Kolom Kiri -->
@@ -79,6 +86,43 @@
                 <p class="help is-danger">{{ $message }}</p>
               @enderror
             </div>
+
+            <!-- Foto Profil -->
+            <div class="field">
+              <label class="label">Foto Profil</label>
+
+              <!-- Tampilkan Foto Saat Ini -->
+              @if($dataUser->profile_picture)
+                <div class="mb-3">
+                  <p class="text-sm text-muted mb-2">Foto Saat Ini:</p>
+                  <div class="flex items-start gap-4">
+                    <img src="{{ asset('storage/profile_pictures/' . $dataUser->profile_picture) }}"
+                         alt="Foto Profil {{ $dataUser->name }}"
+                         class="profile-img-preview rounded-lg border">
+                    <div class="flex-1">
+                      <p class="font-medium mb-1">{{ $dataUser->profile_picture }}</p>
+                      <small class="text-gray-500 block mb-2">File gambar</small>
+                    </div>
+                  </div>
+                </div>
+              @else
+                <div class="mb-3">
+                  <p class="text-sm text-muted">Belum ada foto profil</p>
+                </div>
+              @endif
+
+              <div class="control icons-left">
+                <input class="input @error('profile_picture') is-danger @enderror"
+                       type="file"
+                       name="profile_picture"
+                       accept="image/*">
+                <span class="icon left"><i class="mdi mdi-camera"></i></span>
+              </div>
+              @error('profile_picture')
+                <p class="help is-danger">{{ $message }}</p>
+              @enderror
+              <p class="help">Biarkan kosong jika tidak ingin mengubah foto. Format: JPG, PNG, GIF. Maksimal 2MB.</p>
+            </div>
           </div>
 
           <!-- Kolom Kanan -->
@@ -89,15 +133,9 @@
                 <div class="select is-fullwidth @error('role') is-danger @enderror">
                   <select name="role" required class="input">
                     <option value="">Pilih Role</option>
-                    <option value="Super Admin" {{ old('role', $dataUser->role) == 'Super Admin' ? 'selected' : '' }}>
-                      Super Admin
-                    </option>
-                    <option value="Pelanggan" {{ old('role', $dataUser->role) == 'Pelanggan' ? 'selected' : '' }}>
-                      Pelanggan
-                    </option>
-                    <option value="Mitra" {{ old('role', $dataUser->role) == 'Mitra' ? 'selected' : '' }}>
-                      Mitra
-                    </option>
+                    <option value="Super Admin" {{ old('role', $dataUser->role) == 'Super Admin' ? 'selected' : '' }}>Super Admin</option>
+                    <option value="Pelanggan" {{ old('role', $dataUser->role) == 'Pelanggan' ? 'selected' : '' }}>Pelanggan</option>
+                    <option value="Mitra" {{ old('role', $dataUser->role) == 'Mitra' ? 'selected' : '' }}>Mitra</option>
                   </select>
                 </div>
                 <span class="icon left"><i class="mdi mdi-account-key"></i></span>
@@ -112,14 +150,13 @@
               <label class="label">Password</label>
               <div class="control icons-left">
                 <input class="input @error('password') is-danger @enderror"
-                  type="password" name="password"
-                  placeholder="Kosongkan jika tidak ingin mengubah password">
+                  type="password" name="password" placeholder="Kosongkan jika tidak ingin mengubah">
                 <span class="icon left"><i class="mdi mdi-lock"></i></span>
               </div>
-              <p class="help is-info">Biarkan kosong jika tidak ingin mengubah password</p>
               @error('password')
                 <p class="help is-danger">{{ $message }}</p>
               @enderror
+              <p class="help">Biarkan kosong jika tidak ingin mengubah password.</p>
             </div>
 
             <!-- Konfirmasi Password -->
@@ -143,7 +180,7 @@
               <div class="control">
                 <button type="submit" class="button green">
                   <span class="icon"><i class="mdi mdi-content-save"></i></span>
-                  <span>Simpan Perubahan</span>
+                  <span>Update Data</span>
                 </button>
               </div>
               <div class="control">
@@ -241,13 +278,6 @@
     font-size: 0.75rem;
     margin-top: 0.25rem;
     display: block;
-  }
-
-  .help.is-info {
-    color: #6b7280;
-    font-size: 0.75rem;
-    margin-top: 0.25rem;
-    font-style: italic;
   }
 
   .input.is-danger,
@@ -356,6 +386,68 @@
     color: #dc2626;
   }
 
+  /* Image preview styling */
+  .profile-img-preview {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+  }
+
+  /* Utility classes */
+  .flex {
+    display: flex;
+  }
+
+  .items-start {
+    align-items: flex-start;
+  }
+
+  .gap-4 {
+    gap: 1rem;
+  }
+
+  .mb-3 {
+    margin-bottom: 1rem;
+  }
+
+  .mb-2 {
+    margin-bottom: 0.5rem;
+  }
+
+  .mb-1 {
+    margin-bottom: 0.25rem;
+  }
+
+  .block {
+    display: block;
+  }
+
+  .font-medium {
+    font-weight: 500;
+  }
+
+  .text-gray-500 {
+    color: #6b7280;
+  }
+
+  .text-sm {
+    font-size: 0.875rem;
+  }
+
+  .rounded-lg {
+    border-radius: 0.5rem;
+  }
+
+  .border {
+    border: 1px solid #e5e7eb;
+  }
+
+  .flex-1 {
+    flex: 1;
+  }
+
   /* Responsive design */
   @media (max-width: 768px) {
     .col-md-6 {
@@ -381,13 +473,14 @@
       padding: 1rem;
     }
 
-    .control.icons-left input,
-    .control.icons-left .select select {
-      padding-left: 2.5rem;
+    .profile-img-preview {
+      width: 100px;
+      height: 100px;
     }
 
-    .control.icons-left .icon.left {
-      left: 0.75rem;
+    .flex.items-start.gap-4 {
+      flex-direction: column;
+      gap: 1rem;
     }
   }
 
@@ -397,6 +490,12 @@
     padding: 1rem 1.5rem;
     border-radius: 8px;
     font-weight: 500;
+  }
+
+  .notification.is-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
   }
 
   .notification.is-danger {

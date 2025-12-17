@@ -461,5 +461,35 @@
 
 /* Ensure Material Icons are loaded */
 @import url('https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css');
+
+/* CSS untuk User Avatar di Header */
+.has-user-avatar .user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.has-user-avatar .navbar-link {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+}
+
+.has-user-avatar .is-user-name {
+  margin-left: 10px;
+  font-weight: 500;
+  color: #363636;
+}
+
+/* Untuk membuat gambar profil bulat */
+.is-rounded {
+  border-radius: 50% !important;
+}
+
+/* Hover effect untuk dropdown user */
+.has-user-avatar:hover .navbar-link {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
 </style>
 <!-- END CSS -->

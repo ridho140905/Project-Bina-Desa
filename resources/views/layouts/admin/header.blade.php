@@ -15,7 +15,7 @@
   </div>
   <div class="navbar-menu" id="navbar-menu">
     <div class="navbar-end">
-      <!-- Sample Menu Dropdown -->
+      <!-- Sample Menu Dropdown (BIARKAN TETAP ADA) -->
       <div class="navbar-item dropdown has-divider">
         <a class="navbar-link">
           <span class="icon"><i class="mdi mdi-menu"></i></span>
@@ -46,18 +46,26 @@
       </div>
 
       <!-- Menu Authentication -->
-      @if(session('user_id'))
+      @auth
       <!-- Tampilan ketika user sudah login -->
       <div class="navbar-item dropdown has-divider has-user-avatar">
         <a class="navbar-link">
           <div class="user-avatar">
-            @if(session('user_avatar'))
-            <img src="{{ session('user_avatar') }}" alt="{{ session('username') }}" class="rounded-full" style="width: 32px; height: 32px;">
+            @if(Auth::user()->profile_picture)
+            <!-- Tampilkan profile picture dari upload user -->
+            <img src="{{ asset('storage/profile_pictures/' . Auth::user()->profile_picture) }}"
+                 alt="{{ Auth::user()->name }}"
+                 class="rounded-full"
+                 style="width: 32px; height: 32px; object-fit: cover;">
             @else
-            <img src="https://avatars.dicebear.com/v2/initials/{{ substr(session('username'), 0, 1) }}.svg" alt="{{ session('username') }}" class="rounded-full" style="width: 32px; height: 32px;">
+            <!-- Tampilkan avatar default (bisa tetap pake dicebear atau ganti) -->
+            <img src="https://avatars.dicebear.com/v2/initials/{{ substr(Auth::user()->name, 0, 1) }}.svg"
+                 alt="{{ Auth::user()->name }}"
+                 class="rounded-full"
+                 style="width: 32px; height: 32px;">
             @endif
           </div>
-          <div class="is-user-name"><span>{{ session('username') }}</span></div>
+          <div class="is-user-name"><span>{{ Auth::user()->name }}</span></div>
           <span class="icon"><i class="mdi mdi-chevron-down"></i></span>
         </a>
         <div class="navbar-dropdown">

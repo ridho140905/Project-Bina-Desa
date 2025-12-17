@@ -47,7 +47,8 @@
       </p>
     </header>
     <div class="card-content">
-      <form action="{{ route('user.store') }}" method="POST">
+      <!-- TAMBAHKAN enctype="multipart/form-data" DI SINI -->
+      <form action="{{ route('user.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div class="row">
@@ -126,6 +127,24 @@
               @error('password_confirmation')
                 <p class="help is-danger">{{ $message }}</p>
               @enderror
+            </div>
+          </div>
+
+          <!-- TAMBAHKAN ROW BARU UNTUK UPLOAD FOTO PROFIL -->
+          <div class="col-12">
+            <div class="field">
+              <label class="label">Foto Profil (Opsional)</label>
+              <div class="control icons-left">
+                <input class="input @error('profile_picture') is-danger @enderror"
+                       type="file"
+                       name="profile_picture"
+                       accept="image/*">
+                <span class="icon left"><i class="mdi mdi-camera"></i></span>
+              </div>
+              @error('profile_picture')
+                <p class="help is-danger">{{ $message }}</p>
+              @enderror
+              <p class="help">Format: JPG, PNG, GIF. Maksimal 2MB.</p>
             </div>
           </div>
 

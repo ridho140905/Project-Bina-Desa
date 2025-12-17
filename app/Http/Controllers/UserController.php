@@ -5,19 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-     public function index(Request $request)
+    public function index(Request $request)
     {
-       // Inisialisasi query
+        // PAKAI YANG SUDAH ADA (jangan diubah)
         $query = User::query();
 
-        // Search functionality (nama dan email)
         if ($request->filled('search')) {
             $query->where(function($q) use ($request) {
                 $q->where('name', 'LIKE', '%' . $request->search . '%')
@@ -25,35 +24,24 @@ class UserController extends Controller
             });
         }
 
-        // Filter functionality dengan dropdown huruf saja
         if ($request->filled('filter_user')) {
             if ($request->filter_user == 'a') {
-                // User dengan nama A-M
                 $query->whereRaw('LOWER(SUBSTRING(name, 1, 1)) BETWEEN "a" AND "m"');
             } elseif ($request->filter_user == 'n') {
-                // User dengan nama N-Z
                 $query->whereRaw('LOWER(SUBSTRING(name, 1, 1)) BETWEEN "n" AND "z"');
             }
         }
 
-        // Default order by name
         $query->orderBy('name', 'asc');
-
         $data['dataUser'] = $query->paginate(10);
-
-        // Untuk menjaga filter di pagination
         $data['dataUser']->appends($request->query());
-
 
         return view('pages.user.index', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-       return view('pages.user.create');
+        return view('pages.user.create');
     }
 
     /**
@@ -61,31 +49,31 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //dd($request->all());
+        // Data dasar (PAKAI YANG SUDAH ADA)
         $data['name'] = $request->name;
-        $data['email']  = $request->email;
-        $data['password']   = Hash::make($request->password);
+        $data['email'] = $request->email;
+        $data['password'] = Hash::make($request->password);
         $data['role'] = $request->role;
+
+        // PERBAIKAN: UPLOAD GAMBAR MENGGUNAKAN STORAGE FACADE
+        if ($request->hasFile('profile_picture')) {
+            // Simpan file ke storage dengan disk 'public'
+            $fileName = time() . '_' . $request->file('profile_picture')->getClientOriginalName();
+
+            // PERBAIKAN: Gunakan Storage facade dengan disk 'public'
+            $request->file('profile_picture')->storeAs('profile_pictures', $fileName, 'public');
+
+            $data['profile_picture'] = $fileName;
+        }
 
         User::create($data);
 
         return redirect()->route('user.index')->with('success', 'Penambahan Data Berhasil!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
-          $data['dataUser'] = User::findOrFail($id);
+        $data['dataUser'] = User::findOrFail($id);
         return view('pages.user.edit', $data);
     }
 
@@ -94,13 +82,34 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $id = $id;
-        $user    = User::findOrFail($id);
+        $user = User::findOrFail($id);
 
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->password = $request->password;
+
+        // Update password hanya jika diisi (PAKAI YANG SUDAH ADA)
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
         $user->role = $request->role;
+
+        // PERBAIKAN: UPLOAD GAMBAR BARU MENGGUNAKAN STORAGE FACADE
+        if ($request->hasFile('profile_picture')) {
+            // Hapus file lama jika ada
+            if ($user->profile_picture && Storage::disk('public')->exists('profile_pictures/' . $user->profile_picture)) {
+                Storage::disk('public')->delete('profile_pictures/' . $user->profile_picture);
+            }
+
+            // Simpan file baru
+            $fileName = time() . '_' . $request->file('profile_picture')->getClientOriginalName();
+
+            // PERBAIKAN: Gunakan Storage facade dengan disk 'public'
+            $request->file('profile_picture')->storeAs('profile_pictures', $fileName, 'public');
+
+            $user->profile_picture = $fileName;
+        }
+
         $user->save();
 
         return redirect()->route('user.index')->with('success', 'Perubahan Data Berhasil!');
@@ -112,6 +121,11 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $user = User::findOrFail($id);
+
+        // PERBAIKAN: Hapus profile picture jika ada
+        if ($user->profile_picture && Storage::disk('public')->exists('profile_pictures/' . $user->profile_picture)) {
+            Storage::disk('public')->delete('profile_pictures/' . $user->profile_picture);
+        }
 
         $user->delete();
 
