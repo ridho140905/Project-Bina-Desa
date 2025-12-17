@@ -89,12 +89,5 @@ class Media extends Model
     {
         return strpos($this->mime_type, 'image/') === 0;
     }
-/**
-     * Relasi ke galeri (jika media ini milik galeri)
-     */
-    public function galeri()
-    {
-        return $this->belongsTo(Galeri::class, 'ref_id', 'galeri_id')
-                    ->where('ref_table', 'galeri');
-    }
 }
+

@@ -2,36 +2,58 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
 
 class Galeri extends Model
 {
-    protected $table = 'galeri';
+    use HasFactory;
+
     protected $primaryKey = 'galeri_id';
+    protected $table = 'galeri';
+
     protected $fillable = [
         'judul',
-        'deskripsi',
+        'deskripsi'
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     /**
-     * Relationship dengan media
+     * Relasi dengan media
      */
-    public function media()
+    public function media(): HasMany
     {
         return $this->hasMany(Media::class, 'ref_id', 'galeri_id')
                     ->where('ref_table', 'galeri')
-                    ->orderBy('sort_order')
-                    ->orderBy('media_id');
+                    ->orderBy('sort_order');
     }
 
     /**
-     * Accessor untuk foto utama
+     * Get foto utama (gambar pertama - sort_order = 1)
      */
     public function getFotoUtamaAttribute()
     {
-        $foto = $this->media->first();
-        return $foto ? $foto->file_name : null;
+        return $this->media()
+                    ->where('mime_type', 'like', 'image/%')
+                    ->where('sort_order', 1)
+                    ->first();
+    }
+
+    /**
+     * Get foto pendukung (sort_order > 1)
+     */
+    public function getFotoPendukungAttribute()
+    {
+        return $this->media()
+                    ->where('mime_type', 'like', 'image/%')
+                    ->where('sort_order', '>', 1)
+                    ->get();
     }
 
     /**
@@ -39,16 +61,8 @@ class Galeri extends Model
      */
     public function getFotoUtamaUrlAttribute()
     {
-        $foto = $this->media->first();
-        return $foto ? asset('storage/media/galeri/' . $foto->file_name) : null;
-    }
-
-    /**
-     * Accessor untuk semua foto
-     */
-    public function getSemuaFotoAttribute()
-    {
-        return $this->media;
+        $fotoUtama = $this->fotoUtama;
+        return $fotoUtama ? asset('storage/media/galeri/' . $fotoUtama->file_name) : null;
     }
 
     /**
@@ -56,11 +70,23 @@ class Galeri extends Model
      */
     public function getJumlahFotoAttribute()
     {
-        return $this->media->count();
+        return $this->media()->count();
     }
 
     /**
-     * Scope untuk filter
+     * Accessor untuk thumbnail (jika diperlukan untuk tabel)
+     */
+    public function getThumbnailAttribute()
+    {
+        $fotoUtama = $this->fotoUtama;
+        if ($fotoUtama) {
+            return asset('storage/media/galeri/' . $fotoUtama->file_name);
+        }
+        return asset('images/default-gallery.png'); // gambar default jika tidak ada
+    }
+
+    /**
+     * Scope untuk filter (sama seperti Agenda)
      */
     public function scopeFilter(Builder $query, $request, array $filterableColumns): Builder
     {
@@ -73,16 +99,38 @@ class Galeri extends Model
     }
 
     /**
-     * Scope untuk search
+     * Scope untuk search (sama seperti Agenda)
      */
-    public function scopeSearch($query, $request, array $columns)
+    public function scopeSearch(Builder $query, $request, array $searchableColumns): Builder
     {
         if ($request->filled('search')) {
-            $query->where(function($q) use ($request, $columns) {
-                foreach ($columns as $column) {
-                    $q->orWhere($column, 'LIKE', '%' . $request->search . '%');
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm, $searchableColumns) {
+                foreach ($searchableColumns as $column) {
+                    $q->orWhere($column, 'like', '%' . $searchTerm . '%');
                 }
             });
         }
+        return $query;
+    }
+
+    /**
+     * Scope untuk mengambil galeri dengan foto utama (agar bisa ditampilkan di frontend)
+     */
+    public function scopeWithFotoUtama(Builder $query): Builder
+    {
+        return $query->with(['media' => function($q) {
+            $q->where('sort_order', 1)->where('mime_type', 'like', 'image/%');
+        }]);
+    }
+
+    /**
+     * Scope untuk mengambil galeri dengan semua foto
+     */
+    public function scopeWithAllMedia(Builder $query): Builder
+    {
+        return $query->with(['media' => function($q) {
+            $q->orderBy('sort_order');
+        }]);
     }
 }

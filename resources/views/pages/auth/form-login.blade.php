@@ -477,7 +477,7 @@
                     </li>
                     <li>
                         <i class="mdi mdi-check-circle icon"></i>
-                        Menampilkan berita yang terjadu
+                        Menampilkan berita yang terjadi
                     </li>
                     <li>
                         <i class="mdi mdi-check-circle icon"></i>

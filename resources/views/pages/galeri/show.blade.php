@@ -12,9 +12,9 @@
                             <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
                         </svg>
                     </span>
-                    Galeri - {{ $dataGaleri->judul }}
+                    Detail Galeri - {{ Str::limit($dataGaleri->judul, 50) }}
                 </h1>
-                <p>Detail foto-foto dalam galeri</p>
+                <p>Informasi detail dan foto-foto dalam galeri</p>
             </div>
             <div class="btn-group-custom">
                 <a href="{{ route('galeri.index') }}" class="btn-light-universal">
@@ -43,7 +43,7 @@
 
         <div class="row">
             <!-- Informasi Galeri -->
-            <div class="col-lg-4 mb-4">
+            <div class="col-lg-6 mb-4">
                 <div class="card-universal">
                     <div class="card-header-universal">
                         <h5 class="card-title-universal">
@@ -57,14 +57,18 @@
                     </div>
                     <div class="card-body-universal">
                         <!-- Foto Utama -->
+                        @php
+                            // Gunakan accessor fotoUtama dari model
+                            $fotoUtama = $dataGaleri->fotoUtama;
+                        @endphp
                         <div class="text-center mb-4">
                             <div class="position-relative d-inline-block">
-                                @if($dataGaleri->foto_utama_url)
-                                    <img src="{{ $dataGaleri->foto_utama_url }}"
+                                @if($fotoUtama)
+                                    <img src="{{ asset('storage/media/galeri/' . $fotoUtama->file_name) }}"
                                          alt="Foto Utama {{ $dataGaleri->judul }}"
-                                         class="profile-img-detail">
+                                         class="poster-img-detail">
                                 @else
-                                    <div class="no-image-detail">
+                                    <div class="no-poster-detail">
                                         <svg width="60" height="60" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
                                         </svg>
@@ -72,7 +76,7 @@
                                 @endif
                             </div>
 
-                            <!-- Tombol Edit & Hapus DI BAWAH FOTO -->
+                            <!-- Tombol Edit & Hapus DI BAWAH POSTER -->
                             <div class="photo-action-bottom">
                                 <a href="{{ route('galeri.edit', $dataGaleri->galeri_id) }}"
                                    class="btn-edit-bottom"
@@ -80,7 +84,7 @@
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                                     </svg>
-                                    Edit
+                                    Edit Galeri
                                 </a>
                                 <form action="{{ route('galeri.destroy', $dataGaleri->galeri_id) }}"
                                       method="POST">
@@ -93,13 +97,10 @@
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                                         </svg>
-                                        Hapus
+                                        Hapus Galeri
                                     </button>
                                 </form>
                             </div>
-
-                            <h4 class="mt-3 fw-bold">{{ $dataGaleri->judul }}</h4>
-                            <p class="text-muted">{{ $dataGaleri->jumlah_foto }} foto</p>
                         </div>
 
                         <div class="info-list">
@@ -112,12 +113,28 @@
                                 <span class="info-value">{{ $dataGaleri->jumlah_foto }} foto</span>
                             </div>
                             <div class="info-item">
+                                <span class="info-label">Foto Utama</span>
+                                <span class="info-value">
+                                    @if($fotoUtama)
+                                        <span class="badge badge-success">Ada</span>
+                                    @else
+                                        <span class="badge badge-warning">Tidak ada</span>
+                                    @endif
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Foto Pendukung</span>
+                                <span class="info-value">
+                                    {{ $dataGaleri->fotoPendukung->count() }} foto
+                                </span>
+                            </div>
+                            <div class="info-item">
                                 <span class="info-label">Tanggal Dibuat</span>
-                                <span class="info-value">{{ $dataGaleri->created_at->format('d F Y') }}</span>
+                                <span class="info-value">{{ $dataGaleri->created_at->format('d M Y H:i') }}</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Terakhir Diupdate</span>
-                                <span class="info-value">{{ $dataGaleri->updated_at->format('d F Y') }}</span>
+                                <span class="info-value">{{ $dataGaleri->updated_at->format('d M Y H:i') }}</span>
                             </div>
                         </div>
                     </div>
@@ -125,7 +142,7 @@
             </div>
 
             <!-- Deskripsi Galeri -->
-            <div class="col-lg-8 mb-4">
+            <div class="col-lg-6 mb-4">
                 <div class="card-universal h-100">
                     <div class="card-header-universal">
                         <h5 class="card-title-universal">
@@ -142,7 +159,12 @@
                             @if($dataGaleri->deskripsi)
                                 {!! nl2br(e($dataGaleri->deskripsi)) !!}
                             @else
-                                <p class="text-muted text-center">Tidak ada deskripsi</p>
+                                <div class="text-center text-muted py-4">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" class="mb-3">
+                                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                    </svg>
+                                    <p>Belum ada deskripsi galeri</p>
+                                </div>
                             @endif
                         </div>
                     </div>
@@ -161,35 +183,38 @@
                                     <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
                                 </svg>
                             </span>
-                            Tambah Foto Baru
+                            Tambah Foto Pendukung Baru
                         </h5>
+                        <div class="card-header-info">
+                            <small>Hanya untuk menambahkan foto pendukung. Foto utama dapat diganti di halaman edit.</small>
+                        </div>
                     </div>
                     <div class="card-body-universal">
-                        <!-- FORM DENGAN ROUTE KHUSUS UPLOAD-FILES -->
                         <form action="{{ route('galeri.upload-files', $dataGaleri->galeri_id) }}" method="POST" enctype="multipart/form-data" id="uploadForm">
                             @csrf
+
                             <div class="row">
                                 <div class="col-md-8">
                                     <div class="field-group">
-                                        <label class="form-label-universal">Pilih Foto</label>
+                                        <label class="form-label-universal">Pilih Foto Pendukung</label>
                                         <div class="control">
                                             <input class="input-universal @error('foto') is-danger @enderror"
                                                    type="file"
                                                    name="foto[]"
                                                    id="fotoInput"
                                                    multiple
-                                                   accept=".jpg,.jpeg,.png,.gif,.webp">
-                                            @error('foto')
-                                                <p class="help is-danger">{{ $message }}</p>
-                                            @enderror
-                                            @error('foto.*')
-                                                <p class="help is-danger">{{ $message }}</p>
-                                            @enderror
+                                                   accept="image/*">
                                         </div>
                                         <small class="form-text text-muted">
-                                            Format: JPG, JPEG, PNG, GIF, WEBP. Maksimal 5MB per file.
+                                            Format: JPG, JPEG, PNG, GIF, WebP. Maksimal 5 file, 5MB per file.
                                         </small>
-                                        <div id="fileList" class="mt-2"></div>
+                                        @error('foto')
+                                            <p class="help is-danger">{{ $message }}</p>
+                                        @enderror
+                                        @error('foto.*')
+                                            <p class="help is-danger">{{ $message }}</p>
+                                        @enderror
+                                        <div id="fileListPreview" class="mt-2"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-4 d-flex align-items-end">
@@ -209,7 +234,7 @@
             </div>
         </div>
 
-        <!-- Daftar Foto -->
+        <!-- Daftar Foto Pendukung -->
         <div class="row">
             <div class="col-12">
                 <div class="card-universal">
@@ -220,54 +245,69 @@
                                     <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
                                 </svg>
                             </span>
-                            Daftar Foto ({{ $dataGaleri->media->count() }})
+                            Foto Pendukung ({{ $dataGaleri->fotoPendukung->count() }})
                         </h5>
+                        <div class="card-header-info">
+                            <small>Foto-foto pendukung dalam galeri ini. Foto utama tidak ditampilkan di sini.</small>
+                        </div>
                     </div>
                     <div class="card-body-universal">
-                        @if($dataGaleri->media->count() > 0)
+                        @php
+                            // Gunakan accessor fotoPendukung dari model
+                            $fotoPendukung = $dataGaleri->fotoPendukung;
+                        @endphp
+
+                        @if($fotoPendukung->count() > 0)
                             <div class="table-responsive table-responsive-universal">
                                 <table class="table universal-table">
                                     <thead>
                                         <tr>
-                                            <th width="60%">NAMA FOTO</th>
-                                            <th width="20%">TANGGAL UPLOAD</th>
-                                            <th width="20%" class="text-center">AKSI</th>
+                                            <th width="50%">Nama File</th>
+                                            <th width="20%">Tipe File</th>
+                                            <th width="30%" class="text-center">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($dataGaleri->media as $foto)
+                                        @foreach($fotoPendukung as $foto)
                                             <tr>
                                                 <td class="align-middle">
                                                     <div class="d-flex align-items-center">
-                                                        <img src="{{ asset('storage/media/galeri/' . $foto->file_name) }}"
-                                                             alt="Thumbnail {{ $foto->file_name }}"
-                                                             class="file-thumbnail me-3"
-                                                             onerror="this.style.display='none'">
+                                                        <div class="file-thumbnail-container me-3">
+                                                            <img src="{{ asset('storage/media/galeri/' . $foto->file_name) }}"
+                                                                 alt="Thumbnail {{ $foto->file_name }}"
+                                                                 class="file-thumbnail"
+                                                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                            <div class="file-icon" style="display: none;">
+                                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                                                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                                                </svg>
+                                                            </div>
+                                                        </div>
                                                         <div>
-                                                            <div class="fw-semibold text-break">{{ $foto->file_name }}</div>
-                                                            <small class="text-muted">
-                                                                @php
-                                                                    $filePath = storage_path('app/public/media/galeri/' . $foto->file_name);
-                                                                    $fileSize = file_exists($filePath) ? round(filesize($filePath) / 1024) : '0';
-                                                                @endphp
-                                                                {{ $fileSize }} KB
-                                                            </small>
+                                                            <div class="fw-semibold">{{ $foto->file_name }}</div>
+                                                            <small class="text-muted">Uploaded: {{ $foto->created_at->format('d/m/Y H:i') }}</small>
+                                                            @if($foto->sort_order == 1)
+                                                                <span class="badge badge-primary ms-2">Foto Utama</span>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td class="align-middle">
-                                                    <span class="text-muted">{{ $foto->created_at->format('d/m/Y H:i') }}</span>
+                                                    <span class="universal-badge badge-info">
+                                                        {{ strtoupper(pathinfo($foto->file_name, PATHINFO_EXTENSION)) }}
+                                                    </span>
                                                 </td>
                                                 <td class="align-middle">
-                                                    <div class="action-buttons-center">
+                                                    <div class="action-buttons-near">
                                                         <a href="{{ asset('storage/media/galeri/' . $foto->file_name) }}"
                                                            target="_blank"
                                                            class="btn-primary-near"
                                                            title="Lihat Foto">
                                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+                                                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                                                             </svg>
                                                         </a>
+                                                        @if($foto->sort_order != 1) {{-- Cegah hapus foto utama --}}
                                                         <form action="{{ route('galeri.delete-file', ['galeri' => $dataGaleri->galeri_id, 'file' => $foto->media_id]) }}"
                                                               method="POST"
                                                               class="d-inline">
@@ -282,6 +322,13 @@
                                                                 </svg>
                                                             </button>
                                                         </form>
+                                                        @else
+                                                        <span class="btn-delete-near disabled" title="Foto utama tidak dapat dihapus di sini">
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                                <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm4.3 14.3c-.39.39-1.02.39-1.41 0L12 13.41 9.11 16.3c-.39.39-1.02.39-1.41 0-.39-.39-.39-1.02 0-1.41L10.59 12 7.7 9.11c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0L12 10.59l2.89-2.89c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41L13.41 12l2.89 2.89c.38.38.38 1.02 0 1.41z"/>
+                                                            </svg>
+                                                        </span>
+                                                        @endif
                                                     </div>
                                                 </td>
                                             </tr>
@@ -296,22 +343,13 @@
                                         <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
                                     </svg>
                                 </span>
-                                Belum ada foto dalam galeri ini
+                                Belum ada foto pendukung dalam galeri ini
                             </div>
                         @endif
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-
-<!-- Modal untuk preview gambar -->
-<div id="imageModal" class="modal-universal">
-    <div class="modal-content-universal">
-        <span class="close-modal">&times;</span>
-        <img id="modalImage" src="" alt="">
-        <div id="modalCaption"></div>
     </div>
 </div>
 
@@ -353,6 +391,14 @@
 .page-header-primary p {
     color: var(--secondary-color);
     margin: 0;
+}
+
+/* Card Header Info */
+.card-header-info {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 4px;
+    font-style: italic;
 }
 
 /* Button Styles */
@@ -412,35 +458,37 @@
     padding: 20px;
 }
 
-/* Profile Image - PERBAIKAN: Tidak bulat */
-.profile-img-detail {
-    width: 140px;
-    height: 140px;
+/* Poster Image */
+.poster-img-detail {
+    width: 100%;
+    max-width: 300px;
+    height: 200px;
     object-fit: cover;
-    border: 4px solid #e2e8f0;
     border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.no-image-detail {
-    width: 140px;
-    height: 140px;
+.no-poster-detail {
+    width: 100%;
+    max-width: 300px;
+    height: 200px;
     background-color: #f8f9fa;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #6c757d;
-    border: 4px dashed #dee2e6;
+    border: 2px dashed #dee2e6;
     margin: 0 auto;
     border-radius: 12px;
 }
 
-/* Photo Action Buttons - DI BAWAH FOTO */
+/* Photo Action Buttons - DI BAWAH POSTER */
 .photo-action-bottom {
     display: flex;
     gap: 8px;
     align-items: center;
     justify-content: center;
-    margin-top: 12px;
+    margin-top: 16px;
     width: 100%;
 }
 
@@ -448,11 +496,11 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 12px;
+    padding: 8px 16px;
     border: none;
     border-radius: 6px;
     text-decoration: none;
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     font-weight: 500;
     transition: all 0.2s ease;
     white-space: nowrap;
@@ -506,6 +554,32 @@
     font-size: 1rem;
 }
 
+/* Badge styling */
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-success {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.badge-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.badge-primary {
+    background-color: #dbeafe;
+    color: #1e40af;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+}
+
 /* Content Box */
 .content-box {
     background-color: #f8f9fa;
@@ -514,10 +588,27 @@
     border-left: 4px solid var(--primary-color);
     white-space: pre-line;
     line-height: 1.6;
-    min-height: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    min-height: 200px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.content-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+.content-box::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.content-box::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+.content-box::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 }
 
 /* File Upload */
@@ -568,31 +659,36 @@
     color: white;
 }
 
-.btn-success-universal:disabled {
-    background-color: #9ca3af;
-    cursor: not-allowed;
-    transform: none;
-}
-
 /* File List Preview */
-#fileList {
-    max-height: 120px;
-    overflow-y: auto;
-}
-
-.file-item {
+#fileListPreview {
     display: flex;
-    justify-content: between;
-    align-items: center;
-    padding: 6px 8px;
-    background: #f8f9fa;
-    border-radius: 4px;
-    margin-bottom: 4px;
-    font-size: 0.875rem;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
 }
 
-.file-item:last-child {
-    margin-bottom: 0;
+.file-preview-item {
+    position: relative;
+    display: inline-block;
+    margin: 5px;
+    text-align: center;
+    vertical-align: top;
+}
+
+.file-preview-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.file-preview-item .file-name {
+    font-size: 10px;
+    margin-top: 2px;
+    color: #666;
+    word-break: break-all;
+    max-width: 60px;
 }
 
 /* File List Table */
@@ -625,6 +721,12 @@
     border-bottom: none;
 }
 
+.file-thumbnail-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
 .file-thumbnail {
     width: 60px;
     height: 60px;
@@ -633,11 +735,17 @@
     border: 1px solid #e2e8f0;
 }
 
-/* Action Buttons - PERBAIKAN: Alignment center */
-.action-buttons-center {
+.file-icon {
+    display: inline-flex;
+    align-items: center;
+    color: #6b7280;
+}
+
+/* Action Buttons - DEKAT DENGAN TULISAN AKSI */
+.action-buttons-near {
     display: flex;
     gap: 8px;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     height: 100%;
     flex-wrap: nowrap;
@@ -645,13 +753,13 @@
     padding: 0;
 }
 
-.action-buttons-center form {
+.action-buttons-near form {
     display: flex;
     margin: 0;
     align-items: center;
 }
 
-.btn-primary-near, .btn-delete-near {
+.btn-primary-near, .btn-delete-near, .btn-delete-near.disabled {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -686,13 +794,40 @@
     transform: translateY(-1px);
 }
 
+.btn-delete-near.disabled {
+    background-color: #9ca3af;
+    color: #fff;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-delete-near.disabled:hover {
+    transform: none;
+    background-color: #9ca3af;
+}
+
+/* Badge */
+.universal-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge-info {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
 /* Empty State */
 .empty-state-universal {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    padding: 60px 20px !important;
+    padding: 40px !important;
     color: #6c757d;
     text-align: center;
 }
@@ -717,64 +852,6 @@
     color: #991b1b;
 }
 
-/* Modal Styles */
-.modal-universal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    padding-top: 60px;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
-    animation: fadeIn 0.3s;
-}
-
-.modal-content-universal {
-    margin: auto;
-    display: block;
-    max-width: 80%;
-    max-height: 80%;
-    animation: zoomIn 0.3s;
-}
-
-#modalCaption {
-    margin: auto;
-    display: block;
-    width: 80%;
-    text-align: center;
-    color: #fff;
-    padding: 10px 0;
-    font-size: 16px;
-    font-weight: 500;
-}
-
-.close-modal {
-    position: absolute;
-    top: 15px;
-    right: 35px;
-    color: #fff;
-    font-size: 40px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.close-modal:hover {
-    color: #bbb;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes zoomIn {
-    from { transform: scale(0.8); }
-    to { transform: scale(1); }
-}
-
 /* Responsive */
 @media (max-width: 768px) {
     .page-header-primary {
@@ -792,13 +869,13 @@
         grid-template-columns: 1fr;
     }
 
-    .action-buttons-center {
+    .action-buttons-near {
         flex-direction: row;
         gap: 6px;
-        justify-content: center;
+        justify-content: flex-start;
     }
 
-    .btn-primary-near, .btn-delete-near {
+    .btn-primary-near, .btn-delete-near, .btn-delete-near.disabled {
         width: 32px;
         height: 32px;
     }
@@ -822,11 +899,21 @@
         width: 40px;
         height: 40px;
     }
+
+    .poster-img-detail {
+        max-width: 200px;
+        height: 150px;
+    }
+
+    .no-poster-detail {
+        max-width: 200px;
+        height: 150px;
+    }
 }
 
 @media (min-width: 992px) {
     .info-list {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
         gap: 16px;
     }
 
@@ -837,59 +924,107 @@
 </style>
 
 <script>
-// File upload preview and validation
-document.getElementById('fotoInput').addEventListener('change', function(e) {
-    const fileList = document.getElementById('fileList');
-    const uploadBtn = document.getElementById('uploadBtn');
-    fileList.innerHTML = '';
+document.addEventListener('DOMContentLoaded', function() {
+    // Validasi file untuk foto pendukung
+    const fotoInput = document.getElementById('fotoInput');
+    const fileListPreview = document.getElementById('fileListPreview');
 
-    if (this.files.length > 0) {
-        uploadBtn.disabled = false;
+    if (fotoInput) {
+        fotoInput.addEventListener('change', function() {
+            const files = this.files;
+            const maxSize = 5 * 1024 * 1024; // 5MB per file
+            const maxFiles = 5; // Maksimal 5 file
 
-        for (let i = 0; i < this.files.length; i++) {
-            const file = this.files[i];
-            const fileItem = document.createElement('div');
-            fileItem.className = 'file-item';
-            fileItem.innerHTML = `
-                <span>${file.name}</span>
-                <small class="text-muted">(${(file.size / 1024).toFixed(0)} KB)</small>
+            // Clear previous preview
+            fileListPreview.innerHTML = '';
+
+            if (files.length > maxFiles) {
+                alert(`Maksimal ${maxFiles} foto yang dapat diupload`);
+                this.value = '';
+                return;
+            }
+
+            for (let file of files) {
+                if (file.size > maxSize) {
+                    alert(`Foto ${file.name} melebihi ukuran maksimal 5MB`);
+                    this.value = '';
+                    fileListPreview.innerHTML = '';
+                    break;
+                }
+
+                // Validasi tipe file harus gambar
+                if (!file.type.startsWith('image/')) {
+                    alert(`File ${file.name} bukan gambar. Hanya file gambar yang diperbolehkan`);
+                    this.value = '';
+                    fileListPreview.innerHTML = '';
+                    break;
+                }
+
+                // Create preview untuk setiap file
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'file-preview-item';
+
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.alt = 'Preview Foto';
+
+                        const name = document.createElement('div');
+                        name.className = 'file-name';
+                        name.textContent = file.name.length > 15 ? file.name.substring(0, 15) + '...' : file.name;
+
+                        previewItem.appendChild(img);
+                        previewItem.appendChild(name);
+                        fileListPreview.appendChild(previewItem);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+    }
+
+    // Form submission handling
+    const uploadForm = document.getElementById('uploadForm');
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', function(e) {
+            const files = document.getElementById('fotoInput').files;
+            const uploadBtn = document.getElementById('uploadBtn');
+
+            // Validasi minimal satu file
+            if (files.length === 0) {
+                e.preventDefault();
+                alert('Pilih foto terlebih dahulu!');
+                return false;
+            }
+
+            // Show loading state
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = `
+                <span class="icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </span>
+                Mengupload...
             `;
-            fileList.appendChild(fileItem);
-        }
-    } else {
-        uploadBtn.disabled = true;
-    }
-});
-
-// Form submission handling
-document.getElementById('uploadForm').addEventListener('submit', function(e) {
-    const files = document.getElementById('fotoInput').files;
-    if (files.length === 0) {
-        e.preventDefault();
-        alert('Pilih foto terlebih dahulu!');
-        return false;
+        });
     }
 
-    // Validate file sizes
-    for (let i = 0; i < files.length; i++) {
-        if (files[i].size > 5 * 1024 * 1024) { // 5MB
-            e.preventDefault();
-            alert(`File ${files[i].name} terlalu besar. Maksimal 5MB per file.`);
-            return false;
-        }
-    }
-
-    // Show loading state
-    const uploadBtn = document.getElementById('uploadBtn');
-    uploadBtn.disabled = true;
-    uploadBtn.innerHTML = `
-        <span class="icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-            </svg>
-        </span>
-        Mengupload...
-    `;
+    // Validasi hapus foto utama
+    const deleteButtons = document.querySelectorAll('.btn-delete-near:not(.disabled)');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const form = this.closest('form');
+            if (form) {
+                const filename = this.closest('tr').querySelector('.fw-semibold').textContent;
+                if (!confirm(`Yakin ingin menghapus foto "${filename}"?`)) {
+                    e.preventDefault();
+                }
+            }
+        });
+    });
 });
 </script>
 @endsection

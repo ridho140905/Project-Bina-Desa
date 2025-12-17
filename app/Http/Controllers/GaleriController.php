@@ -13,9 +13,22 @@ class GaleriController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data['dataGaleri'] = Galeri::with('media')->orderBy('created_at', 'desc')->paginate(10);
+        // Gunakan scope seperti di Agenda
+        $filterableColumns = []; // Tambahkan kolom filter jika ada
+        $searchableColumns = ['judul', 'deskripsi'];
+
+        $data['dataGaleri'] = Galeri::filter($request, $filterableColumns)
+            ->search($request, $searchableColumns)
+            ->with(['media' => function($query) {
+                $query->where('ref_table', 'galeri')
+                      ->orderBy('sort_order');
+            }])
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
         return view('pages.galeri.index', $data);
     }
 
@@ -35,22 +48,26 @@ class GaleriController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
-            'foto' => 'required|array',
-            'foto.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:5120', // 5MB max
+            'foto_utama' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:5120', // 5MB max
+            'foto_pendukung' => 'nullable|array',
+            'foto_pendukung.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:5120',
         ]);
 
-        DB::transaction(function () use ($request) {
-            // Simpan data galeri
-            $galeri = Galeri::create($request->only([
-                'judul',
-                'deskripsi'
-            ]));
+        // Simpan data galeri
+        $galeri = Galeri::create($request->only([
+            'judul',
+            'deskripsi'
+        ]));
 
-            // Upload foto jika ada
-            if ($request->hasFile('foto')) {
-                $this->uploadFoto($request->file('foto'), $galeri->galeri_id);
-            }
-        });
+        // Upload foto utama
+        if ($request->hasFile('foto_utama')) {
+            $this->uploadFotoUtama($request->file('foto_utama'), $galeri->galeri_id);
+        }
+
+        // Upload foto pendukung jika ada
+        if ($request->hasFile('foto_pendukung')) {
+            $this->uploadFotoPendukung($request->file('foto_pendukung'), $galeri->galeri_id);
+        }
 
         return redirect()->route('galeri.index')->with('success', 'Penambahan Data Galeri Berhasil!');
     }
@@ -60,7 +77,11 @@ class GaleriController extends Controller
      */
     public function show(string $id)
     {
-        $data['dataGaleri'] = Galeri::with('media')->findOrFail($id);
+        $data['dataGaleri'] = Galeri::with(['media' => function($query) {
+            $query->where('ref_table', 'galeri')
+                  ->orderBy('sort_order');
+        }])->findOrFail($id);
+
         return view('pages.galeri.show', $data);
     }
 
@@ -69,7 +90,11 @@ class GaleriController extends Controller
      */
     public function edit(string $id)
     {
-        $data['dataGaleri'] = Galeri::with('media')->findOrFail($id);
+        $data['dataGaleri'] = Galeri::with(['media' => function($query) {
+            $query->where('ref_table', 'galeri')
+                  ->orderBy('sort_order');
+        }])->findOrFail($id);
+
         return view('pages.galeri.edit', $data);
     }
 
@@ -81,24 +106,44 @@ class GaleriController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
-            'foto' => 'nullable|array',
-            'foto.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:5120', // 5MB max
+            'foto_utama' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
+            'foto_pendukung' => 'nullable|array',
+            'foto_pendukung.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:5120',
         ]);
 
         $galeri = Galeri::findOrFail($id);
+        $galeri->update($request->only([
+            'judul',
+            'deskripsi'
+        ]));
 
-        DB::transaction(function () use ($request, $galeri) {
-            // Update data galeri
-            $galeri->update($request->only([
-                'judul',
-                'deskripsi'
-            ]));
+        // Upload foto utama baru jika ada
+        if ($request->hasFile('foto_utama')) {
+            $this->uploadFotoUtama($request->file('foto_utama'), $galeri->galeri_id);
+        }
 
-            // Upload foto baru jika ada
-            if ($request->hasFile('foto')) {
-                $this->uploadFoto($request->file('foto'), $galeri->galeri_id);
+        // Upload foto pendukung baru jika ada
+        if ($request->hasFile('foto_pendukung')) {
+            $this->uploadFotoPendukung($request->file('foto_pendukung'), $galeri->galeri_id);
+        }
+
+        // Handle delete file tertentu jika ada request delete_files
+        if ($request->has('delete_files')) {
+            foreach ($request->delete_files as $fileId) {
+                $file = Media::where('media_id', $fileId)
+                    ->where('ref_table', 'galeri')
+                    ->where('ref_id', $galeri->galeri_id)
+                    ->first();
+
+                if ($file) {
+                    // Jangan hapus foto utama (sort_order = 1)
+                    if ($file->sort_order != 1) {
+                        Storage::disk('public')->delete('media/galeri/' . $file->file_name);
+                        $file->delete();
+                    }
+                }
             }
-        });
+        }
 
         return redirect()->route('galeri.index')->with('success', 'Perubahan Data Galeri Berhasil!');
     }
@@ -110,56 +155,111 @@ class GaleriController extends Controller
     {
         $galeri = Galeri::findOrFail($id);
 
-        DB::transaction(function () use ($galeri) {
-            // Hapus semua file terkait galeri ini
-            $this->deleteAllFiles($galeri->galeri_id);
+        // Hapus semua file terkait galeri ini
+        $this->deleteAllFiles($galeri->galeri_id);
 
-            $galeri->delete();
-        });
+        $galeri->delete();
 
         return redirect()->route('galeri.index')->with('success', 'Data Galeri berhasil dihapus');
     }
 
     /**
-     * Upload foto tambahan ke galeri yang sudah ada
+     * Upload foto tambahan dari halaman show (untuk foto pendukung)
      */
-    public function uploadFiles(Request $request, string $galeriId)
+    public function uploadFiles(Request $request, $id)
     {
-        $request->validate([
-            'foto' => 'required|array',
-            'foto.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:5120', // 5MB max
-        ]);
+        try {
+            DB::beginTransaction();
 
-        $galeri = Galeri::findOrFail($galeriId);
+            $galeri = Galeri::findOrFail($id);
 
-        DB::transaction(function () use ($request, $galeri) {
-            // Upload foto baru
-            if ($request->hasFile('foto')) {
-                $this->uploadFoto($request->file('foto'), $galeri->galeri_id);
+            $request->validate([
+                'foto' => 'required|array',
+                'foto.*' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:5120'
+            ]);
+
+            // Cek jumlah file (maksimal 5 file)
+            if (count($request->file('foto')) > 5) {
+                return redirect()->back()->with('error', 'Maksimal 5 file yang dapat diupload sekaligus');
             }
-        });
 
-        return redirect()->route('galeri.show', $galeriId)->with('success', 'Foto berhasil ditambahkan ke galeri!');
+            // Upload foto pendukung
+            if ($request->hasFile('foto')) {
+                $this->uploadFotoPendukung($request->file('foto'), $galeri->galeri_id);
+            }
+
+            DB::commit();
+
+            return redirect()->route('galeri.show', $galeri->galeri_id)
+                ->with('success', 'Foto pendukung berhasil diupload');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('galeri.show', $id)
+                ->with('error', 'Gagal upload foto: ' . $e->getMessage());
+        }
     }
 
     /**
-     * Upload foto galeri
+     * Upload foto utama (single file)
      */
-    private function uploadFoto($files, $galeriId)
+    private function uploadFotoUtama($file, $galeriId)
     {
-        // Get current max sort_order untuk galeri ini
-        $maxSortOrder = Media::where('ref_table', 'galeri')
-            ->where('ref_id', $galeriId)
-            ->max('sort_order') ?? 0;
+        if ($file->isValid()) {
+            // Generate unique filename untuk foto utama
+            $filename = 'galeri-utama-' . $galeriId . '-' . time() . '.' . $file->getClientOriginalExtension();
 
-        $sortOrder = $maxSortOrder + 1;
+            // Store file
+            $file->storeAs('media/galeri', $filename, 'public');
+
+            // Cek apakah sudah ada foto utama
+            $existingUtama = Media::where('ref_table', 'galeri')
+                ->where('ref_id', $galeriId)
+                ->where('sort_order', 1)
+                ->first();
+
+            if ($existingUtama) {
+                // Hapus file lama
+                Storage::disk('public')->delete('media/galeri/' . $existingUtama->file_name);
+                // Update record yang ada
+                $existingUtama->update([
+                    'file_name' => $filename,
+                    'mime_type' => $file->getMimeType(),
+                    'file_size' => $file->getSize(),
+                ]);
+            } else {
+                // Buat record baru
+                Media::create([
+                    'ref_table'     => 'galeri',
+                    'ref_id'        => $galeriId,
+                    'file_name'     => $filename,
+                    'mime_type'     => $file->getMimeType(),
+                    'caption'       => 'Foto Utama Galeri',
+                    'sort_order'    => 1, // Foto utama selalu sort_order = 1
+                    'file_size'     => $file->getSize(),
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Upload foto pendukung (multiple files)
+     */
+    private function uploadFotoPendukung($files, $galeriId)
+    {
+        // Cari sort_order terakhir untuk foto pendukung (dimulai dari 2)
+        $lastSortOrder = Media::where('ref_table', 'galeri')
+            ->where('ref_id', $galeriId)
+            ->max('sort_order') ?? 1;
+
+        $sortOrder = ($lastSortOrder == 1) ? 2 : $lastSortOrder + 1;
 
         foreach ($files as $file) {
             if ($file->isValid()) {
                 // Generate unique filename
-                $filename = 'galeri-' . $galeriId . '-' . time() . '-' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $filename = 'galeri-pendukung-' . $galeriId . '-' . time() . '-' . $sortOrder . '.' . $file->getClientOriginalExtension();
 
-                // Store file - simpan di folder 'media/galeri'
+                // Store file
                 $file->storeAs('media/galeri', $filename, 'public');
 
                 // Simpan ke tabel media
@@ -168,8 +268,9 @@ class GaleriController extends Controller
                     'ref_id'        => $galeriId,
                     'file_name'     => $filename,
                     'mime_type'     => $file->getMimeType(),
-                    'caption'       => 'Foto Galeri',
+                    'caption'       => 'Foto Pendukung Galeri',
                     'sort_order'    => $sortOrder,
+                    'file_size'     => $file->getSize(),
                 ]);
 
                 $sortOrder++;
@@ -187,29 +288,40 @@ class GaleriController extends Controller
             ->get();
 
         foreach ($files as $file) {
-            // Hapus file dari storage
             Storage::disk('public')->delete('media/galeri/' . $file->file_name);
-            // Hapus record dari database
             $file->delete();
         }
     }
 
     /**
-     * Delete file individual
+     * Delete file individual - Cegah hapus foto utama
      */
     public function deleteFile(string $galeriId, string $fileId)
     {
-        $file = Media::where('media_id', $fileId)
-            ->where('ref_table', 'galeri')
-            ->where('ref_id', $galeriId)
-            ->firstOrFail();
+        try {
+            DB::beginTransaction();
 
-        // Hapus file dari storage
-        Storage::disk('public')->delete('media/galeri/' . $file->file_name);
+            $file = Media::where('media_id', $fileId)
+                ->where('ref_table', 'galeri')
+                ->where('ref_id', $galeriId)
+                ->firstOrFail();
 
-        $file->delete();
+            // Cegah hapus foto utama (sort_order = 1)
+            if ($file->sort_order == 1) {
+                return redirect()->back()->with('error', 'Tidak dapat menghapus foto utama! Silakan ganti foto utama melalui edit galeri.');
+            }
 
-        return redirect()->back()->with('success', 'Foto berhasil dihapus!');
+            Storage::disk('public')->delete('media/galeri/' . $file->file_name);
+            $file->delete();
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Foto pendukung berhasil dihapus!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menghapus file: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -217,18 +329,28 @@ class GaleriController extends Controller
      */
     public function updateSortOrder(Request $request, string $galeriId)
     {
-        $request->validate([
-            'sort_order' => 'required|array',
-            'sort_order.*' => 'integer'
-        ]);
+        try {
+            DB::beginTransaction();
 
-        foreach ($request->sort_order as $mediaId => $sortOrder) {
-            Media::where('media_id', $mediaId)
-                ->where('ref_table', 'galeri')
-                ->where('ref_id', $galeriId)
-                ->update(['sort_order' => $sortOrder]);
+            $request->validate([
+                'sort_order' => 'required|array',
+                'sort_order.*' => 'integer'
+            ]);
+
+            foreach ($request->sort_order as $mediaId => $sortOrder) {
+                Media::where('media_id', $mediaId)
+                    ->where('ref_table', 'galeri')
+                    ->where('ref_id', $galeriId)
+                    ->update(['sort_order' => $sortOrder]);
+            }
+
+            DB::commit();
+
+            return response()->json(['success' => true, 'message' => 'Urutan foto berhasil diupdate!']);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Gagal update urutan: ' . $e->getMessage()], 500);
         }
-
-        return response()->json(['success' => true, 'message' => 'Urutan foto berhasil diupdate!']);
     }
 }
