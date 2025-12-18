@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\warga;
+use App\Models\Warga;
 class WargaController extends Controller
 {
     /**
@@ -16,7 +16,7 @@ class WargaController extends Controller
         $searchableColumns = ['nama', 'no_ktp', 'email'];
 
         // Gunakan scope filter untuk memproses query
-        $data['Warga'] = Warga::filter($request, $filterableColumns)
+        $data['warga'] = Warga::filter($request, $filterableColumns)
             ->search($request, $searchableColumns)
             ->paginate(10)
             ->withQueryString();
