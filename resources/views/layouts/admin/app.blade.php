@@ -17,6 +17,89 @@
     <!-- START JS -->
     @include('layouts.admin.js')
     <!-- END JS -->
+
+    <style>
+        /* Sidebar Toggle untuk Mobile */
+        .sidebar-toggle {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            /* Sidebar untuk mobile */
+            aside.sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 50;
+                width: 280px;
+            }
+
+            aside.sidebar.active {
+                transform: translateX(0);
+            }
+
+            /* Overlay untuk sidebar */
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 40;
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            /* Tombol toggle di header */
+            .sidebar-toggle {
+                display: block;
+                position: fixed;
+                top: 16px;
+                left: 16px;
+                z-index: 100;
+                background: #3b82f6;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 8px 12px;
+                cursor: pointer;
+            }
+
+            /* Adjust header untuk mobile */
+            header.navbar {
+                padding-left: 60px;
+            }
+
+            /* Main content adjustment */
+            #app > div:not(.sidebar-overlay):not(.sidebar-toggle) {
+                transition: margin-left 0.3s ease;
+            }
+
+            /* Ketika sidebar aktif */
+            body.sidebar-active main {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            aside.sidebar {
+                width: 250px;
+            }
+
+            .sidebar-toggle {
+                top: 12px;
+                left: 12px;
+                padding: 6px 10px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -26,6 +109,14 @@
         <!-- START HEADER -->
         @include('layouts.admin.header')
         <!-- END HEADER -->
+
+        <!-- Sidebar Toggle Button untuk Mobile -->
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="mdi mdi-menu"></i>
+        </button>
+
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
         <!-- START SIDEBAR -->
         @include('layouts.admin.sidebar')
@@ -52,6 +143,62 @@
             </svg>
         </a>
     </div>
+
+    <script>
+        // Sidebar Toggle untuk Mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.querySelector('aside.sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const body = document.body;
+
+            if (sidebarToggle && sidebar) {
+                // Toggle sidebar
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                    sidebarOverlay.classList.toggle('active');
+                    body.classList.toggle('sidebar-active');
+                });
+
+                // Close sidebar dengan overlay
+                sidebarOverlay.addEventListener('click', function() {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                    body.classList.remove('sidebar-active');
+                });
+
+                // Close sidebar dengan Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        sidebar.classList.remove('active');
+                        sidebarOverlay.classList.remove('active');
+                        body.classList.remove('sidebar-active');
+                    }
+                });
+
+                // Close sidebar ketika klik link di sidebar (untuk mobile)
+                const sidebarLinks = sidebar.querySelectorAll('a');
+                sidebarLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        if (window.innerWidth < 768) {
+                            sidebar.classList.remove('active');
+                            sidebarOverlay.classList.remove('active');
+                            body.classList.remove('sidebar-active');
+                        }
+                    });
+                });
+            }
+
+            // Auto close sidebar di mobile saat resize ke desktop
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 768) {
+                    if (sidebar) sidebar.classList.remove('active');
+                    if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+                    body.classList.remove('sidebar-active');
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>

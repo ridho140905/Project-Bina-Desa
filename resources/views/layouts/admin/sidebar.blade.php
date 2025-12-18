@@ -9,7 +9,7 @@
 
             <!-- Teks di sebelah kanan logo -->
             <div class="header-title">
-                <b class="font-black"> Profil</b> <b class="font-black">Desa</b>
+                <b class="font-black"> Portal</b> <b class="font-black">Desa</b>
             </div>
         </div>
     </div>
