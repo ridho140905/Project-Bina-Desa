@@ -29,7 +29,7 @@ class DashboardController extends Controller
         $totalAgenda = Agenda::count();
         $totalBerita = Berita::count();
         $totalGaleri = Galeri::count();
-        $totalWarga = Warga::count();
+        $totalWarga = warga::count();
         $totalKategoriBerita = KategoriBerita::count();
 
         // Hitung total semua media
