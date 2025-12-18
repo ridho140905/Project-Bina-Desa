@@ -16,7 +16,7 @@ class WargaController extends Controller
         $searchableColumns = ['nama', 'no_ktp', 'email'];
 
         // Gunakan scope filter untuk memproses query
-        $data['warga'] = Warga::filter($request, $filterableColumns)
+        $data['Warga'] = Warga::filter($request, $filterableColumns)
             ->search($request, $searchableColumns)
             ->paginate(10)
             ->withQueryString();
