@@ -423,7 +423,7 @@
                 <div id="image-placeholder" class="image-placeholder" style="display: none;">
                     <div>
                         <i class="mdi mdi-image-off" style="font-size: 3rem; margin-bottom: 10px; display: block;"></i>
-                        Gambar Bergabung dengan Bina Desa<br>
+                        Gambar Bergabung dengan Portal Desa<br>
                         <small>Bergabunglah untuk membangun desa yang lebih baik</small>
                     </div>
                 </div>
@@ -431,10 +431,10 @@
 
             <div class="hero-content">
                 <i class="mdi mdi-account-plus hero-icon"></i>
-                <h1 class="hero-title">Bergabung dengan Bina Desa</h1>
+                <h1 class="hero-title">Bergabung dengan Portal Desa</h1>
                 <p class="hero-subtitle">
                     Mari bersama-sama membangun desa yang lebih maju dan sejahtera.
-                    Dengan bergabung di platform Bina Desa, Anda akan menjadi bagian dari transformasi digital desa.
+                    Dengan bergabung di platform Portal Desa, Anda akan menjadi bagian dari transformasi digital desa.
                 </p>
 
                 <ul class="hero-features">
@@ -448,11 +448,11 @@
                     </li>
                     <li>
                         <i class="mdi mdi-check-circle icon"></i>
-                        Kelola profil dan data diri dengan mudah
+                        Kelola profil dan data desa dengan mudah
                     </li>
                     <li>
                         <i class="mdi mdi-check-circle icon"></i>
-                        Berpartisipasi dalam program pembangunan desa
+                        Berpartisipasi dalam agenda desa
                     </li>
                     <li>
                         <i class="mdi mdi-check-circle icon"></i>
@@ -467,7 +467,7 @@
             <div class="register-card">
                 <div class="card-header">
                     <i class="mdi mdi-account-plus icon"></i>
-                    <h1 class="card-header-title">Bina Desa</h1>
+                    <h1 class="card-header-title">Portal Desa</h1>
                     <p class="card-header-subtitle">Buat akun Anda</p>
                 </div>
 
