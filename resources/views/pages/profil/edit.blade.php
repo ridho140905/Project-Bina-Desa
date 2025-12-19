@@ -58,7 +58,7 @@
         @method('PUT')
 
         <div class="row">
-          <!-- Kolom Kiri - Informasi Dasar & File Pendukung -->
+          <!-- Kolom Kiri - Informasi Dasar -->
           <div class="col-md-6">
             <div class="field">
               <label class="label">Nama Desa <span class="text-danger">*</span></label>
@@ -139,50 +139,6 @@
                 <p class="help is-danger">{{ $message }}</p>
               @enderror
             </div>
-
-            <!-- File Pendukung - di kiri bawah -->
-            @php
-              $filePendukung = $dataProfil->media->where('sort_order', '>', 1);
-            @endphp
-            <div class="field">
-              <label class="label">File Pendukung Tambahan</label>
-
-              {{-- Tampilkan File Pendukung Saat Ini --}}
-              @if($filePendukung->count() > 0)
-                <div class="mb-3">
-                  <p class="text-sm text-muted mb-2">File Pendukung Saat Ini:</p>
-                  <div class="space-y-2">
-                    @foreach($filePendukung as $file)
-                      <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
-                        <div>
-                          <span class="font-medium block">{{ $file->file_name }}</span>
-                          <small class="text-gray-500">{{ $file->mime_type }}</small>
-                        </div>
-                        <a href="{{ route('profil.delete-file', ['profil' => $dataProfil->profil_id, 'file' => $file->media_id]) }}"
-                           class="button is-small is-danger"
-                           onclick="return confirm('Yakin ingin menghapus file ini?')">
-                          <span class="icon"><i class="mdi mdi-delete"></i></span>
-                        </a>
-                      </div>
-                    @endforeach
-                  </div>
-                </div>
-              @endif
-
-              <div class="control">
-                <input class="input @error('file_pendukung') is-danger @enderror"
-                       type="file"
-                       name="file_pendukung[]"
-                       multiple
-                       accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx">
-              </div>
-              <small class="form-text text-muted">
-                Upload file tambahan. Format: JPG, JPEG, PNG, GIF, PDF, DOC, DOCX. Maksimal 5 file.
-              </small>
-              @error('file_pendukung')
-                <p class="help is-danger">{{ $message }}</p>
-              @enderror
-            </div>
           </div>
 
           <!-- Kolom Kanan - Informasi Kontak & Foto Profil -->
@@ -237,12 +193,19 @@
                     <div class="flex-1">
                       <p class="font-medium mb-1">{{ $fotoProfil->file_name }}</p>
                       <small class="text-gray-500 block mb-2">{{ $fotoProfil->mime_type }}</small>
-                      <a href="{{ route('profil.delete-file', ['profil' => $dataProfil->profil_id, 'file' => $fotoProfil->media_id]) }}"
-                         class="button is-small is-danger"
-                         onclick="return confirm('Yakin ingin menghapus foto profil ini?')">
-                        <span class="icon"><i class="mdi mdi-delete"></i></span>
-                        <span>Hapus Foto</span>
-                      </a>
+                      <!-- PERBAIKAN: Ganti tag <a> dengan form untuk DELETE method -->
+                      <form action="{{ route('profil.delete-file', ['profil' => $dataProfil->profil_id, 'file' => $fotoProfil->media_id]) }}"
+                            method="POST"
+                            style="display: inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                                class="button is-small is-danger"
+                                onclick="return confirm('Yakin ingin menghapus foto profil ini?')">
+                          <span class="icon"><i class="mdi mdi-delete"></i></span>
+                          <span>Hapus Foto</span>
+                        </button>
+                      </form>
                     </div>
                   </div>
                 </div>
@@ -296,6 +259,59 @@
                 <span class="icon left"><i class="mdi mdi-office-building"></i></span>
               </div>
               @error('alamat_kantor')
+                <p class="help is-danger">{{ $message }}</p>
+              @enderror
+            </div>
+          </div>
+
+          <!-- File Pendukung - di kiri bawah -->
+          @php
+            $filePendukung = $dataProfil->media->where('sort_order', '>', 1);
+          @endphp
+          <div class="col-12">
+            <div class="field">
+              <label class="label">File Pendukung Tambahan</label>
+
+              {{-- Tampilkan File Pendukung Saat Ini --}}
+              @if($filePendukung->count() > 0)
+                <div class="mb-3">
+                  <p class="text-sm text-muted mb-2">File Pendukung Saat Ini:</p>
+                  <div class="space-y-2">
+                    @foreach($filePendukung as $file)
+                      <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                        <div>
+                          <span class="font-medium block">{{ $file->file_name }}</span>
+                          <small class="text-gray-500">{{ $file->mime_type }}</small>
+                        </div>
+                        <!-- PERBAIKAN: Ganti tag <a> dengan form untuk DELETE method -->
+                        <form action="{{ route('profil.delete-file', ['profil' => $dataProfil->profil_id, 'file' => $file->media_id]) }}"
+                              method="POST"
+                              style="display: inline;">
+                          @csrf
+                          @method('DELETE')
+                          <button type="submit"
+                                  class="button is-small is-danger"
+                                  onclick="return confirm('Yakin ingin menghapus file {{ $file->file_name }}?')">
+                            <span class="icon"><i class="mdi mdi-delete"></i></span>
+                          </button>
+                        </form>
+                      </div>
+                    @endforeach
+                  </div>
+                </div>
+              @endif
+
+              <div class="control">
+                <input class="input @error('file_pendukung') is-danger @enderror"
+                       type="file"
+                       name="file_pendukung[]"
+                       multiple
+                       accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx">
+              </div>
+              <small class="form-text text-muted">
+                Upload file tambahan. Format: JPG, JPEG, PNG, GIF, PDF, DOC, DOCX. Maksimal 5 file.
+              </small>
+              @error('file_pendukung')
                 <p class="help is-danger">{{ $message }}</p>
               @enderror
             </div>

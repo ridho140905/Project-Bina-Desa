@@ -172,59 +172,60 @@
             </div>
         </div>
 
-        <!-- Upload File Pendukung -->
-        <div class="row">
-            <div class="col-12 mb-4">
-                <div class="card-universal">
-                    <div class="card-header-universal">
-                        <h5 class="card-title-universal">
-                            <span class="icon">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
-                                </svg>
-                            </span>
-                            Tambah File Pendukung
-                        </h5>
-                    </div>
-                    <div class="card-body-universal">
-                        <form action="{{ route('profil.update', $dataProfil->profil_id) }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-                            @method('PUT')
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="field-group">
-                                        <label class="form-label-universal">Pilih File</label>
-                                        <div class="control">
-                                            <input class="input-universal @error('file_pendukung') is-danger @enderror"
-                                                   type="file"
-                                                   name="file_pendukung[]"
-                                                   multiple
-                                                   accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx">
-                                        </div>
-                                        <small class="form-text text-muted">
-                                            Format: JPG, JPEG, PNG, GIF, PDF, DOC, DOCX. Maksimal 2MB per file.
-                                        </small>
-                                        @error('file_pendukung')
-                                            <p class="help is-danger">{{ $message }}</p>
-                                        @enderror
-                                    </div>
+      <!-- Upload File Pendukung -->
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card-universal">
+            <div class="card-header-universal">
+                <h5 class="card-title-universal">
+                    <span class="icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+                        </svg>
+                    </span>
+                    Tambah File Pendukung
+                </h5>
+            </div>
+            <div class="card-body-universal">
+                <!-- UBAH ACTION KE ROUTE TERPISAH -->
+                <form action="{{ route('profil.upload-files', $dataProfil->profil_id) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="field-group">
+                                <label class="form-label-universal">Pilih File</label>
+                                <div class="control">
+                                    <input class="input-universal @error('file_pendukung') is-danger @enderror"
+                                           type="file"
+                                           name="file_pendukung[]"
+                                           multiple
+                                           accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx"
+                                           required>
                                 </div>
-                                <div class="col-md-4 d-flex align-items-end">
-                                    <button type="submit" class="btn-success-universal w-100">
-                                        <span class="icon">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
-                                            </svg>
-                                        </span>
-                                        Upload Files
-                                    </button>
-                                </div>
+                                <small class="form-text text-muted">
+                                    Format: JPG, JPEG, PNG, GIF, PDF, DOC, DOCX. Maksimal 2MB per file.
+                                </small>
+                                @error('file_pendukung')
+                                    <p class="help is-danger">{{ $message }}</p>
+                                @enderror
                             </div>
-                        </form>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn-success-universal w-100">
+                                <span class="icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+                                    </svg>
+                                </span>
+                                Upload Files
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
+    </div>
+</div>
 
         <!-- Daftar File Pendukung -->
         <div class="row">

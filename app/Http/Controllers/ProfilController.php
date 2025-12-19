@@ -60,7 +60,7 @@ class ProfilController extends Controller
 
         // Upload foto profil jika ada
         if ($request->hasFile('foto_profil') && $request->file('foto_profil')->isValid()) {
-            $this->uploadFotoProfil($request->file('foto_profil'), $profil->profil_id);
+            $this->uploadFotoProfilFile($request->file('foto_profil'), $profil->profil_id);
         }
 
         // Upload file pendukung jika ada
@@ -113,15 +113,15 @@ class ProfilController extends Controller
         $profil = Profil::findOrFail($id);
         $profil->update($request->all());
 
-        // Upload foto profil baru jika ada
+        // Upload foto profil baru jika ada (hanya jika melalui form edit)
         if ($request->hasFile('foto_profil') && $request->file('foto_profil')->isValid()) {
             // Hapus foto profil lama jika ada
             $this->deleteFotoProfil($profil->profil_id);
             // Upload foto profil baru
-            $this->uploadFotoProfil($request->file('foto_profil'), $profil->profil_id);
+            $this->uploadFotoProfilFile($request->file('foto_profil'), $profil->profil_id);
         }
 
-        // Upload file pendukung baru jika ada
+        // Upload file pendukung baru jika ada (hanya jika melalui form edit)
         if ($request->hasFile('file_pendukung')) {
             $this->uploadFilePendukung($request->file('file_pendukung'), $profil->profil_id);
         }
@@ -145,9 +145,48 @@ class ProfilController extends Controller
     }
 
     /**
-     * Upload foto profil
+     * UPLOAD FOTO PROFIL VIA ROUTE TERPISAH
      */
-    public function uploadFotoProfil($file, $profilId)
+    public function uploadFotoProfil(Request $request, string $id)
+    {
+        $request->validate([
+            'foto_profil' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048'
+        ]);
+
+        $profil = Profil::findOrFail($id);
+
+        // Hapus foto profil lama jika ada
+        $this->deleteFotoProfil($profil->profil_id);
+
+        // Upload foto profil baru
+        $this->uploadFotoProfilFile($request->file('foto_profil'), $profil->profil_id);
+
+        return redirect()->back()->with('success', 'Foto profil berhasil diupload!');
+    }
+
+    /**
+     * UPLOAD FILE PENDUKUNG VIA ROUTE TERPISAH
+     */
+    public function uploadFiles(Request $request, string $id)
+    {
+        $request->validate([
+            'file_pendukung'   => 'required|array',
+            'file_pendukung.*' => 'file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:2048',
+        ]);
+
+        $profil = Profil::findOrFail($id);
+
+        if ($request->hasFile('file_pendukung')) {
+            $this->uploadFilePendukung($request->file('file_pendukung'), $profil->profil_id);
+        }
+
+        return redirect()->back()->with('success', 'File pendukung berhasil diupload!');
+    }
+
+    /**
+     * Helper: Upload foto profil file
+     */
+    private function uploadFotoProfilFile($file, $profilId)
     {
         // Generate unique filename
         $filename = 'foto-profil-' . $profilId . '-' . time() . '.' . $file->getClientOriginalExtension();
@@ -167,11 +206,15 @@ class ProfilController extends Controller
     }
 
     /**
-     * Upload file pendukung
+     * Helper: Upload file pendukung
      */
     private function uploadFilePendukung($files, $profilId)
     {
-        $sortOrder = 2;
+        $sortOrder = Media::where('ref_table', 'profil')
+            ->where('ref_id', $profilId)
+            ->max('sort_order') ?? 1;
+
+        $sortOrder = $sortOrder >= 1 ? $sortOrder + 1 : 2;
 
         foreach ($files as $file) {
             if ($file->isValid()) {
@@ -257,6 +300,6 @@ class ProfilController extends Controller
 
         $file->delete();
 
-        return redirect()->route('profil.show', $profilId)->with('success', 'File berhasil dihapus!');
+        return redirect()->back()->with('success', 'File berhasil dihapus!');
     }
 }

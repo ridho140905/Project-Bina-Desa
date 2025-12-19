@@ -39,10 +39,16 @@ Route::resource('kategoriberita', KategoriBeritaController::class);
 Route::resource('agenda', AgendaController::class);
 Route::resource('galeri', GaleriController::class);
 
-Route::post('/profil/{profil}/upload-files', [ProfilController::class, 'uploadFiles'])->name('profil.upload-files');
-Route::delete('/profil/{profil}/file/{file}', [ProfilController::class, 'deleteFile'])->name('profil.delete-file');
-// routes/web.php
-Route::post('/profil/{id}/upload-foto-profil', [ProfilController::class, 'uploadFotoProfil'])->name('profil.upload-foto-profil');
+
+// Rute tambahan untuk upload file terpisah profil
+Route::post('/profil/{profil}/upload-foto-profil', [ProfilController::class, 'uploadFotoProfil'])
+    ->name('profil.upload-foto-profil');
+
+Route::post('/profil/{profil}/upload-files', [ProfilController::class, 'uploadFiles'])
+    ->name('profil.upload-files');
+
+Route::delete('/profil/{profil}/file/{file}', [ProfilController::class, 'deleteFile'])
+    ->name('profil.delete-file');
 
 // Routes untuk Berita
 Route::resource('berita', BeritaController::class);

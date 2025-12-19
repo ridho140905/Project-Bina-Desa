@@ -496,7 +496,7 @@
                         <!-- Logo Profil Desa -->
                         <img src="{{ asset('assets-admin/img/logoprofildesa.png') }}" alt="Logo Profil Desa" class="login-logo">
                         <!-- Judul dan Subtitle -->
-                        <h1 class="card-header-title">Profil Desa</h1>
+                        <h1 class="card-header-title">Portal Desa</h1>
                     </div>
                 </div>
                 <!-- END MODIFIKASI -->
