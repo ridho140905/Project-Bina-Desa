@@ -460,7 +460,7 @@
 
             <div class="hero-content">
                 <i class="mdi mdi-home-group hero-icon"></i>
-                <h1 class="hero-title">Sistem Bina Desa</h1>
+                <h1 class="hero-title">Sistem Portal Desa</h1>
                 <p class="hero-subtitle">
                     Platform digital untuk mengelola dan memajukan desa secara terintegrasi.
                     Membangun desa yang mandiri, sejahtera, dan berkelanjutan melalui teknologi modern.
