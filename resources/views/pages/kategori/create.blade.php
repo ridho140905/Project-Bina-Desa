@@ -56,14 +56,18 @@
           <div class="col-md-6">
             <div class="field">
               <label class="label">Nama Kategori <span class="text-danger">*</span></label>
-              <div class="control icons-left">
-                <input class="input @error('nama') is-danger @enderror"
-                       type="text"
-                       name="nama"
-                       value="{{ old('nama') }}"
-                       placeholder="Masukkan nama kategori"
-                       required>
-                <span class="icon left"><i class="mdi mdi-tag"></i></span>
+              <div class="control">
+                <div class="input-with-icon">
+                  <input class="input @error('nama') is-danger @enderror"
+                         type="text"
+                         name="nama"
+                         value="{{ old('nama') }}"
+                         placeholder="Masukkan nama kategori"
+                         required>
+                  <span class="input-icon">
+                    <i class="mdi mdi-tag"></i>
+                  </span>
+                </div>
               </div>
               @error('nama')
                 <p class="help is-danger">{{ $message }}</p>
@@ -75,14 +79,18 @@
           <div class="col-md-6">
             <div class="field">
               <label class="label">Slug <span class="text-danger">*</span></label>
-              <div class="control icons-left">
-                <input class="input @error('slug') is-danger @enderror"
-                       type="text"
-                       name="slug"
-                       value="{{ old('slug') }}"
-                       placeholder="nama-kategori-url"
-                       required>
-                <span class="icon left"><i class="mdi mdi-link"></i></span>
+              <div class="control">
+                <div class="input-with-icon">
+                  <input class="input @error('slug') is-danger @enderror"
+                         type="text"
+                         name="slug"
+                         value="{{ old('slug') }}"
+                         placeholder="nama-kategori-url"
+                         required>
+                  <span class="input-icon">
+                    <i class="mdi mdi-link"></i>
+                  </span>
+                </div>
               </div>
               @error('slug')
                 <p class="help is-danger">{{ $message }}</p>
@@ -96,10 +104,15 @@
             <div class="field">
               <label class="label">Deskripsi</label>
               <div class="control">
-                <textarea class="textarea @error('deskripsi') is-danger @enderror"
-                          name="deskripsi"
-                          rows="4"
-                          placeholder="Masukkan deskripsi kategori (opsional)">{{ old('deskripsi') }}</textarea>
+                <div class="textarea-with-icon">
+                  <textarea class="textarea @error('deskripsi') is-danger @enderror"
+                            name="deskripsi"
+                            rows="4"
+                            placeholder="Masukkan deskripsi kategori (opsional)">{{ old('deskripsi') }}</textarea>
+                  <span class="textarea-icon">
+                    <i class="mdi mdi-text"></i>
+                  </span>
+                </div>
               </div>
               @error('deskripsi')
                 <p class="help is-danger">{{ $message }}</p>
@@ -150,11 +163,17 @@
     font-size: 0.875rem;
   }
 
-  .input,
-  .select select,
-  .textarea {
+  /* Input dengan icon - PEletakan yang TEPAT */
+  .input-with-icon,
+  .textarea-with-icon {
+    position: relative;
     width: 100%;
-    padding: 0.75rem 1rem;
+  }
+
+  .input-with-icon .input,
+  .textarea-with-icon .textarea {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.75rem;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     font-size: 14px;
@@ -163,37 +182,57 @@
     font-family: inherit;
   }
 
+  /* Icon untuk input teks */
+  .input-with-icon .input-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    z-index: 2;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  /* Icon untuk textarea */
+  .textarea-with-icon .textarea-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 1.25rem;
+    color: #6b7280;
+    z-index: 2;
+    pointer-events: none;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .textarea-with-icon .textarea {
+    min-height: 120px;
+    resize: vertical;
+    padding-left: 2.75rem !important;
+  }
+
+  /* Focus state */
   .input:focus,
-  .select select:focus,
   .textarea:focus {
     outline: none;
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 
-  /* Textarea styling */
-  .textarea {
-    min-height: 120px;
-    resize: vertical;
-  }
-
-  /* Icons styling untuk input */
-  .control.icons-left {
-    position: relative;
-  }
-
-  .control.icons-left .icon.left {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
+  /* Helper text */
+  .help {
     color: #6b7280;
-    z-index: 2;
-    pointer-events: none;
-  }
-
-  .control.icons-left input {
-    padding-left: 3rem;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: block;
   }
 
   /* Error styling */
@@ -209,13 +248,6 @@
     border-color: #dc2626;
   }
 
-  .help {
-    color: #6b7280;
-    font-size: 0.75rem;
-    margin-top: 0.25rem;
-    display: block;
-  }
-
   /* Button styling */
   .field.grouped {
     display: flex;
@@ -226,25 +258,7 @@
     border-top: 1px solid #e2e8f0;
   }
 
-  .button.green {
-    background-color: #10b981;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
-    font-size: 0.875rem;
-  }
-
-  .button.light {
-    background-color: #f3f4f6;
-    color: #374151;
-    border: 1px solid #d1d5db;
+  .button {
     padding: 0.75rem 1.5rem;
     border-radius: 8px;
     cursor: pointer;
@@ -254,6 +268,19 @@
     font-weight: 500;
     transition: all 0.3s ease;
     font-size: 0.875rem;
+    border: none;
+    text-decoration: none;
+  }
+
+  .button.green {
+    background-color: #10b981;
+    color: white;
+  }
+
+  .button.light {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
   }
 
   .button.green:hover {
@@ -317,6 +344,20 @@
     color: #dc2626;
   }
 
+  /* Notification styling */
+  .notification {
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  .notification.is-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+
   /* Responsive design */
   @media (max-width: 768px) {
     .col-md-6 {
@@ -342,27 +383,15 @@
       padding: 1rem;
     }
 
-    .control.icons-left input {
+    .input-with-icon .input,
+    .textarea-with-icon .textarea {
       padding-left: 2.5rem;
     }
 
-    .control.icons-left .icon.left {
-      left: 0.75rem;
+    .input-with-icon .input-icon,
+    .textarea-with-icon .textarea-icon {
+      left: 0.5rem;
     }
-  }
-
-  /* Notification styling */
-  .notification {
-    margin-bottom: 1.5rem;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 500;
-  }
-
-  .notification.is-danger {
-    background-color: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
   }
 </style>
 

@@ -1,17 +1,16 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Profil;
 use App\Models\Agenda;
 use App\Models\Berita;
 use App\Models\Galeri;
-use App\Models\Warga;
 use App\Models\KategoriBerita;
 use App\Models\Media;
+use App\Models\Profil;
+use App\Models\Warga;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -20,16 +19,16 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        if (!Auth::check()){
+        if (! Auth::check()) {
             return redirect()->route('auth.index');
         }
 
         // Data Statistik Utama
-        $totalProfil = Profil::count();
-        $totalAgenda = Agenda::count();
-        $totalBerita = Berita::count();
-        $totalGaleri = Galeri::count();
-        $totalWarga = Warga::count();
+        $totalProfil         = Profil::count();
+        $totalAgenda         = Agenda::count();
+        $totalBerita         = Berita::count();
+        $totalGaleri         = Galeri::count();
+        $totalWarga          = Warga::count();
         $totalKategoriBerita = KategoriBerita::count();
 
         // Hitung total semua media
@@ -54,16 +53,23 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        $agendaTerbaru = Agenda::where(function($query) {
-                $query->where('tanggal_selesai', '>=', Carbon::now())
-                    ->orWhere('tanggal_mulai', '>=', Carbon::now()->subDays(30));
-            })
+        $agendaTerbaru = Agenda::where(function ($query) {
+            $query->where('tanggal_selesai', '>=', Carbon::now())
+                ->orWhere('tanggal_mulai', '>=', Carbon::now()->subDays(30));
+        })
             ->latest()
             ->take(5)
             ->get();
 
         // Data Berita Terbaru (5 terbaru)
         $beritaTerbaru = Berita::with('kategori')
+            ->select('berita.*')
+            ->selectSub(function ($q) {
+                $q->from('media')
+                    ->selectRaw('COUNT(*)')
+                    ->whereColumn('media.ref_id', 'berita.berita_id')
+                    ->where('media.ref_table', 'berita');
+            }, 'total_media')
             ->latest()
             ->take(5)
             ->get();
@@ -77,7 +83,7 @@ class DashboardController extends Controller
         $galeriTerbaru = Galeri::latest()
             ->take(4)
             ->get()
-            ->map(function($galeri) {
+            ->map(function ($galeri) {
                 // Ambil foto utama dari media jika ada
                 $fotoUtama = Media::where('ref_table', 'galeri')
                     ->where('ref_id', $galeri->galeri_id)
@@ -101,9 +107,9 @@ class DashboardController extends Controller
         foreach ($galeriTerbaru as $galeri) {
             if (isset($galeri->foto_utama_url)) {
                 $slideshowImages[] = [
-                    'url' => $galeri->foto_utama_url,
-                    'title' => $galeri->judul,
-                    'description' => $galeri->deskripsi
+                    'url'         => $galeri->foto_utama_url,
+                    'title'       => $galeri->judul,
+                    'description' => $galeri->deskripsi,
                 ];
             }
         }
@@ -112,15 +118,15 @@ class DashboardController extends Controller
         if (empty($slideshowImages)) {
             $slideshowImages = [
                 [
-                    'url' => 'https://images.unsplash.com/photo-1579033014042-5c7b42c525a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-                    'title' => 'Keindahan Desa Indonesia',
-                    'description' => 'Potret kehidupan masyarakat desa yang harmonis'
+                    'url'         => 'https://images.unsplash.com/photo-1579033014042-5c7b42c525a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+                    'title'       => 'Keindahan Desa Indonesia',
+                    'description' => 'Potret kehidupan masyarakat desa yang harmonis',
                 ],
                 [
-                    'url' => 'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-                    'title' => 'Pertanian Desa',
-                    'description' => 'Kegiatan pertanian sebagai tulang punggung ekonomi desa'
-                ]
+                    'url'         => 'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+                    'title'       => 'Pertanian Desa',
+                    'description' => 'Kegiatan pertanian sebagai tulang punggung ekonomi desa',
+                ],
             ];
         }
 

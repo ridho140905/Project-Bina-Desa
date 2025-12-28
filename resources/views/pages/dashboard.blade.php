@@ -669,7 +669,7 @@ tr:hover {
                 Agenda Aktif
               </h3>
               <h1 class="text-2xl md:text-3xl font-bold text-gray-800">
-                {{ $agendaBerlangsung }}
+                {{ $totalAgenda }}
               </h1>
             </div>
             <span class="icon widget-icon text-blue-500"><i class="mdi mdi-calendar-check mdi-36px md:mdi-48px"></i></span>

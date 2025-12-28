@@ -63,11 +63,13 @@
           <div class="col-md-6">
             <div class="field">
               <label class="label">Nama Lengkap <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <input class="input @error('name') is-danger @enderror" type="text"
                   name="name" value="{{ old('name', $dataUser->name) }}"
                   placeholder="Masukkan nama lengkap" required>
-                <span class="icon left"><i class="mdi mdi-account"></i></span>
+                <span class="icon is-left">
+                  <i class="mdi mdi-account"></i>
+                </span>
               </div>
               @error('name')
                 <p class="help is-danger">{{ $message }}</p>
@@ -76,11 +78,13 @@
 
             <div class="field">
               <label class="label">Email <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <input class="input @error('email') is-danger @enderror" type="email"
                   name="email" value="{{ old('email', $dataUser->email) }}"
                   placeholder="contoh: user@example.com" required>
-                <span class="icon left"><i class="mdi mdi-email"></i></span>
+                <span class="icon is-left">
+                  <i class="mdi mdi-email"></i>
+                </span>
               </div>
               @error('email')
                 <p class="help is-danger">{{ $message }}</p>
@@ -111,12 +115,17 @@
                 </div>
               @endif
 
-              <div class="control icons-left">
+              <div class="control has-icons-left has-icons-right">
                 <input class="input @error('profile_picture') is-danger @enderror"
                        type="file"
                        name="profile_picture"
                        accept="image/*">
-                <span class="icon left"><i class="mdi mdi-camera"></i></span>
+                <span class="icon is-left">
+                  <i class="mdi mdi-camera"></i>
+                </span>
+                <span class="icon is-right file-icon">
+                  <i class="mdi mdi-upload"></i>
+                </span>
               </div>
               @error('profile_picture')
                 <p class="help is-danger">{{ $message }}</p>
@@ -129,7 +138,7 @@
           <div class="col-md-6">
             <div class="field">
               <label class="label">Role <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <div class="select is-fullwidth @error('role') is-danger @enderror">
                   <select name="role" required class="input">
                     <option value="">Pilih Role</option>
@@ -138,7 +147,9 @@
                     <option value="Mitra" {{ old('role', $dataUser->role) == 'Mitra' ? 'selected' : '' }}>Mitra</option>
                   </select>
                 </div>
-                <span class="icon left"><i class="mdi mdi-account-key"></i></span>
+                <span class="icon is-left">
+                  <i class="mdi mdi-account-key"></i>
+                </span>
               </div>
               @error('role')
                 <p class="help is-danger">{{ $message }}</p>
@@ -148,10 +159,12 @@
             <!-- Password -->
             <div class="field">
               <label class="label">Password</label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <input class="input @error('password') is-danger @enderror"
                   type="password" name="password" placeholder="Kosongkan jika tidak ingin mengubah">
-                <span class="icon left"><i class="mdi mdi-lock"></i></span>
+                <span class="icon is-left">
+                  <i class="mdi mdi-lock"></i>
+                </span>
               </div>
               @error('password')
                 <p class="help is-danger">{{ $message }}</p>
@@ -162,11 +175,13 @@
             <!-- Konfirmasi Password -->
             <div class="field">
               <label class="label">Konfirmasi Password</label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <input class="input @error('password_confirmation') is-danger @enderror"
                   type="password" name="password_confirmation"
                   placeholder="Konfirmasi password">
-                <span class="icon left"><i class="mdi mdi-lock-check"></i></span>
+                <span class="icon is-left">
+                  <i class="mdi mdi-lock-check"></i>
+                </span>
               </div>
               @error('password_confirmation')
                 <p class="help is-danger">{{ $message }}</p>
@@ -198,9 +213,15 @@
 </section>
 
 <style>
-  /* Style dasar untuk form */
+  /* Reset dan base styles */
+  * {
+    box-sizing: border-box;
+  }
+
+  /* Field styling */
   .field {
     margin-bottom: 1.5rem;
+    position: relative;
   }
 
   .label {
@@ -211,6 +232,12 @@
     font-size: 0.875rem;
   }
 
+  /* Control container */
+  .control {
+    position: relative;
+  }
+
+  /* Input dan Select base styles */
   .input,
   .select select {
     width: 100%;
@@ -223,6 +250,18 @@
     font-family: inherit;
   }
 
+  /* Input dengan icon kiri */
+  .control.has-icons-left .input,
+  .control.has-icons-left .select select {
+    padding-left: 2.75rem;
+  }
+
+  /* Input file dengan icon kanan */
+  .control.has-icons-right .input[type="file"] {
+    padding-right: 2.75rem;
+  }
+
+  /* Focus state */
   .input:focus,
   .select select:focus {
     outline: none;
@@ -248,14 +287,18 @@
     background-size: 16px;
   }
 
-  /* Icons styling untuk input dan select */
-  .control.icons-left {
-    position: relative;
+  /* Icon positioning */
+  .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
   }
 
-  .control.icons-left .icon.left {
+  .control .icon.is-left {
     position: absolute;
-    left: 1rem;
+    left: 0.75rem;
     top: 50%;
     transform: translateY(-50%);
     color: #6b7280;
@@ -263,18 +306,20 @@
     pointer-events: none;
   }
 
-  /* Khusus untuk select dengan icon */
-  .control.icons-left .select select {
-    padding-left: 3rem;
-  }
-
-  .control.icons-left input {
-    padding-left: 3rem;
+  /* Icon untuk input file di sebelah kanan */
+  .control .icon.is-right.file-icon {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    z-index: 2;
+    pointer-events: none;
   }
 
   /* Error styling */
   .help.is-danger {
-    color: #dc2626;
+    color: #dc3545;
     font-size: 0.75rem;
     margin-top: 0.25rem;
     display: block;
@@ -282,7 +327,15 @@
 
   .input.is-danger,
   .select.is-danger select {
-    border-color: #dc2626;
+    border-color: #dc3545;
+  }
+
+  /* Helper text styling */
+  .help {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+    display: block;
   }
 
   /* Button styling */
@@ -295,25 +348,7 @@
     border-top: 1px solid #e2e8f0;
   }
 
-  .button.green {
-    background-color: #10b981;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
-    font-size: 0.875rem;
-  }
-
-  .button.light {
-    background-color: #f3f4f6;
-    color: #374151;
-    border: 1px solid #d1d5db;
+  .button {
     padding: 0.75rem 1.5rem;
     border-radius: 8px;
     cursor: pointer;
@@ -323,6 +358,19 @@
     font-weight: 500;
     transition: all 0.3s ease;
     font-size: 0.875rem;
+    border: none;
+    text-decoration: none;
+  }
+
+  .button.green {
+    background-color: #10b981;
+    color: white;
+  }
+
+  .button.light {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
   }
 
   .button.green:hover {
@@ -448,6 +496,41 @@
     flex: 1;
   }
 
+  /* File input khusus styling */
+  input[type="file"] {
+    padding: 0.75rem;
+    border: 2px dashed #e2e8f0;
+    background-color: #f8fafc;
+    cursor: pointer;
+    width: 100%;
+    color: #6b7280;
+  }
+
+  input[type="file"]:hover {
+    border-color: #3b82f6;
+    background-color: #f0f9ff;
+  }
+
+  /* Notification styling */
+  .notification {
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  .notification.is-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+
+  .notification.is-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+
   /* Responsive design */
   @media (max-width: 768px) {
     .col-md-6 {
@@ -484,24 +567,17 @@
     }
   }
 
-  /* Notification styling */
-  .notification {
-    margin-bottom: 1.5rem;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 500;
+  /* Konsistensi tinggi untuk input dan select dengan ikon */
+  .control.has-icons-left,
+  .control.has-icons-right {
+    display: block;
   }
 
-  .notification.is-success {
-    background-color: #d1fae5;
-    color: #065f46;
-    border: 1px solid #a7f3d0;
-  }
-
-  .notification.is-danger {
-    background-color: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
+  .control.has-icons-left .icon.is-left,
+  .control.has-icons-right .icon.is-right {
+    height: 100%;
+    display: flex;
+    align-items: center;
   }
 </style>
 @endsection

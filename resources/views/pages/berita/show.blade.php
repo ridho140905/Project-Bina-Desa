@@ -189,9 +189,9 @@
                         </h5>
                     </div>
                     <div class="card-body-universal">
-                        <form action="{{ route('berita.update', $berita->berita_id) }}" method="POST" enctype="multipart/form-data">
+                        <!-- PERBAIKAN: Gunakan route khusus untuk upload gambar pendukung -->
+                        <form action="{{ route('berita.upload.gambar.pendukung', $berita->berita_id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            @method('PUT')
                             <div class="row">
                                 <div class="col-md-8">
                                     <div class="field-group">

@@ -60,7 +60,7 @@ Route::delete('berita/{berita}/file/{file}', [BeritaController::class, 'deleteFi
 // Route untuk upload gambar tambahan (jika diperlukan terpisah)
 Route::post('berita/{berita}/upload-gambar', [BeritaController::class, 'uploadGambar'])
     ->name('berita.upload-gambar');
-
+Route::post('/berita/{berita}/upload-gambar', [BeritaController::class, 'uploadGambarPendukungFiles'])->name('berita.upload.gambar.pendukung');
     // route agenda
 Route::delete('agenda/{agenda}/file/{file}', [AgendaController::class, 'deleteFile'])
     ->name('agenda.delete-file');

@@ -104,7 +104,7 @@
                                 <th>EMAIL</th>
                                 <th>PASSWORD</th>
                                 <th>ROLE</th>
-                                <th class="text-center">AKSI</th>
+                                <th class="text-left">AKSI</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -121,7 +121,7 @@
                                         </span>
                                     </td>
                                     <td>{{ $item->role }}</td>
-                                    <td class="text-center">
+                                    <td class="text-left">
                                         <div class="action-buttons">
                                             <a href="{{ route('user.edit', $item->id) }}" class="btn btn-edit" title="Edit User">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -228,7 +228,7 @@
 .action-buttons {
     display: flex;
     gap: 8px;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     min-height: 40px;
 }
@@ -480,17 +480,18 @@
     margin-bottom: 16px;
 }
 
-/* Memastikan kolom aksi memiliki width yang konsisten */
-.universal-table th.text-center:last-child,
-.universal-table td.text-center:last-child {
-    width: 140px;
-    min-width: 140px;
-    max-width: 140px;
+/* KOLOM AKSI - PERBAIKAN UTAMA */
+.universal-table th.text-left,
+.universal-table td.text-left {
+    text-align: left !important;
+    padding-left: 16px !important;
 }
 
-/* Memastikan tombol tetap sejajar di semua kondisi */
-.universal-table tbody td.text-center {
-    vertical-align: middle !important;
+/* Pastikan semua sel di kolom aksi rata kiri */
+.universal-table td:last-child {
+    text-align: left !important;
+    padding-left: 16px !important;
+    vertical-align: middle;
 }
 
 /* Responsive styles */
@@ -536,6 +537,13 @@
         height: 36px;
         padding: 6px;
     }
+
+    /* Kolom aksi tetap rata kiri di mobile */
+    .universal-table th.text-left,
+    .universal-table td.text-left {
+        text-align: left !important;
+        padding-left: 12px !important;
+    }
 }
 
 /* Responsive Design */
@@ -554,6 +562,7 @@
     .action-buttons {
         flex-direction: row;
         gap: 8px;
+        justify-content: flex-start;
     }
 }
 </style>

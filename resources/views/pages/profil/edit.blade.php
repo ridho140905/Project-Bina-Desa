@@ -28,12 +28,6 @@
 </section>
 
 <section class="section main-section">
-  @if (session('success'))
-    <div class="notification is-success">
-      {{ session('success') }}
-    </div>
-  @endif
-
   @if ($errors->any())
     <div class="notification is-danger">
       <strong>Error!</strong> Terdapat kesalahan dalam pengisian form:
@@ -42,6 +36,13 @@
           <li>{{ $error }}</li>
         @endforeach
       </ul>
+    </div>
+  @endif
+
+  @if (session('success'))
+    <div class="notification is-success">
+      <i class="mdi mdi-check-circle"></i>
+      {{ session('success') }}
     </div>
   @endif
 
@@ -62,14 +63,13 @@
           <div class="col-md-6">
             <div class="field">
               <label class="label">Nama Desa <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <input class="input @error('nama_desa') is-danger @enderror"
-                       type="text"
-                       name="nama_desa"
-                       value="{{ old('nama_desa', $dataProfil->nama_desa) }}"
-                       placeholder="Masukkan nama desa"
-                       required>
-                <span class="icon left"><i class="mdi mdi-home"></i></span>
+                       type="text" name="nama_desa" value="{{ old('nama_desa', $dataProfil->nama_desa) }}"
+                       placeholder="Masukkan nama desa" required>
+                <span class="icon is-left">
+                  <i class="mdi mdi-home"></i>
+                </span>
               </div>
               @error('nama_desa')
                 <p class="help is-danger">{{ $message }}</p>
@@ -78,14 +78,13 @@
 
             <div class="field">
               <label class="label">Kecamatan <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <input class="input @error('kecamatan') is-danger @enderror"
-                       type="text"
-                       name="kecamatan"
-                       value="{{ old('kecamatan', $dataProfil->kecamatan) }}"
-                       placeholder="Masukkan nama kecamatan"
-                       required>
-                <span class="icon left"><i class="mdi mdi-map-marker"></i></span>
+                       type="text" name="kecamatan" value="{{ old('kecamatan', $dataProfil->kecamatan) }}"
+                       placeholder="Masukkan nama kecamatan" required>
+                <span class="icon is-left">
+                  <i class="mdi mdi-map-marker"></i>
+                </span>
               </div>
               @error('kecamatan')
                 <p class="help is-danger">{{ $message }}</p>
@@ -94,14 +93,13 @@
 
             <div class="field">
               <label class="label">Kabupaten <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <input class="input @error('kabupaten') is-danger @enderror"
-                       type="text"
-                       name="kabupaten"
-                       value="{{ old('kabupaten', $dataProfil->kabupaten) }}"
-                       placeholder="Masukkan nama kabupaten"
-                       required>
-                <span class="icon left"><i class="mdi mdi-city"></i></span>
+                       type="text" name="kabupaten" value="{{ old('kabupaten', $dataProfil->kabupaten) }}"
+                       placeholder="Masukkan nama kabupaten" required>
+                <span class="icon is-left">
+                  <i class="mdi mdi-city"></i>
+                </span>
               </div>
               @error('kabupaten')
                 <p class="help is-danger">{{ $message }}</p>
@@ -110,116 +108,96 @@
 
             <div class="field">
               <label class="label">Provinsi <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <input class="input @error('provinsi') is-danger @enderror"
-                       type="text"
-                       name="provinsi"
-                       value="{{ old('provinsi', $dataProfil->provinsi) }}"
-                       placeholder="Masukkan nama provinsi"
-                       required>
-                <span class="icon left"><i class="mdi mdi-earth"></i></span>
+                       type="text" name="provinsi" value="{{ old('provinsi', $dataProfil->provinsi) }}"
+                       placeholder="Masukkan nama provinsi" required>
+                <span class="icon is-left">
+                  <i class="mdi mdi-earth"></i>
+                </span>
               </div>
               @error('provinsi')
                 <p class="help is-danger">{{ $message }}</p>
               @enderror
             </div>
 
-            <!-- Visi - di kiri bawah -->
-            <div class="field">
-              <label class="label">Visi <span class="text-danger">*</span></label>
-              <div class="control icons-left">
-                <textarea class="textarea @error('visi') is-danger @enderror"
-                          name="visi"
-                          rows="4"
-                          placeholder="Tuliskan visi desa"
-                          required>{{ old('visi', $dataProfil->visi) }}</textarea>
-                <span class="icon left"><i class="mdi mdi-target"></i></span>
-              </div>
-              @error('visi')
-                <p class="help is-danger">{{ $message }}</p>
-              @enderror
-            </div>
-          </div>
-
-          <!-- Kolom Kanan - Informasi Kontak & Foto Profil -->
-          <div class="col-md-6">
             <div class="field">
               <label class="label">Telepon <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <input class="input @error('telepon') is-danger @enderror"
-                       type="text"
-                       name="telepon"
-                       value="{{ old('telepon', $dataProfil->telepon) }}"
-                       placeholder="Contoh: 081234567890"
-                       required>
-                <span class="icon left"><i class="mdi mdi-phone"></i></span>
+                       type="text" name="telepon" value="{{ old('telepon', $dataProfil->telepon) }}"
+                       placeholder="Contoh: 081234567890" required>
+                <span class="icon is-left">
+                  <i class="mdi mdi-phone"></i>
+                </span>
               </div>
               @error('telepon')
                 <p class="help is-danger">{{ $message }}</p>
               @enderror
             </div>
+          </div>
 
+          <!-- Kolom Kanan - Informasi Kontak & Visi/Misi -->
+          <div class="col-md-6">
             <div class="field">
               <label class="label">Email <span class="text-danger">*</span></label>
-              <div class="control icons-left">
-                <input class="input @error('email') is-danger @enderror"
-                       type="email"
-                       name="email"
-                       value="{{ old('email', $dataProfil->email) }}"
-                       placeholder="contoh: desa@example.com"
-                       required>
-                <span class="icon left"><i class="mdi mdi-email"></i></span>
+              <div class="control has-icons-left">
+                <input class="input @error('email') is-danger @enderror" type="email"
+                       name="email" value="{{ old('email', $dataProfil->email) }}"
+                       placeholder="contoh: desa@example.com" required>
+                <span class="icon is-left">
+                  <i class="mdi mdi-email"></i>
+                </span>
               </div>
               @error('email')
                 <p class="help is-danger">{{ $message }}</p>
               @enderror
             </div>
 
-            <!-- Foto Profil - di kanan -->
+            <!-- Upload Foto Profil -->
             @php
               $fotoProfil = $dataProfil->media->where('sort_order', 1)->first();
             @endphp
             <div class="field">
               <label class="label">Foto Profil</label>
 
-              {{-- Preview Foto Saat Ini --}}
               @if($fotoProfil)
                 <div class="mb-3">
                   <p class="text-sm text-muted mb-2">Foto Saat Ini:</p>
-                  <div class="flex items-start gap-4">
+                  <div class="d-flex align-items-center mb-3">
                     <img src="{{ asset('storage/media/profil/' . $fotoProfil->file_name) }}"
                          alt="Foto Profil {{ $dataProfil->nama_desa }}"
-                         class="profile-img-preview rounded-lg border">
-                    <div class="flex-1">
-                      <p class="font-medium mb-1">{{ $fotoProfil->file_name }}</p>
-                      <small class="text-gray-500 block mb-2">{{ $fotoProfil->mime_type }}</small>
-                      <!-- PERBAIKAN: Ganti tag <a> dengan form untuk DELETE method -->
-                      <form action="{{ route('profil.delete-file', ['profil' => $dataProfil->profil_id, 'file' => $fotoProfil->media_id]) }}"
-                            method="POST"
-                            style="display: inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
-                                class="button is-small is-danger"
-                                onclick="return confirm('Yakin ingin menghapus foto profil ini?')">
-                          <span class="icon"><i class="mdi mdi-delete"></i></span>
-                          <span>Hapus Foto</span>
-                        </button>
-                      </form>
+                         class="profile-img-preview rounded me-3"
+                         onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="no-image-preview" style="display: none;">
+                      <div class="no-image-placeholder">
+                        <i class="mdi mdi-image-off"></i>
+                      </div>
+                    </div>
+                    <div>
+                      <p class="text-sm mb-1">{{ $fotoProfil->file_name }}</p>
+                      <small class="text-muted d-block">{{ $fotoProfil->mime_type }}</small>
                     </div>
                   </div>
                 </div>
               @else
                 <div class="mb-3">
-                  <p class="text-sm text-muted">Belum ada foto profil</p>
+                  <p class="text-sm text-muted mb-2">Belum ada foto profil</p>
+                  <div class="no-image-placeholder mb-3">
+                    <i class="mdi mdi-image-off"></i>
+                  </div>
                 </div>
               @endif
 
-              <div class="control">
+              <div class="control has-icons-left has-icons-right">
                 <input class="input @error('foto_profil') is-danger @enderror"
-                       type="file"
-                       name="foto_profil"
-                       accept="image/*">
+                       type="file" name="foto_profil" accept="image/*">
+                <span class="icon is-left">
+                  <i class="mdi mdi-image"></i>
+                </span>
+                <span class="icon is-right file-icon">
+                  <i class="mdi mdi-upload"></i>
+                </span>
               </div>
               <small class="form-text text-muted">
                 Biarkan kosong jika tidak ingin mengubah foto. Format: JPG, JPEG, PNG, GIF. Maksimal 2MB.
@@ -229,89 +207,54 @@
               @enderror
             </div>
 
-            <!-- Misi - di kanan bawah -->
-            <div class="field">
-              <label class="label">Misi <span class="text-danger">*</span></label>
-              <div class="control icons-left">
-                <textarea class="textarea @error('misi') is-danger @enderror"
-                          name="misi"
-                          rows="4"
-                          placeholder="Tuliskan misi desa"
-                          required>{{ old('misi', $dataProfil->misi) }}</textarea>
-                <span class="icon left"><i class="mdi mdi-bullseye-arrow"></i></span>
+            <!-- Visi & Misi Side by Side -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="field">
+                  <label class="label">Visi <span class="text-danger">*</span></label>
+                  <div class="control has-icons-left">
+                    <textarea class="textarea @error('visi') is-danger @enderror" name="visi" rows="5"
+                              placeholder="Tuliskan visi desa" required>{{ old('visi', $dataProfil->visi) }}</textarea>
+                    <span class="icon is-left">
+                      <i class="mdi mdi-target"></i>
+                    </span>
+                  </div>
+                  @error('visi')
+                    <p class="help is-danger">{{ $message }}</p>
+                  @enderror
+                </div>
               </div>
-              @error('misi')
-                <p class="help is-danger">{{ $message }}</p>
-              @enderror
+
+              <div class="col-md-6">
+                <div class="field">
+                  <label class="label">Misi <span class="text-danger">*</span></label>
+                  <div class="control has-icons-left">
+                    <textarea class="textarea @error('misi') is-danger @enderror" name="misi" rows="5"
+                              placeholder="Tuliskan misi desa" required>{{ old('misi', $dataProfil->misi) }}</textarea>
+                    <span class="icon is-left">
+                      <i class="mdi mdi-bullseye-arrow"></i>
+                    </span>
+                  </div>
+                  @error('misi')
+                    <p class="help is-danger">{{ $message }}</p>
+                  @enderror
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Alamat Kantor - Full Width -->
+          <!-- Kolom Bawah Full Width - Alamat Kantor -->
           <div class="col-12">
             <div class="field">
               <label class="label">Alamat Kantor <span class="text-danger">*</span></label>
-              <div class="control icons-left">
-                <textarea class="textarea @error('alamat_kantor') is-danger @enderror"
-                          name="alamat_kantor"
-                          rows="3"
-                          placeholder="Masukkan alamat lengkap kantor desa"
-                          required>{{ old('alamat_kantor', $dataProfil->alamat_kantor) }}</textarea>
-                <span class="icon left"><i class="mdi mdi-office-building"></i></span>
+              <div class="control has-icons-left">
+                <textarea class="textarea @error('alamat_kantor') is-danger @enderror" name="alamat_kantor" rows="3"
+                          placeholder="Masukkan alamat lengkap kantor desa" required>{{ old('alamat_kantor', $dataProfil->alamat_kantor) }}</textarea>
+                <span class="icon is-left">
+                  <i class="mdi mdi-office-building"></i>
+                </span>
               </div>
               @error('alamat_kantor')
-                <p class="help is-danger">{{ $message }}</p>
-              @enderror
-            </div>
-          </div>
-
-          <!-- File Pendukung - di kiri bawah -->
-          @php
-            $filePendukung = $dataProfil->media->where('sort_order', '>', 1);
-          @endphp
-          <div class="col-12">
-            <div class="field">
-              <label class="label">File Pendukung Tambahan</label>
-
-              {{-- Tampilkan File Pendukung Saat Ini --}}
-              @if($filePendukung->count() > 0)
-                <div class="mb-3">
-                  <p class="text-sm text-muted mb-2">File Pendukung Saat Ini:</p>
-                  <div class="space-y-2">
-                    @foreach($filePendukung as $file)
-                      <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
-                        <div>
-                          <span class="font-medium block">{{ $file->file_name }}</span>
-                          <small class="text-gray-500">{{ $file->mime_type }}</small>
-                        </div>
-                        <!-- PERBAIKAN: Ganti tag <a> dengan form untuk DELETE method -->
-                        <form action="{{ route('profil.delete-file', ['profil' => $dataProfil->profil_id, 'file' => $file->media_id]) }}"
-                              method="POST"
-                              style="display: inline;">
-                          @csrf
-                          @method('DELETE')
-                          <button type="submit"
-                                  class="button is-small is-danger"
-                                  onclick="return confirm('Yakin ingin menghapus file {{ $file->file_name }}?')">
-                            <span class="icon"><i class="mdi mdi-delete"></i></span>
-                          </button>
-                        </form>
-                      </div>
-                    @endforeach
-                  </div>
-                </div>
-              @endif
-
-              <div class="control">
-                <input class="input @error('file_pendukung') is-danger @enderror"
-                       type="file"
-                       name="file_pendukung[]"
-                       multiple
-                       accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx">
-              </div>
-              <small class="form-text text-muted">
-                Upload file tambahan. Format: JPG, JPEG, PNG, GIF, PDF, DOC, DOCX. Maksimal 5 file.
-              </small>
-              @error('file_pendukung')
                 <p class="help is-danger">{{ $message }}</p>
               @enderror
             </div>
@@ -324,6 +267,12 @@
                 <button type="submit" class="button green">
                   <span class="icon"><i class="mdi mdi-content-save"></i></span>
                   <span>Update Data</span>
+                </button>
+              </div>
+              <div class="control">
+                <button type="reset" class="button light">
+                  <span class="icon"><i class="mdi mdi-refresh"></i></span>
+                  <span>Reset Form</span>
                 </button>
               </div>
               <div class="control">
@@ -373,27 +322,67 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 
-  .textarea {
-    resize: vertical;
-    min-height: 120px;
+  /* Style khusus untuk input file */
+  input[type="file"] {
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border: 1px dashed #dee2e6;
+    cursor: pointer;
   }
 
-  /* Icons styling */
-  .control.icons-left {
+  input[type="file"]:focus {
+    border-color: #3b82f6;
+    border-style: solid;
+  }
+
+  /* Textarea styling */
+  .textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  /* Icons styling untuk input */
+  .control.has-icons-left {
     position: relative;
   }
 
-  .control.icons-left .icon.left {
+  .control.has-icons-left .icon.is-left {
     position: absolute;
-    left: 1rem;
-    top: 1rem;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
     color: #6b7280;
-    z-index: 1;
+    z-index: 2;
+    pointer-events: none;
   }
 
-  .control.icons-left input,
-  .control.icons-left textarea {
-    padding-left: 3rem;
+  /* Icon untuk textarea perlu diatur secara khusus */
+  .control.has-icons-left .textarea + .icon.is-left {
+    top: 1.25rem;
+    transform: none;
+    align-items: flex-start;
+  }
+
+  /* Icon untuk input file di sebelah kanan */
+  .control.has-icons-right .icon.is-right.file-icon {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* Input dengan icon kiri */
+  .control.has-icons-left .input,
+  .control.has-icons-left .textarea {
+    padding-left: 2.75rem;
+  }
+
+  /* Input file dengan icon kanan */
+  .control.has-icons-right .input[type="file"] {
+    padding-right: 2.75rem;
   }
 
   /* Helper text */
@@ -417,6 +406,13 @@
     border-color: #dc3545;
   }
 
+  .help {
+    color: #6b7280;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: block;
+  }
+
   /* Button styling */
   .field.grouped {
     display: flex;
@@ -427,25 +423,7 @@
     border-top: 1px solid #e2e8f0;
   }
 
-  .button.green {
-    background-color: #10b981;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
-    font-size: 0.875rem;
-  }
-
-  .button.light {
-    background-color: #f3f4f6;
-    color: #374151;
-    border: 1px solid #d1d5db;
+  .button {
     padding: 0.75rem 1.5rem;
     border-radius: 8px;
     cursor: pointer;
@@ -455,17 +433,20 @@
     font-weight: 500;
     transition: all 0.3s ease;
     font-size: 0.875rem;
+    text-decoration: none;
+    border: 1px solid transparent;
   }
 
-  .button.is-danger {
-    background-color: #ef4444;
+  .button.green {
+    background-color: #10b981;
     color: white;
     border: none;
   }
 
-  .button.is-small {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.75rem;
+  .button.light {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
   }
 
   .button.green:hover {
@@ -474,10 +455,6 @@
 
   .button.light:hover {
     background-color: #e5e7eb;
-  }
-
-  .button.is-danger:hover {
-    background-color: #dc2626;
   }
 
   /* Row and column styling */
@@ -533,86 +510,92 @@
     color: #dc2626;
   }
 
-  /* Image preview styling */
-  .profile-img-preview {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    border: 2px solid #e2e8f0;
+  /* Notification styling */
+  .notification {
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.5rem;
     border-radius: 8px;
-  }
-
-  .text-sm {
-    font-size: 0.875rem;
-  }
-
-  /* Utility classes */
-  .flex {
-    display: flex;
-  }
-
-  .items-center {
-    align-items: center;
-  }
-
-  .items-start {
-    align-items: flex-start;
-  }
-
-  .justify-between {
-    justify-content: space-between;
-  }
-
-  .gap-4 {
-    gap: 1rem;
-  }
-
-  .space-y-2 > * + * {
-    margin-top: 0.5rem;
-  }
-
-  .mb-1 {
-    margin-bottom: 0.25rem;
-  }
-
-  .mb-2 {
-    margin-bottom: 0.5rem;
-  }
-
-  .mb-3 {
-    margin-bottom: 1rem;
-  }
-
-  .p-3 {
-    padding: 0.75rem;
-  }
-
-  .bg-gray-50 {
-    background-color: #f9fafb;
-  }
-
-  .rounded {
-    border-radius: 0.375rem;
-  }
-
-  .rounded-lg {
-    border-radius: 0.5rem;
-  }
-
-  .border {
-    border: 1px solid #e5e7eb;
-  }
-
-  .block {
-    display: block;
-  }
-
-  .font-medium {
     font-weight: 500;
   }
 
-  .text-gray-500 {
-    color: #6b7280;
+  .notification.is-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+
+  .notification.is-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+
+  .notification.is-success i {
+    margin-right: 0.5rem;
+  }
+
+  /* Image preview styling */
+  .profile-img-preview {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    display: block;
+  }
+
+  .text-sm {
+    font-size: 14px;
+  }
+
+  .no-image-placeholder {
+    width: 150px;
+    height: 150px;
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-size: 48px;
+  }
+
+  /* Bootstrap-like utility classes */
+  .d-flex {
+    display: flex !important;
+  }
+
+  .align-items-center {
+    align-items: center !important;
+  }
+
+  .me-3 {
+    margin-right: 1rem !important;
+  }
+
+  .mb-1 {
+    margin-bottom: 0.25rem !important;
+  }
+
+  .mb-2 {
+    margin-bottom: 0.5rem !important;
+  }
+
+  .mb-3 {
+    margin-bottom: 1rem !important;
+  }
+
+  .bg-light {
+    background-color: #f8f9fa !important;
+  }
+
+  .rounded {
+    border-radius: 0.375rem !important;
+  }
+
+  .d-block {
+    display: block !important;
   }
 
   /* Responsive design */
@@ -641,48 +624,47 @@
     }
 
     .profile-img-preview {
-      width: 100px;
-      height: 100px;
+      width: 120px;
+      height: 120px;
     }
 
-    .flex.items-start.gap-4 {
+    .d-flex.align-items-center.mb-3 {
       flex-direction: column;
-      gap: 1rem;
+      align-items: flex-start;
     }
-  }
 
-  /* Specific styling for file inputs */
-  input[type="file"] {
-    padding: 0.5rem;
-    border: 2px dashed #e2e8f0;
-    background-color: #f8fafc;
-    cursor: pointer;
-    width: 100%;
-  }
-
-  input[type="file"]:hover {
-    border-color: #3b82f6;
-    background-color: #f0f9ff;
-  }
-
-  /* Notification styling */
-  .notification {
-    margin-bottom: 1.5rem;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 500;
-  }
-
-  .notification.is-success {
-    background-color: #d1fae5;
-    color: #065f46;
-    border: 1px solid #a7f3d0;
-  }
-
-  .notification.is-danger {
-    background-color: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
+    .d-flex.align-items-center.mb-3 img,
+    .d-flex.align-items-center.mb-3 .no-image-preview {
+      margin-bottom: 0.5rem;
+    }
   }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Validasi ukuran file foto profil
+    const fotoProfilInput = document.querySelector('input[name="foto_profil"]');
+
+    if (fotoProfilInput) {
+        fotoProfilInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                const file = this.files[0];
+                const maxSize = 2 * 1024 * 1024; // 2MB
+
+                if (file.size > maxSize) {
+                    alert('Ukuran file maksimal 2MB');
+                    this.value = '';
+                }
+
+                // Validasi tipe file
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Format file harus JPG, JPEG, PNG, atau GIF');
+                    this.value = '';
+                }
+            }
+        });
+    }
+});
+</script>
 @endsection

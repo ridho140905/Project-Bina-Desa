@@ -5,6 +5,7 @@ use App\Models\Media;
 use App\Models\Profil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class ProfilController extends Controller
 {
@@ -12,19 +13,23 @@ class ProfilController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-{
-    // Daftar kolom yang bisa difilter sesuai name pada form
-    $filterableColumns = ['provinsi'];
-    $searchableColumns = ['nama_desa', 'kecamatan', 'kabupaten'];
+    {
+        // Daftar kolom yang bisa difilter sesuai name pada form
+        $filterableColumns = ['provinsi'];
+        $searchableColumns = ['nama_desa', 'kecamatan', 'kabupaten'];
 
-    // Gunakan scope filter untuk memproses query
-    $data['dataProfil'] = Profil::filter($request, $filterableColumns)
-        ->search($request, $searchableColumns)
-        ->paginate(10)
-        ->withQueryString();
+        // Gunakan scope filter untuk memproses query
+        $data['dataProfil'] = Profil::filter($request, $filterableColumns)
+            ->search($request, $searchableColumns)
+            ->with(['media' => function($query) {
+                $query->orderBy('sort_order');
+            }])
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
-    return view('pages.profil.index', $data);
-}
+        return view('pages.profil.index', $data);
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -39,36 +44,46 @@ class ProfilController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi data
-        $request->validate([
-            'nama_desa'        => 'required|string|max:255',
-            'kecamatan'        => 'required|string|max:255',
-            'kabupaten'        => 'required|string|max:255',
-            'provinsi'         => 'required|string|max:255',
-            'telepon'          => 'required|string|max:20',
-            'email'            => 'required|email|max:255',
-            'alamat_kantor'    => 'required|string',
-            'visi'             => 'required|string',
-            'misi'             => 'required|string',
-            'foto_profil'      => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'file_pendukung'   => 'nullable|array',
-            'file_pendukung.*' => 'file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:2048',
-        ]);
+        try {
+            DB::beginTransaction();
 
-        // Simpan data profil
-        $profil = Profil::create($request->all());
+            // Validasi data
+            $request->validate([
+                'nama_desa'        => 'required|string|max:255',
+                'kecamatan'        => 'required|string|max:255',
+                'kabupaten'        => 'required|string|max:255',
+                'provinsi'         => 'required|string|max:255',
+                'telepon'          => 'required|string|max:20',
+                'email'            => 'required|email|max:255',
+                'alamat_kantor'    => 'required|string',
+                'visi'             => 'required|string',
+                'misi'             => 'required|string',
+                'foto_profil'      => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+                'file_pendukung'   => 'nullable|array',
+                'file_pendukung.*' => 'file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:2048',
+            ]);
 
-        // Upload foto profil jika ada
-        if ($request->hasFile('foto_profil') && $request->file('foto_profil')->isValid()) {
-            $this->uploadFotoProfilFile($request->file('foto_profil'), $profil->profil_id);
+            // Simpan data profil
+            $profil = Profil::create($request->all());
+
+            // Upload foto profil jika ada
+            if ($request->hasFile('foto_profil') && $request->file('foto_profil')->isValid()) {
+                $this->uploadFotoProfil($request->file('foto_profil'), $profil->profil_id);
+            }
+
+            // Upload file pendukung jika ada
+            if ($request->hasFile('file_pendukung')) {
+                $this->uploadFilePendukung($request->file('file_pendukung'), $profil->profil_id);
+            }
+
+            DB::commit();
+
+            return redirect()->route('profil.index')->with('success', 'Penambahan Data Berhasil!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
-
-        // Upload file pendukung jika ada
-        if ($request->hasFile('file_pendukung')) {
-            $this->uploadFilePendukung($request->file('file_pendukung'), $profil->profil_id);
-        }
-
-        return redirect()->route('profil.index')->with('success', 'Penambahan Data Berhasil!');
     }
 
     /**
@@ -76,7 +91,11 @@ class ProfilController extends Controller
      */
     public function show(string $id)
     {
-        $data['dataProfil'] = Profil::with('media')->findOrFail($id);
+        $data['dataProfil'] = Profil::with(['media' => function($query) {
+            $query->where('ref_table', 'profil')
+                  ->orderBy('sort_order');
+        }])->findOrFail($id);
+
         return view('pages.profil.show', $data);
     }
 
@@ -85,7 +104,11 @@ class ProfilController extends Controller
      */
     public function edit(string $id)
     {
-        $data['dataProfil'] = Profil::with('media')->findOrFail($id);
+        $data['dataProfil'] = Profil::with(['media' => function($query) {
+            $query->where('ref_table', 'profil')
+                  ->orderBy('sort_order');
+        }])->findOrFail($id);
+
         return view('pages.profil.edit', $data);
     }
 
@@ -94,39 +117,62 @@ class ProfilController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Validasi data
-        $request->validate([
-            'nama_desa'        => 'required|string|max:255',
-            'kecamatan'        => 'required|string|max:255',
-            'kabupaten'        => 'required|string|max:255',
-            'provinsi'         => 'required|string|max:255',
-            'telepon'          => 'required|string|max:20',
-            'email'            => 'required|email|max:255',
-            'alamat_kantor'    => 'required|string',
-            'visi'             => 'required|string',
-            'misi'             => 'required|string',
-            'foto_profil'      => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'file_pendukung'   => 'nullable|array',
-            'file_pendukung.*' => 'file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:2048',
-        ]);
+        try {
+            DB::beginTransaction();
 
-        $profil = Profil::findOrFail($id);
-        $profil->update($request->all());
+            // Validasi data
+            $request->validate([
+                'nama_desa'        => 'required|string|max:255',
+                'kecamatan'        => 'required|string|max:255',
+                'kabupaten'        => 'required|string|max:255',
+                'provinsi'         => 'required|string|max:255',
+                'telepon'          => 'required|string|max:20',
+                'email'            => 'required|email|max:255',
+                'alamat_kantor'    => 'required|string',
+                'visi'             => 'required|string',
+                'misi'             => 'required|string',
+                'foto_profil'      => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            ]);
 
-        // Upload foto profil baru jika ada (hanya jika melalui form edit)
-        if ($request->hasFile('foto_profil') && $request->file('foto_profil')->isValid()) {
-            // Hapus foto profil lama jika ada
-            $this->deleteFotoProfil($profil->profil_id);
-            // Upload foto profil baru
-            $this->uploadFotoProfilFile($request->file('foto_profil'), $profil->profil_id);
+            $profil = Profil::findOrFail($id);
+            $profil->update($request->all());
+
+            // Upload foto profil baru jika ada
+            if ($request->hasFile('foto_profil') && $request->file('foto_profil')->isValid()) {
+                // Hapus foto profil lama jika ada
+                $this->deleteFotoProfil($profil->profil_id);
+                // Upload foto profil baru
+                $this->uploadFotoProfil($request->file('foto_profil'), $profil->profil_id);
+            }
+
+            // Handle delete file tertentu jika ada request delete_files
+            if ($request->has('delete_files')) {
+                foreach ($request->delete_files as $fileId) {
+                    $file = Media::where('media_id', $fileId)
+                        ->where('ref_table', 'profil')
+                        ->where('ref_id', $profil->profil_id)
+                        ->first();
+
+                    if ($file && $file->sort_order != 1) { // Jangan hapus foto profil (sort_order = 1)
+                        // Tentukan path berdasarkan sort_order
+                        if ($file->sort_order == 1) {
+                            Storage::disk('public')->delete('media/profil/' . $file->file_name);
+                        } else {
+                            Storage::disk('public')->delete('media/profil/files/' . $file->file_name);
+                        }
+                        $file->delete();
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('profil.index')->with('success', 'Data Berhasil Diupdate!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal mengupdate data: ' . $e->getMessage());
         }
-
-        // Upload file pendukung baru jika ada (hanya jika melalui form edit)
-        if ($request->hasFile('file_pendukung')) {
-            $this->uploadFilePendukung($request->file('file_pendukung'), $profil->profil_id);
-        }
-
-        return redirect()->route('profil.index')->with('success', 'Data Berhasil Diupdate!');
     }
 
     /**
@@ -134,34 +180,54 @@ class ProfilController extends Controller
      */
     public function destroy(string $id)
     {
-        $profil = Profil::findOrFail($id);
+        try {
+            DB::beginTransaction();
 
-        // Hapus semua file terkait profil ini
-        $this->deleteAllFiles($profil->profil_id);
+            $profil = Profil::findOrFail($id);
 
-        $profil->delete();
+            // Hapus semua file terkait profil ini
+            $this->deleteAllFiles($profil->profil_id);
 
-        return redirect()->route('profil.index')->with('success', 'Data berhasil dihapus');
+            $profil->delete();
+
+            DB::commit();
+
+            return redirect()->route('profil.index')->with('success', 'Data berhasil dihapus');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());
+        }
     }
 
     /**
      * UPLOAD FOTO PROFIL VIA ROUTE TERPISAH
      */
-    public function uploadFotoProfil(Request $request, string $id)
+    public function uploadFotoProfilSeparate(Request $request, string $id)
     {
-        $request->validate([
-            'foto_profil' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048'
-        ]);
+        try {
+            DB::beginTransaction();
 
-        $profil = Profil::findOrFail($id);
+            $request->validate([
+                'foto_profil' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048'
+            ]);
 
-        // Hapus foto profil lama jika ada
-        $this->deleteFotoProfil($profil->profil_id);
+            $profil = Profil::findOrFail($id);
 
-        // Upload foto profil baru
-        $this->uploadFotoProfilFile($request->file('foto_profil'), $profil->profil_id);
+            // Hapus foto profil lama jika ada
+            $this->deleteFotoProfil($profil->profil_id);
 
-        return redirect()->back()->with('success', 'Foto profil berhasil diupload!');
+            // Upload foto profil baru
+            $this->uploadFotoProfil($request->file('foto_profil'), $profil->profil_id);
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Foto profil berhasil diupload!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal upload foto profil: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -169,24 +235,39 @@ class ProfilController extends Controller
      */
     public function uploadFiles(Request $request, string $id)
     {
-        $request->validate([
-            'file_pendukung'   => 'required|array',
-            'file_pendukung.*' => 'file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:2048',
-        ]);
+        try {
+            DB::beginTransaction();
 
-        $profil = Profil::findOrFail($id);
+            $request->validate([
+                'file_pendukung'   => 'required|array',
+                'file_pendukung.*' => 'file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:2048',
+            ]);
 
-        if ($request->hasFile('file_pendukung')) {
-            $this->uploadFilePendukung($request->file('file_pendukung'), $profil->profil_id);
+            $profil = Profil::findOrFail($id);
+
+            // Cek jumlah file
+            if (count($request->file('file_pendukung')) > 5) {
+                return redirect()->back()->with('error', 'Maksimal 5 file yang dapat diupload sekaligus');
+            }
+
+            if ($request->hasFile('file_pendukung')) {
+                $this->uploadFilePendukung($request->file('file_pendukung'), $profil->profil_id);
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'File pendukung berhasil diupload!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal upload file pendukung: ' . $e->getMessage());
         }
-
-        return redirect()->back()->with('success', 'File pendukung berhasil diupload!');
     }
 
     /**
      * Helper: Upload foto profil file
      */
-    private function uploadFotoProfilFile($file, $profilId)
+    private function uploadFotoProfil($file, $profilId)
     {
         // Generate unique filename
         $filename = 'foto-profil-' . $profilId . '-' . time() . '.' . $file->getClientOriginalExtension();
@@ -210,11 +291,14 @@ class ProfilController extends Controller
      */
     private function uploadFilePendukung($files, $profilId)
     {
-        $sortOrder = Media::where('ref_table', 'profil')
+        // Cari sort_order maksimum untuk file pendukung (sort_order > 1)
+        $maxSortOrder = Media::where('ref_table', 'profil')
             ->where('ref_id', $profilId)
-            ->max('sort_order') ?? 1;
+            ->where('sort_order', '>', 1)
+            ->max('sort_order');
 
-        $sortOrder = $sortOrder >= 1 ? $sortOrder + 1 : 2;
+        // Jika belum ada file pendukung, mulai dari 2
+        $sortOrder = $maxSortOrder ? $maxSortOrder + 1 : 2;
 
         foreach ($files as $file) {
             if ($file->isValid()) {
@@ -224,7 +308,7 @@ class ProfilController extends Controller
                 // Store file - simpan di folder 'media/profil/files'
                 $file->storeAs('media/profil/files', $filename, 'public');
 
-                // Simpan ke tabel media dengan struktur yang baru
+                // Simpan ke tabel media
                 Media::create([
                     'ref_table'     => 'profil',
                     'ref_id'        => $profilId,
@@ -282,24 +366,37 @@ class ProfilController extends Controller
     /**
      * Delete file individual
      */
-    public function deleteFile(string $profilId, string $fileId)
+    public function deleteFile(string $profil_id, string $file_id)
     {
-        $file = Media::where('media_id', $fileId)
-            ->where('ref_table', 'profil')
-            ->where('ref_id', $profilId)
-            ->firstOrFail();
+        try {
+            DB::beginTransaction();
 
-        // Tentukan path berdasarkan sort_order
-        if ($file->sort_order == 1) {
-            // Foto profil
-            Storage::disk('public')->delete('media/profil/' . $file->file_name);
-        } else {
-            // File pendukung
-            Storage::disk('public')->delete('media/profil/files/' . $file->file_name);
+            // Validasi: pastikan profil ada
+            $profil = Profil::findOrFail($profil_id);
+
+            // Cari file
+            $file = Media::where('media_id', $file_id)
+                ->where('ref_table', 'profil')
+                ->where('ref_id', $profil_id)
+                ->firstOrFail();
+
+            if ($file->sort_order == 1) {
+                // Hapus foto profil
+                Storage::disk('public')->delete('media/profil/' . $file->file_name);
+            } else {
+                // Hapus file pendukung
+                Storage::disk('public')->delete('media/profil/files/' . $file->file_name);
+            }
+
+            $file->delete();
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'File berhasil dihapus!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menghapus file: ' . $e->getMessage());
         }
-
-        $file->delete();
-
-        return redirect()->back()->with('success', 'File berhasil dihapus!');
     }
 }

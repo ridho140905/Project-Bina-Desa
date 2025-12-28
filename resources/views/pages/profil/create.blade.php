@@ -56,17 +56,18 @@
       <form action="{{ route('profil.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
-        {{-- Bagian form kamu yang sudah ada --}}
         <div class="row">
           <!-- Kolom Kiri - Informasi Dasar -->
           <div class="col-md-6">
             <div class="field">
               <label class="label">Nama Desa <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <input class="input @error('nama_desa') is-danger @enderror"
                        type="text" name="nama_desa" value="{{ old('nama_desa') }}"
                        placeholder="Masukkan nama desa" required>
-                <span class="icon left"><i class="mdi mdi-home"></i></span>
+                <span class="icon is-left">
+                  <i class="mdi mdi-home"></i>
+                </span>
               </div>
               @error('nama_desa')
                 <p class="help is-danger">{{ $message }}</p>
@@ -75,11 +76,13 @@
 
             <div class="field">
               <label class="label">Kecamatan <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <input class="input @error('kecamatan') is-danger @enderror"
                        type="text" name="kecamatan" value="{{ old('kecamatan') }}"
                        placeholder="Masukkan nama kecamatan" required>
-                <span class="icon left"><i class="mdi mdi-map-marker"></i></span>
+                <span class="icon is-left">
+                  <i class="mdi mdi-map-marker"></i>
+                </span>
               </div>
               @error('kecamatan')
                 <p class="help is-danger">{{ $message }}</p>
@@ -88,11 +91,13 @@
 
             <div class="field">
               <label class="label">Kabupaten <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <input class="input @error('kabupaten') is-danger @enderror"
                        type="text" name="kabupaten" value="{{ old('kabupaten') }}"
                        placeholder="Masukkan nama kabupaten" required>
-                <span class="icon left"><i class="mdi mdi-city"></i></span>
+                <span class="icon is-left">
+                  <i class="mdi mdi-city"></i>
+                </span>
               </div>
               @error('kabupaten')
                 <p class="help is-danger">{{ $message }}</p>
@@ -101,11 +106,13 @@
 
             <div class="field">
               <label class="label">Provinsi <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <input class="input @error('provinsi') is-danger @enderror"
                        type="text" name="provinsi" value="{{ old('provinsi') }}"
                        placeholder="Masukkan nama provinsi" required>
-                <span class="icon left"><i class="mdi mdi-earth"></i></span>
+                <span class="icon is-left">
+                  <i class="mdi mdi-earth"></i>
+                </span>
               </div>
               @error('provinsi')
                 <p class="help is-danger">{{ $message }}</p>
@@ -117,11 +124,13 @@
           <div class="col-md-6">
             <div class="field">
               <label class="label">Telepon <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <input class="input @error('telepon') is-danger @enderror"
                        type="text" name="telepon" value="{{ old('telepon') }}"
                        placeholder="Contoh: 081234567890" required>
-                <span class="icon left"><i class="mdi mdi-phone"></i></span>
+                <span class="icon is-left">
+                  <i class="mdi mdi-phone"></i>
+                </span>
               </div>
               @error('telepon')
                 <p class="help is-danger">{{ $message }}</p>
@@ -130,11 +139,13 @@
 
             <div class="field">
               <label class="label">Email <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <input class="input @error('email') is-danger @enderror" type="email"
                        name="email" value="{{ old('email') }}"
                        placeholder="contoh: desa@example.com" required>
-                <span class="icon left"><i class="mdi mdi-email"></i></span>
+                <span class="icon is-left">
+                  <i class="mdi mdi-email"></i>
+                </span>
               </div>
               @error('email')
                 <p class="help is-danger">{{ $message }}</p>
@@ -144,30 +155,20 @@
             <!-- Upload Foto Profil -->
             <div class="field">
               <label class="label">Foto Profil</label>
-              <div class="control">
+              <div class="control has-icons-left has-icons-right">
                 <input class="input @error('foto_profil') is-danger @enderror"
                        type="file" name="foto_profil" accept="image/*">
+                <span class="icon is-left">
+                  <i class="mdi mdi-image"></i>
+                </span>
+                <span class="icon is-right file-icon">
+                  <i class="mdi mdi-upload"></i>
+                </span>
               </div>
               <small class="form-text text-muted">
                 Format: JPG, JPEG, PNG, GIF. Maksimal 2MB.
               </small>
               @error('foto_profil')
-                <p class="help is-danger">{{ $message }}</p>
-              @enderror
-            </div>
-
-            <!-- Upload File Pendukung Multiple -->
-            <div class="field">
-              <label class="label">File Pendukung</label>
-              <div class="control">
-                <input class="input @error('file_pendukung') is-danger @enderror"
-                       type="file" name="file_pendukung[]" multiple
-                       accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx">
-              </div>
-              <small class="form-text text-muted">
-                Format: JPG, JPEG, PNG, GIF, PDF, DOC, DOCX. Maksimal 5 file.
-              </small>
-              @error('file_pendukung')
                 <p class="help is-danger">{{ $message }}</p>
               @enderror
             </div>
@@ -177,10 +178,12 @@
           <div class="col-md-6">
             <div class="field">
               <label class="label">Visi <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <textarea class="textarea @error('visi') is-danger @enderror" name="visi" rows="4"
                           placeholder="Tuliskan visi desa" required>{{ old('visi') }}</textarea>
-                <span class="icon left"><i class="mdi mdi-target"></i></span>
+                <span class="icon is-left">
+                  <i class="mdi mdi-target"></i>
+                </span>
               </div>
               @error('visi')
                 <p class="help is-danger">{{ $message }}</p>
@@ -191,10 +194,12 @@
           <div class="col-md-6">
             <div class="field">
               <label class="label">Misi <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <textarea class="textarea @error('misi') is-danger @enderror" name="misi" rows="4"
                           placeholder="Tuliskan misi desa" required>{{ old('misi') }}</textarea>
-                <span class="icon left"><i class="mdi mdi-bullseye-arrow"></i></span>
+                <span class="icon is-left">
+                  <i class="mdi mdi-bullseye-arrow"></i>
+                </span>
               </div>
               @error('misi')
                 <p class="help is-danger">{{ $message }}</p>
@@ -206,10 +211,12 @@
           <div class="col-12">
             <div class="field">
               <label class="label">Alamat Kantor <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <textarea class="textarea @error('alamat_kantor') is-danger @enderror" name="alamat_kantor" rows="3"
                           placeholder="Masukkan alamat lengkap kantor desa" required>{{ old('alamat_kantor') }}</textarea>
-                <span class="icon left"><i class="mdi mdi-office-building"></i></span>
+                <span class="icon is-left">
+                  <i class="mdi mdi-office-building"></i>
+                </span>
               </div>
               @error('alamat_kantor')
                 <p class="help is-danger">{{ $message }}</p>
@@ -241,9 +248,15 @@
 </section>
 
 <style>
-  /* Style dasar untuk form */
+  /* Reset dan base styles */
+  * {
+    box-sizing: border-box;
+  }
+
+  /* Field styling */
   .field {
     margin-bottom: 1.5rem;
+    position: relative;
   }
 
   .label {
@@ -254,6 +267,12 @@
     font-size: 0.875rem;
   }
 
+  /* Control container */
+  .control {
+    position: relative;
+  }
+
+  /* Input dan Textarea base styles */
   .input,
   .textarea {
     width: 100%;
@@ -266,6 +285,25 @@
     font-family: inherit;
   }
 
+  /* Input dengan icon kiri */
+  .control.has-icons-left .input,
+  .control.has-icons-left .textarea {
+    padding-left: 2.75rem;
+  }
+
+  /* Input file dengan icon kanan */
+  .control.has-icons-right .input[type="file"] {
+    padding-right: 2.75rem;
+  }
+
+  /* Textarea khusus */
+  .textarea {
+    resize: vertical;
+    min-height: 120px;
+    padding-top: 0.75rem;
+  }
+
+  /* Focus state */
   .input:focus,
   .textarea:focus {
     outline: none;
@@ -273,27 +311,41 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 
-  .textarea {
-    resize: vertical;
-    min-height: 120px;
+  /* Icon positioning */
+  .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
   }
 
-  /* Icons styling */
-  .control.icons-left {
-    position: relative;
-  }
-
-  .control.icons-left .icon.left {
+  .control .icon.is-left {
     position: absolute;
-    left: 1rem;
-    top: 1rem;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
     color: #6b7280;
-    z-index: 1;
+    z-index: 2;
+    pointer-events: none;
   }
 
-  .control.icons-left input,
-  .control.icons-left textarea {
-    padding-left: 3rem;
+  /* Icon untuk textarea perlu diatur secara khusus */
+  .control.has-icons-left .textarea + .icon.is-left {
+    top: 1.25rem;
+    transform: none;
+    align-items: flex-start;
+  }
+
+  /* Icon untuk input file di sebelah kanan */
+  .control .icon.is-right.file-icon {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    z-index: 2;
+    pointer-events: none;
   }
 
   /* Helper text */
@@ -327,25 +379,7 @@
     border-top: 1px solid #e2e8f0;
   }
 
-  .button.green {
-    background-color: #10b981;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
-    font-size: 0.875rem;
-  }
-
-  .button.light {
-    background-color: #f3f4f6;
-    color: #374151;
-    border: 1px solid #d1d5db;
+  .button {
     padding: 0.75rem 1.5rem;
     border-radius: 8px;
     cursor: pointer;
@@ -355,6 +389,19 @@
     font-weight: 500;
     transition: all 0.3s ease;
     font-size: 0.875rem;
+    border: none;
+    text-decoration: none;
+  }
+
+  .button.green {
+    background-color: #10b981;
+    color: white;
+  }
+
+  .button.light {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
   }
 
   .button.green:hover {
@@ -418,6 +465,41 @@
     color: #dc2626;
   }
 
+  /* File input khusus styling */
+  input[type="file"] {
+    padding: 0.75rem;
+    border: 2px dashed #e2e8f0;
+    background-color: #f8fafc;
+    cursor: pointer;
+    width: 100%;
+    color: #6b7280;
+  }
+
+  input[type="file"]:hover {
+    border-color: #3b82f6;
+    background-color: #f0f9ff;
+  }
+
+  /* Notification styling */
+  .notification {
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  .notification.is-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+
+  .notification.is-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+
   /* Responsive design */
   @media (max-width: 768px) {
     .col-md-6 {
@@ -442,45 +524,23 @@
     .card-content {
       padding: 1rem;
     }
+
+    .control.has-icons-left .textarea + .icon.is-left {
+      top: 1rem;
+    }
   }
 
-  /* Specific styling for file inputs */
-  input[type="file"] {
-    padding: 0.5rem;
-    border: 2px dashed #e2e8f0;
-    background-color: #f8fafc;
-    cursor: pointer;
-    width: 100%;
+  /* Konsistensi tinggi untuk input dan textarea dengan ikon */
+  .control.has-icons-left,
+  .control.has-icons-right {
+    display: block;
   }
 
-  input[type="file"]:hover {
-    border-color: #3b82f6;
-    background-color: #f0f9ff;
-  }
-
-  /* Ensure consistent height for aligned elements */
-  .field .control {
-    min-height: 2.5rem;
-  }
-
-  /* Notification styling */
-  .notification {
-    margin-bottom: 1.5rem;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 500;
-  }
-
-  .notification.is-success {
-    background-color: #d1fae5;
-    color: #065f46;
-    border: 1px solid #a7f3d0;
-  }
-
-  .notification.is-danger {
-    background-color: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
+  .control.has-icons-left .icon.is-left,
+  .control.has-icons-right .icon.is-right {
+    height: 100%;
+    display: flex;
+    align-items: center;
   }
 </style>
 @endsection

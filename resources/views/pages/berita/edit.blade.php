@@ -53,7 +53,7 @@
       </p>
     </header>
     <div class="card-content">
-      <form action="{{ route('berita.update', $berita->berita_id) }}" method="POST" enctype="multipart/form-data">
+      <form action="{{ route('berita.update', $berita->berita_id) }}" method="POST" enctype="multipart/form-data" id="editBeritaForm">
         @csrf
         @method('PUT')
 
@@ -62,14 +62,16 @@
           <div class="col-md-6">
             <div class="field">
               <label class="label">Judul Berita <span class="text-danger">*</span></label>
-              <div class="control icons-left">
-                <input class="input @error('judul') is-danger @enderror"
-                       type="text"
-                       name="judul"
-                       value="{{ old('judul', $berita->judul) }}"
-                       placeholder="Masukkan judul berita"
-                       required>
-                <span class="icon left"><i class="mdi mdi-format-title"></i></span>
+              <div class="control">
+                <div style="position: relative;">
+                  <input class="input @error('judul') is-danger @enderror"
+                         type="text"
+                         name="judul"
+                         value="{{ old('judul', $berita->judul) }}"
+                         placeholder="Masukkan judul berita"
+                         required>
+                  <i class="mdi mdi-format-title icon-left"></i>
+                </div>
               </div>
               @error('judul')
                 <p class="help is-danger">{{ $message }}</p>
@@ -78,14 +80,16 @@
 
             <div class="field">
               <label class="label">Slug <span class="text-danger">*</span></label>
-              <div class="control icons-left">
-                <input class="input @error('slug') is-danger @enderror"
-                       type="text"
-                       name="slug"
-                       value="{{ old('slug', $berita->slug) }}"
-                       placeholder="judul-berita-url"
-                       required>
-                <span class="icon left"><i class="mdi mdi-link"></i></span>
+              <div class="control">
+                <div style="position: relative;">
+                  <input class="input @error('slug') is-danger @enderror"
+                         type="text"
+                         name="slug"
+                         value="{{ old('slug', $berita->slug) }}"
+                         placeholder="judul-berita-url"
+                         required>
+                  <i class="mdi mdi-link icon-left"></i>
+                </div>
               </div>
               @error('slug')
                 <p class="help is-danger">{{ $message }}</p>
@@ -97,76 +101,25 @@
 
             <div class="field">
               <label class="label">Kategori <span class="text-danger">*</span></label>
-              <div class="control icons-left">
-                <div class="select is-fullwidth @error('kategori_id') is-danger @enderror">
-                  <select name="kategori_id" required class="input">
-                    <option value="">Pilih Kategori</option>
-                    @foreach($kategoriBerita as $kategori)
-                      <option value="{{ $kategori->kategori_id }}"
-                        {{ old('kategori_id', $berita->kategori_id) == $kategori->kategori_id ? 'selected' : '' }}>
-                        {{ $kategori->nama }}
-                      </option>
-                    @endforeach
-                  </select>
+              <div class="control">
+                <div class="select-wrapper">
+                  <div class="select is-fullwidth @error('kategori_id') is-danger @enderror">
+                    <select name="kategori_id" required>
+                      <option value="">Pilih Kategori</option>
+                      @foreach($kategoriBerita as $kategori)
+                        <option value="{{ $kategori->kategori_id }}"
+                          {{ old('kategori_id', $berita->kategori_id) == $kategori->kategori_id ? 'selected' : '' }}>
+                          {{ $kategori->nama }}
+                        </option>
+                      @endforeach
+                    </select>
+                    <i class="mdi mdi-tag icon-left"></i>
+                  </div>
                 </div>
-                <span class="icon left"><i class="mdi mdi-tag"></i></span>
               </div>
               @error('kategori_id')
                 <p class="help is-danger">{{ $message }}</p>
               @enderror
-            </div>
-
-            <div class="field">
-              <label class="label">Penulis <span class="text-danger">*</span></label>
-              <div class="control icons-left">
-                <input class="input @error('penulis') is-danger @enderror"
-                       type="text"
-                       name="penulis"
-                       value="{{ old('penulis', $berita->penulis) }}"
-                       placeholder="Nama penulis berita"
-                       required>
-                <span class="icon left"><i class="mdi mdi-account"></i></span>
-              </div>
-              @error('penulis')
-                <p class="help is-danger">{{ $message }}</p>
-              @enderror
-            </div>
-          </div>
-
-          <!-- Kolom Kanan - Informasi Tambahan & Upload -->
-          <div class="col-md-6">
-            <div class="field">
-              <label class="label">Status <span class="text-danger">*</span></label>
-              <div class="control icons-left">
-                <div class="select is-fullwidth @error('status') is-danger @enderror">
-                  <select name="status" required class="input">
-                    <option value="draft" {{ old('status', $berita->status) == 'draft' ? 'selected' : '' }}>Draft</option>
-                    <option value="terbit" {{ old('status', $berita->status) == 'terbit' ? 'selected' : '' }}>Terbit</option>
-                  </select>
-                </div>
-                <span class="icon left"><i class="mdi mdi-bullhorn"></i></span>
-              </div>
-              @error('status')
-                <p class="help is-danger">{{ $message }}</p>
-              @enderror
-            </div>
-
-            <div class="field">
-              <label class="label">Tanggal Terbit</label>
-              <div class="control icons-left">
-                <input class="input @error('terbit_at') is-danger @enderror"
-                       type="datetime-local"
-                       name="terbit_at"
-                       value="{{ old('terbit_at', $berita->terbit_at ? $berita->terbit_at->format('Y-m-d\TH:i') : '') }}"
-                       placeholder="Tanggal terbit otomatis jika status terbit">
-                <span class="icon left"><i class="mdi mdi-calendar-clock"></i></span>
-              </div>
-              @error('terbit_at')
-                <p class="help is-danger">{{ $message }}</p>
-              @enderror
-              <small class="form-text text-muted">
-                Kosongkan untuk menggunakan tanggal saat ini ketika status diubah ke "Terbit"
-              </small>
             </div>
 
             <!-- Upload Cover Foto -->
@@ -187,12 +140,6 @@
                     <div class="flex-1">
                       <p class="font-medium mb-1">{{ $coverFoto->file_name }}</p>
                       <small class="text-gray-500 block mb-2">{{ $coverFoto->mime_type }}</small>
-                      <a href="{{ route('berita.delete-file', ['berita' => $berita->berita_id, 'file' => $coverFoto->media_id]) }}"
-                         class="button is-small is-danger"
-                         onclick="return confirm('Yakin ingin menghapus cover foto ini?')">
-                        <span class="icon"><i class="mdi mdi-delete"></i></span>
-                        <span>Hapus Cover</span>
-                      </a>
                     </div>
                   </div>
                 </div>
@@ -215,69 +162,78 @@
                 <p class="help is-danger">{{ $message }}</p>
               @enderror
             </div>
+          </div>
 
-            <!-- Upload Gambar Pendukung Multiple -->
-            @php
-              $gambarPendukung = $berita->media->where('sort_order', '>', 1);
-            @endphp
+          <!-- Kolom Kanan - Informasi Tambahan & Isi Berita -->
+          <div class="col-md-6">
             <div class="field">
-              <label class="label">Gambar Pendukung Tambahan</label>
-
-              <!-- Tampilkan Gambar Pendukung Saat Ini -->
-              @if($gambarPendukung->count() > 0)
-                <div class="mb-3">
-                  <p class="text-sm text-muted mb-2">Gambar Pendukung Saat Ini:</p>
-                  <div class="space-y-2">
-                    @foreach($gambarPendukung as $gambar)
-                      <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
-                        <div class="flex items-center gap-3">
-                          <img src="{{ asset('storage/media/berita/gallery/' . $gambar->file_name) }}"
-                               alt="{{ $gambar->file_name }}"
-                               class="gallery-thumb rounded border"
-                               onerror="this.style.display='none'">
-                          <div>
-                            <span class="font-medium block">{{ $gambar->file_name }}</span>
-                            <small class="text-gray-500">{{ $gambar->mime_type }}</small>
-                          </div>
-                        </div>
-                        <a href="{{ route('berita.delete-file', ['berita' => $berita->berita_id, 'file' => $gambar->media_id]) }}"
-                           class="button is-small is-danger"
-                           onclick="return confirm('Yakin ingin menghapus gambar ini?')">
-                          <span class="icon"><i class="mdi mdi-delete"></i></span>
-                        </a>
-                      </div>
-                    @endforeach
-                  </div>
-                </div>
-              @endif
-
+              <label class="label">Penulis <span class="text-danger">*</span></label>
               <div class="control">
-                <input class="input @error('gambar_pendukung') is-danger @enderror"
-                       type="file"
-                       name="gambar_pendukung[]"
-                       multiple
-                       accept="image/*">
+                <div style="position: relative;">
+                  <input class="input @error('penulis') is-danger @enderror"
+                         type="text"
+                         name="penulis"
+                         value="{{ old('penulis', $berita->penulis) }}"
+                         placeholder="Nama penulis berita"
+                         required>
+                  <i class="mdi mdi-account icon-left"></i>
+                </div>
               </div>
-              <small class="form-text text-muted">
-                Upload gambar tambahan. Format: JPG, JPEG, PNG, GIF. Maksimal 5 file, masing-masing 2MB.
-              </small>
-              @error('gambar_pendukung')
+              @error('penulis')
                 <p class="help is-danger">{{ $message }}</p>
               @enderror
             </div>
-          </div>
 
-          <!-- Konten Berita - Full Width -->
-          <div class="col-12">
+            <div class="field">
+              <label class="label">Status <span class="text-danger">*</span></label>
+              <div class="control">
+                <div class="select-wrapper">
+                  <div class="select is-fullwidth @error('status') is-danger @enderror">
+                    <select name="status" required>
+                      <option value="draft" {{ old('status', $berita->status) == 'draft' ? 'selected' : '' }}>Draft</option>
+                      <option value="terbit" {{ old('status', $berita->status) == 'terbit' ? 'selected' : '' }}>Terbit</option>
+                    </select>
+                    <i class="mdi mdi-bullhorn icon-left"></i>
+                  </div>
+                </div>
+              </div>
+              @error('status')
+                <p class="help is-danger">{{ $message }}</p>
+              @enderror
+            </div>
+
+            <div class="field">
+              <label class="label">Tanggal Terbit</label>
+              <div class="control">
+                <div style="position: relative;">
+                  <input class="input @error('terbit_at') is-danger @enderror"
+                         type="datetime-local"
+                         name="terbit_at"
+                         value="{{ old('terbit_at', $berita->terbit_at ? $berita->terbit_at->format('Y-m-d\TH:i') : '') }}"
+                         placeholder="Tanggal terbit otomatis jika status terbit">
+                  <i class="mdi mdi-calendar-clock icon-left"></i>
+                </div>
+              </div>
+              @error('terbit_at')
+                <p class="help is-danger">{{ $message }}</p>
+              @enderror
+              <small class="form-text text-muted">
+                Kosongkan untuk menggunakan tanggal saat ini ketika status diubah ke "Terbit"
+              </small>
+            </div>
+
+            <!-- Isi Berita - Dipindahkan ke kolom kanan di bawah tanggal terbit -->
             <div class="field">
               <label class="label">Isi Berita (HTML) <span class="text-danger">*</span></label>
-              <div class="control icons-left">
-                <textarea class="textarea @error('isi_html') is-danger @enderror"
-                          name="isi_html"
-                          rows="12"
-                          placeholder="Tulis isi berita dalam format HTML"
-                          required>{{ old('isi_html', $berita->isi_html) }}</textarea>
-                <span class="icon left"><i class="mdi mdi-text"></i></span>
+              <div class="control">
+                <div style="position: relative;">
+                  <textarea class="textarea @error('isi_html') is-danger @enderror"
+                            name="isi_html"
+                            rows="12"
+                            placeholder="Tulis isi berita dalam format HTML"
+                            required>{{ old('isi_html', $berita->isi_html) }}</textarea>
+                  <i class="mdi mdi-text icon-left textarea-icon"></i>
+                </div>
               </div>
               @error('isi_html')
                 <p class="help is-danger">{{ $message }}</p>
@@ -288,7 +244,7 @@
             </div>
           </div>
 
-          <!-- Tombol Aksi -->
+          <!-- Tombol Aksi - Full Width -->
           <div class="col-12">
             <div class="field grouped">
               <div class="control">
@@ -298,7 +254,7 @@
                 </button>
               </div>
               <div class="control">
-                <button type="reset" class="button light">
+                <button type="reset" class="button light" id="resetFormBtn">
                   <span class="icon"><i class="mdi mdi-refresh"></i></span>
                   <span>Reset Form</span>
                 </button>
@@ -318,9 +274,15 @@
 </section>
 
 <style>
-  /* Style dasar untuk form */
+  /* Reset dan base styles */
+  * {
+    box-sizing: border-box;
+  }
+
+  /* Field styling */
   .field {
     margin-bottom: 1.5rem;
+    position: relative;
   }
 
   .label {
@@ -331,17 +293,29 @@
     font-size: 0.875rem;
   }
 
+  /* Control container */
+  .control {
+    position: relative;
+  }
+
+  /* Input, textarea dan select styling */
   .input,
   .textarea,
   .select select {
     width: 100%;
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 1rem 0.75rem 3rem !important;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     font-size: 14px;
     transition: all 0.3s ease;
     background-color: white;
     font-family: inherit;
+    box-sizing: border-box;
+  }
+
+  .textarea {
+    resize: vertical;
+    min-height: 200px;
   }
 
   .input:focus,
@@ -352,12 +326,30 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 
-  .textarea {
-    resize: vertical;
-    min-height: 150px;
+  /* Icon styling konsisten dengan form warga */
+  .icon-left {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    font-size: 20px;
+    z-index: 10;
+    pointer-events: none;
   }
 
-  /* Select styling */
+  /* Untuk textarea, icon perlu diatur ulang */
+  .textarea-icon {
+    top: 1.5rem;
+    transform: none;
+  }
+
+  /* Select wrapper untuk icon */
+  .select-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
   .select.is-fullwidth {
     width: 100%;
     position: relative;
@@ -368,45 +360,65 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: pointer;
-    padding-right: 2.5rem;
+    padding-right: 2.5rem !important;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 0.75rem center;
+    background-position: right 1rem center;
     background-size: 16px;
   }
 
-  /* Icons styling untuk input, textarea dan select */
-  .control.icons-left {
-    position: relative;
-  }
-
-  .control.icons-left .icon.left {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
+  /* File Input Styling - SIMPLE seperti di form create */
+  input[type="file"] {
+    width: 100%;
+    padding: 0.75rem !important;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: white;
+    cursor: pointer;
     color: #6b7280;
-    z-index: 2;
-    pointer-events: none;
+    transition: all 0.3s ease;
   }
 
-  /* Khusus untuk textarea icon */
-  .control.icons-left.textarea-icon .icon.left {
-    top: 1rem;
-    transform: none;
+  input[type="file"]:hover {
+    border-color: #3b82f6;
+    background-color: #f0f9ff;
   }
 
-  .control.icons-left .select select {
-    padding-left: 3rem;
+  /* Styling tombol choose file */
+  input[type="file"]::-webkit-file-upload-button {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: 1rem;
+    transition: all 0.3s ease;
   }
 
-  .control.icons-left input {
-    padding-left: 3rem;
+  input[type="file"]::-webkit-file-upload-button:hover {
+    background-color: #e5e7eb;
   }
 
-  .control.icons-left textarea {
-    padding-left: 3rem;
-    padding-top: 0.75rem;
+  /* Untuk Firefox */
+  input[type="file"]::file-selector-button {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  input[type="file"]::file-selector-button:hover {
+    background-color: #e5e7eb;
   }
 
   /* Helper text */
@@ -427,7 +439,8 @@
 
   .input.is-danger,
   .textarea.is-danger,
-  .select.is-danger select {
+  .select.is-danger select,
+  input[type="file"].is-danger {
     border-color: #dc2626;
   }
 
@@ -441,25 +454,7 @@
     border-top: 1px solid #e2e8f0;
   }
 
-  .button.green {
-    background-color: #10b981;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
-    font-size: 0.875rem;
-  }
-
-  .button.light {
-    background-color: #f3f4f6;
-    color: #374151;
-    border: 1px solid #d1d5db;
+  .button {
     padding: 0.75rem 1.5rem;
     border-radius: 8px;
     cursor: pointer;
@@ -469,17 +464,19 @@
     font-weight: 500;
     transition: all 0.3s ease;
     font-size: 0.875rem;
-  }
-
-  .button.is-danger {
-    background-color: #ef4444;
-    color: white;
     border: none;
+    text-decoration: none;
   }
 
-  .button.is-small {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.75rem;
+  .button.green {
+    background-color: #10b981;
+    color: white;
+  }
+
+  .button.light {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
   }
 
   .button.green:hover {
@@ -488,10 +485,6 @@
 
   .button.light:hover {
     background-color: #e5e7eb;
-  }
-
-  .button.is-danger:hover {
-    background-color: #dc2626;
   }
 
   /* Row and column styling */
@@ -556,12 +549,6 @@
     border-radius: 8px;
   }
 
-  .gallery-thumb {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-  }
-
   .text-sm {
     font-size: 0.875rem;
   }
@@ -571,28 +558,12 @@
     display: flex;
   }
 
-  .items-center {
-    align-items: center;
-  }
-
   .items-start {
     align-items: flex-start;
   }
 
-  .justify-between {
-    justify-content: space-between;
-  }
-
-  .gap-3 {
-    gap: 0.75rem;
-  }
-
   .gap-4 {
     gap: 1rem;
-  }
-
-  .space-y-2 > * + * {
-    margin-top: 0.5rem;
   }
 
   .mb-2 {
@@ -603,18 +574,6 @@
     margin-bottom: 1rem;
   }
 
-  .p-3 {
-    padding: 0.75rem;
-  }
-
-  .bg-gray-50 {
-    background-color: #f9fafb;
-  }
-
-  .rounded {
-    border-radius: 0.375rem;
-  }
-
   .rounded-lg {
     border-radius: 0.5rem;
   }
@@ -623,16 +582,36 @@
     border: 1px solid #e5e7eb;
   }
 
-  .block {
-    display: block;
-  }
-
   .font-medium {
     font-weight: 500;
   }
 
   .text-gray-500 {
     color: #6b7280;
+  }
+
+  input[type="datetime-local"] {
+    padding: 0.75rem 1rem 0.75rem 3rem !important;
+  }
+
+  /* Notification styling */
+  .notification {
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  .notification.is-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+
+  .notification.is-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
   }
 
   /* Responsive design */
@@ -660,18 +639,8 @@
       padding: 1rem;
     }
 
-    .control.icons-left input,
-    .control.icons-left textarea,
-    .control.icons-left .select select {
-      padding-left: 2.5rem;
-    }
-
-    .control.icons-left .icon.left {
-      left: 0.75rem;
-    }
-
     .textarea {
-      min-height: 120px;
+      min-height: 150px;
     }
 
     .cover-img-preview {
@@ -683,44 +652,12 @@
       flex-direction: column;
       gap: 1rem;
     }
-  }
 
-  /* Specific styling for file inputs */
-  input[type="file"] {
-    padding: 0.5rem;
-    border: 2px dashed #e2e8f0;
-    background-color: #f8fafc;
-    cursor: pointer;
-    width: 100%;
-  }
-
-  input[type="file"]:hover {
-    border-color: #3b82f6;
-    background-color: #f0f9ff;
-  }
-
-  input[type="datetime-local"] {
-    padding: 0.75rem 1rem;
-  }
-
-  /* Notification styling */
-  .notification {
-    margin-bottom: 1.5rem;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 500;
-  }
-
-  .notification.is-success {
-    background-color: #d1fae5;
-    color: #065f46;
-    border: 1px solid #a7f3d0;
-  }
-
-  .notification.is-danger {
-    background-color: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
+    input[type="file"]::-webkit-file-upload-button,
+    input[type="file"]::file-selector-button {
+      padding: 0.4rem 0.75rem;
+      font-size: 13px;
+    }
   }
 </style>
 
@@ -729,30 +666,46 @@
 document.addEventListener('DOMContentLoaded', function() {
   const judulInput = document.querySelector('input[name="judul"]');
   const slugInput = document.querySelector('input[name="slug"]');
+  const form = document.getElementById('editBeritaForm');
+  const resetButton = document.getElementById('resetFormBtn');
 
   if (judulInput && slugInput) {
     judulInput.addEventListener('input', function() {
       if (!slugInput.value || slugInput.value === '{{ $berita->slug }}') {
         const slug = judulInput.value
           .toLowerCase()
-          .replace(/[^\w ]+/g, '')
-          .replace(/ +/g, '-');
+          .replace(/[^\w\s]/gi, '')
+          .replace(/\s+/g, '-')
+          .replace(/--+/g, '-');
         slugInput.value = slug;
       }
     });
+  }
 
-    // Reset form handler
-    const resetButton = document.querySelector('button[type="reset"]');
-    if (resetButton) {
-      resetButton.addEventListener('click', function() {
-        setTimeout(() => {
-          // Clear any generated slug when resetting
-          if (slugInput.value === judulInput.value.toLowerCase().replace(/[^\w ]+/g, '').replace(/ +/g, '-')) {
+  // Reset form handler dengan pencegahan reset file
+  if (resetButton) {
+    resetButton.addEventListener('click', function(e) {
+      e.preventDefault();
+
+      if (confirm('Reset form akan mengosongkan semua input. Yakin ingin melanjutkan?')) {
+        form.reset();
+
+        // Reset slug ke nilai awal
+        if (slugInput) {
+          setTimeout(() => {
             slugInput.value = '{{ $berita->slug }}';
-          }
-        }, 100);
-      });
-    }
+          }, 100);
+        }
+      }
+    });
+  }
+
+  // Prevent form reset dari menghapus file input
+  if (form) {
+    form.addEventListener('reset', function(e) {
+      // Biarkan file input tetap seperti semula
+      e.stopPropagation();
+    });
   }
 });
 </script>
