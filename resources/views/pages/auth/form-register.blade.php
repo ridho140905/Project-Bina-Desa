@@ -540,9 +540,9 @@
                                 <select name="role" class="form-input" required>
                                     <option value="">-- Pilih Role --</option>
                                     <option value="Super Admin" {{ old('role') == 'Super Admin' ? 'selected' : '' }}>Super Admin</option>
-                                    <option value="Pelanggan" {{ old('role') == 'Pelanggan' ? 'selected' : '' }}>
-                                        Pelanggan</option>
-                                    <option value="Mitra" {{ old('role') == 'Mitra' ? 'selected' : '' }}>Mitra
+                                    <option value="Admin" {{ old('role') == 'Admin' ? 'selected' : '' }}>
+                                        Admin</option>
+                                    <option value="Guest" {{ old('role') == 'Guest' ? 'selected' : '' }}>Guest
                                     </option>
                                 </select>
                             </div>

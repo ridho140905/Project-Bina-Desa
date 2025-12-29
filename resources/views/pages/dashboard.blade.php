@@ -974,7 +974,7 @@ tr:hover {
           <span class="icon"><i class="mdi mdi-tag-multiple"></i></span>
           <b class="text-sm md:text-base">Kategori Berita</b>
         </div>
-        <a href="{{ route('kategoriberita.index') }}" class="button small textual text-xs md:text-sm">
+        <a href="{{ route('kategori.index') }}" class="button small textual text-xs md:text-sm">
           Lihat Semua
         </a>
       </div>

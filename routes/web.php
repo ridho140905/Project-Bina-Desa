@@ -76,8 +76,19 @@ Route::group(['middleware' => ['checkrole:Super Admin']], function () {
     route::get('berita', [BeritaController::class, 'index'])->name('berita.index');
     route::get('profil', [ProfilController::class, 'index'])->name('profil.index');
     route::get('galeri', [GaleriController::class, 'index'])->name('galeri.index');
-
+    route::get('agenda', [AgendaController::class, 'index'])->name('agenda.index');
+    route::get('kategoriberita', [KategoriBeritaController::class, 'index'])->name('kategori.index');
 });
+
+Route::group(['middleware' => ['checkrole:Admin']], function () {
+    route::get('warga', [WargaController::class, 'index'])->name('warga.index');
+    route::get('berita', [BeritaController::class, 'index'])->name('berita.index');
+    route::get('profil', [ProfilController::class, 'index'])->name('profil.index');
+    route::get('galeri', [GaleriController::class, 'index'])->name('galeri.index');
+    route::get('agenda', [AgendaController::class, 'index'])->name('agenda.index');
+     route::get('kategoriberita', [KategoriBeritaController::class, 'index'])->name('kategori.index');
+});
+
 //  Route::group(['middleware' => ['checkislogin']], function () {
 //     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 //     route::get('user', [UserController::class, 'index'])->name('user.index');

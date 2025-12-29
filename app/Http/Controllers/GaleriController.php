@@ -15,19 +15,32 @@ class GaleriController extends Controller
      */
     public function index(Request $request)
     {
-        // Gunakan scope seperti di Agenda
-        $filterableColumns = []; // Tambahkan kolom filter jika ada
-        $searchableColumns = ['judul', 'deskripsi'];
+        // PAKAI YANG SUDAH ADA (jangan diubah konsep filter seperti di user)
+        $query = Galeri::query()->with(['media' => function($query) {
+            $query->where('ref_table', 'galeri')
+                  ->orderBy('sort_order');
+        }]);
 
-        $data['dataGaleri'] = Galeri::filter($request, $filterableColumns)
-            ->search($request, $searchableColumns)
-            ->with(['media' => function($query) {
-                $query->where('ref_table', 'galeri')
-                      ->orderBy('sort_order');
-            }])
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
+        // Filter berdasarkan search (judul atau deskripsi)
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('judul', 'LIKE', '%' . $request->search . '%')
+                  ->orWhere('deskripsi', 'LIKE', '%' . $request->search . '%');
+            });
+        }
+
+        // Filter berdasarkan huruf pertama judul
+        if ($request->filled('filter_galeri')) {
+            if ($request->filter_galeri == 'a') {
+                $query->whereRaw('LOWER(SUBSTRING(judul, 1, 1)) BETWEEN "a" AND "m"');
+            } elseif ($request->filter_galeri == 'n') {
+                $query->whereRaw('LOWER(SUBSTRING(judul, 1, 1)) BETWEEN "n" AND "z"');
+            }
+        }
+
+        $query->latest();
+        $data['dataGaleri'] = $query->paginate(10);
+        $data['dataGaleri']->appends($request->query());
 
         return view('pages.galeri.index', $data);
     }
@@ -45,31 +58,41 @@ class GaleriController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'judul' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'foto_utama' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:5120', // 5MB max
-            'foto_pendukung' => 'nullable|array',
-            'foto_pendukung.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:5120',
-        ]);
+        try {
+            DB::beginTransaction();
 
-        // Simpan data galeri
-        $galeri = Galeri::create($request->only([
-            'judul',
-            'deskripsi'
-        ]));
+            $request->validate([
+                'judul' => 'required|string|max:255',
+                'deskripsi' => 'nullable|string',
+                'foto_utama' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:5120', // 5MB max
+                'foto_pendukung' => 'nullable|array',
+                'foto_pendukung.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:5120',
+            ]);
 
-        // Upload foto utama
-        if ($request->hasFile('foto_utama')) {
-            $this->uploadFotoUtama($request->file('foto_utama'), $galeri->galeri_id);
+            // Simpan data galeri
+            $galeri = Galeri::create($request->only([
+                'judul',
+                'deskripsi'
+            ]));
+
+            // Upload foto utama jika ada
+            if ($request->hasFile('foto_utama') && $request->file('foto_utama')->isValid()) {
+                $this->uploadFotoUtama($request->file('foto_utama'), $galeri->galeri_id);
+            }
+
+            // Upload foto pendukung jika ada
+            if ($request->hasFile('foto_pendukung')) {
+                $this->uploadFotoPendukung($request->file('foto_pendukung'), $galeri->galeri_id);
+            }
+
+            DB::commit();
+
+            return redirect()->route('galeri.index')->with('success', 'Penambahan Data Galeri Berhasil!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
-
-        // Upload foto pendukung jika ada
-        if ($request->hasFile('foto_pendukung')) {
-            $this->uploadFotoPendukung($request->file('foto_pendukung'), $galeri->galeri_id);
-        }
-
-        return redirect()->route('galeri.index')->with('success', 'Penambahan Data Galeri Berhasil!');
     }
 
     /**
@@ -103,49 +126,52 @@ class GaleriController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'judul' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'foto_utama' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
-            'foto_pendukung' => 'nullable|array',
-            'foto_pendukung.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:5120',
-        ]);
+        try {
+            DB::beginTransaction();
 
-        $galeri = Galeri::findOrFail($id);
-        $galeri->update($request->only([
-            'judul',
-            'deskripsi'
-        ]));
+            $request->validate([
+                'judul' => 'required|string|max:255',
+                'deskripsi' => 'nullable|string',
+                'foto_utama' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
+            ]);
 
-        // Upload foto utama baru jika ada
-        if ($request->hasFile('foto_utama')) {
-            $this->uploadFotoUtama($request->file('foto_utama'), $galeri->galeri_id);
-        }
+            $galeri = Galeri::findOrFail($id);
+            $galeri->update($request->only([
+                'judul',
+                'deskripsi'
+            ]));
 
-        // Upload foto pendukung baru jika ada
-        if ($request->hasFile('foto_pendukung')) {
-            $this->uploadFotoPendukung($request->file('foto_pendukung'), $galeri->galeri_id);
-        }
+            // Upload foto utama baru jika ada
+            if ($request->hasFile('foto_utama') && $request->file('foto_utama')->isValid()) {
+                // Hapus foto utama lama jika ada
+                $this->deleteFotoUtama($galeri->galeri_id);
+                // Upload foto utama baru
+                $this->uploadFotoUtama($request->file('foto_utama'), $galeri->galeri_id);
+            }
 
-        // Handle delete file tertentu jika ada request delete_files
-        if ($request->has('delete_files')) {
-            foreach ($request->delete_files as $fileId) {
-                $file = Media::where('media_id', $fileId)
-                    ->where('ref_table', 'galeri')
-                    ->where('ref_id', $galeri->galeri_id)
-                    ->first();
+            // Handle delete file tertentu jika ada request delete_files
+            if ($request->has('delete_files')) {
+                foreach ($request->delete_files as $fileId) {
+                    $file = Media::where('media_id', $fileId)
+                        ->where('ref_table', 'galeri')
+                        ->where('ref_id', $galeri->galeri_id)
+                        ->first();
 
-                if ($file) {
-                    // Jangan hapus foto utama (sort_order = 1)
-                    if ($file->sort_order != 1) {
+                    if ($file && $file->sort_order != 1) { // Jangan hapus foto utama (sort_order = 1)
                         Storage::disk('public')->delete('media/galeri/' . $file->file_name);
                         $file->delete();
                     }
                 }
             }
-        }
 
-        return redirect()->route('galeri.index')->with('success', 'Perubahan Data Galeri Berhasil!');
+            DB::commit();
+
+            return redirect()->route('galeri.index')->with('success', 'Perubahan Data Galeri Berhasil!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal mengupdate data: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -153,97 +179,118 @@ class GaleriController extends Controller
      */
     public function destroy(string $id)
     {
-        $galeri = Galeri::findOrFail($id);
-
-        // Hapus semua file terkait galeri ini
-        $this->deleteAllFiles($galeri->galeri_id);
-
-        $galeri->delete();
-
-        return redirect()->route('galeri.index')->with('success', 'Data Galeri berhasil dihapus');
-    }
-
-    /**
-     * Upload foto tambahan dari halaman show (untuk foto pendukung)
-     */
-    public function uploadFiles(Request $request, $id)
-    {
         try {
             DB::beginTransaction();
 
             $galeri = Galeri::findOrFail($id);
 
+            // Hapus semua file terkait galeri ini
+            $this->deleteAllFiles($galeri->galeri_id);
+
+            $galeri->delete();
+
+            DB::commit();
+
+            return redirect()->route('galeri.index')->with('success', 'Data Galeri berhasil dihapus');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * UPLOAD FOTO UTAMA VIA ROUTE TERPISAH
+     */
+    public function uploadFotoUtamaSeparate(Request $request, string $id)
+    {
+        try {
+            DB::beginTransaction();
+
             $request->validate([
-                'foto' => 'required|array',
-                'foto.*' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:5120'
+                'foto_utama' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:5120'
             ]);
 
+            $galeri = Galeri::findOrFail($id);
+
+            // Hapus foto utama lama jika ada
+            $this->deleteFotoUtama($galeri->galeri_id);
+
+            // Upload foto utama baru
+            $this->uploadFotoUtama($request->file('foto_utama'), $galeri->galeri_id);
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Foto utama berhasil diupload!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal upload foto utama: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * UPLOAD FOTO PENDUKUNG VIA ROUTE TERPISAH
+     */
+    public function uploadFiles(Request $request, string $galeri)
+    {
+        try {
+            DB::beginTransaction();
+
+            $request->validate([
+                'foto_pendukung' => 'required|array',
+                'foto_pendukung.*' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:5120'
+            ]);
+
+            $galeriModel = Galeri::findOrFail($galeri);
+
             // Cek jumlah file (maksimal 5 file)
-            if (count($request->file('foto')) > 5) {
+            if (count($request->file('foto_pendukung')) > 5) {
                 return redirect()->back()->with('error', 'Maksimal 5 file yang dapat diupload sekaligus');
             }
 
             // Upload foto pendukung
-            if ($request->hasFile('foto')) {
-                $this->uploadFotoPendukung($request->file('foto'), $galeri->galeri_id);
+            if ($request->hasFile('foto_pendukung')) {
+                $this->uploadFotoPendukung($request->file('foto_pendukung'), $galeriModel->galeri_id);
             }
 
             DB::commit();
 
-            return redirect()->route('galeri.show', $galeri->galeri_id)
+            return redirect()->route('galeri.show', $galeriModel->galeri_id)
                 ->with('success', 'Foto pendukung berhasil diupload');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('galeri.show', $id)
+            return redirect()->route('galeri.show', $galeri)
                 ->with('error', 'Gagal upload foto: ' . $e->getMessage());
         }
     }
 
     /**
-     * Upload foto utama (single file)
+     * Helper: Upload foto utama
      */
     private function uploadFotoUtama($file, $galeriId)
     {
-        if ($file->isValid()) {
-            // Generate unique filename untuk foto utama
-            $filename = 'galeri-utama-' . $galeriId . '-' . time() . '.' . $file->getClientOriginalExtension();
+        // Generate unique filename untuk foto utama
+        $filename = 'galeri-utama-' . $galeriId . '-' . time() . '.' . $file->getClientOriginalExtension();
 
-            // Store file
-            $file->storeAs('media/galeri', $filename, 'public');
+        // Store file
+        $file->storeAs('media/galeri', $filename, 'public');
 
-            // Cek apakah sudah ada foto utama
-            $existingUtama = Media::where('ref_table', 'galeri')
-                ->where('ref_id', $galeriId)
-                ->where('sort_order', 1)
-                ->first();
-
-            if ($existingUtama) {
-                // Hapus file lama
-                Storage::disk('public')->delete('media/galeri/' . $existingUtama->file_name);
-                // Update record yang ada
-                $existingUtama->update([
-                    'file_name' => $filename,
-                    'mime_type' => $file->getMimeType(),
-                    'file_size' => $file->getSize(),
-                ]);
-            } else {
-                // Buat record baru
-                Media::create([
-                    'ref_table'     => 'galeri',
-                    'ref_id'        => $galeriId,
-                    'file_name'     => $filename,
-                    'mime_type'     => $file->getMimeType(),
-                    'caption'       => 'Foto Utama Galeri',
-                    'sort_order'    => 1, // Foto utama selalu sort_order = 1
-                    'file_size'     => $file->getSize(),
-                ]);
-            }
-        }
+        // Simpan ke tabel media
+        Media::create([
+            'ref_table'     => 'galeri',
+            'ref_id'        => $galeriId,
+            'file_name'     => $filename,
+            'mime_type'     => $file->getMimeType(),
+            'caption'       => 'Foto Utama Galeri',
+            'sort_order'    => 1, // Foto utama selalu sort_order = 1
+            'file_size'     => $file->getSize(),
+        ]);
     }
 
     /**
-     * Upload foto pendukung (multiple files)
+     * Helper: Upload foto pendukung
      */
     private function uploadFotoPendukung($files, $galeriId)
     {
@@ -279,7 +326,25 @@ class GaleriController extends Controller
     }
 
     /**
-     * Delete semua file terkait galeri
+     * Helper: Hapus foto utama
+     */
+    private function deleteFotoUtama($galeriId)
+    {
+        $fotoUtama = Media::where('ref_table', 'galeri')
+            ->where('ref_id', $galeriId)
+            ->where('sort_order', 1)
+            ->first();
+
+        if ($fotoUtama) {
+            // Hapus file dari storage
+            Storage::disk('public')->delete('media/galeri/' . $fotoUtama->file_name);
+            // Hapus record dari database
+            $fotoUtama->delete();
+        }
+    }
+
+    /**
+     * Helper: Hapus semua file terkait galeri
      */
     private function deleteAllFiles($galeriId)
     {
@@ -294,35 +359,39 @@ class GaleriController extends Controller
     }
 
     /**
-     * Delete file individual - Cegah hapus foto utama
+     * DELETE FILE INDIVIDUAL - PERBAIKAN: BOLEH HAPUS FOTO UTAMA
      */
-    public function deleteFile(string $galeriId, string $fileId)
-    {
-        try {
-            DB::beginTransaction();
+   public function deleteFile(string $galeri, string $file)
+{
+    try {
+        DB::beginTransaction();
 
-            $file = Media::where('media_id', $fileId)
-                ->where('ref_table', 'galeri')
-                ->where('ref_id', $galeriId)
-                ->firstOrFail();
+        // Cari file berdasarkan galeri_id dan media_id
+        $media = Media::where('media_id', $file)
+            ->where('ref_table', 'galeri')
+            ->where('ref_id', $galeri)
+            ->firstOrFail();
 
-            // Cegah hapus foto utama (sort_order = 1)
-            if ($file->sort_order == 1) {
-                return redirect()->back()->with('error', 'Tidak dapat menghapus foto utama! Silakan ganti foto utama melalui edit galeri.');
-            }
+        // Hapus file dari storage
+        Storage::disk('public')->delete('media/galeri/' . $media->file_name);
 
-            Storage::disk('public')->delete('media/galeri/' . $file->file_name);
-            $file->delete();
+        // Hapus record dari database
+        $media->delete();
 
-            DB::commit();
+        DB::commit();
 
-            return redirect()->back()->with('success', 'Foto pendukung berhasil dihapus!');
+        return redirect()->back()->with('success', 'Foto berhasil dihapus!');
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('error', 'Gagal menghapus file: ' . $e->getMessage());
-        }
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error('Delete file error: ' . $e->getMessage(), [
+            'galeri' => $galeri,
+            'file' => $file,
+            'trace' => $e->getTraceAsString()
+        ]);
+        return redirect()->back()->with('error', 'Gagal menghapus file: ' . $e->getMessage());
     }
+}
 
     /**
      * Update sort order untuk foto

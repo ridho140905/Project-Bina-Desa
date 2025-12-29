@@ -143,8 +143,8 @@
                   <select name="role" required class="input">
                     <option value="">Pilih Role</option>
                     <option value="Super Admin" {{ old('role', $dataUser->role) == 'Super Admin' ? 'selected' : '' }}>Super Admin</option>
-                    <option value="Pelanggan" {{ old('role', $dataUser->role) == 'Pelanggan' ? 'selected' : '' }}>Pelanggan</option>
-                    <option value="Mitra" {{ old('role', $dataUser->role) == 'Mitra' ? 'selected' : '' }}>Mitra</option>
+                    <option value="Admin" {{ old('role', $dataUser->role) == 'Pelanggan' ? 'selected' : '' }}>Admin</option>
+                    <option value="Guest" {{ old('role', $dataUser->role) == 'Mitra' ? 'selected' : '' }}>Guest</option>
                   </select>
                 </div>
                 <span class="icon is-left">

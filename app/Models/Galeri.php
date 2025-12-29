@@ -30,8 +30,7 @@ class Galeri extends Model
     public function media(): HasMany
     {
         return $this->hasMany(Media::class, 'ref_id', 'galeri_id')
-                    ->where('ref_table', 'galeri')
-                    ->orderBy('sort_order');
+                    ->where('ref_table', 'galeri');
     }
 
     /**
@@ -40,7 +39,6 @@ class Galeri extends Model
     public function getFotoUtamaAttribute()
     {
         return $this->media()
-                    ->where('mime_type', 'like', 'image/%')
                     ->where('sort_order', 1)
                     ->first();
     }
@@ -51,7 +49,6 @@ class Galeri extends Model
     public function getFotoPendukungAttribute()
     {
         return $this->media()
-                    ->where('mime_type', 'like', 'image/%')
                     ->where('sort_order', '>', 1)
                     ->get();
     }
@@ -112,25 +109,5 @@ class Galeri extends Model
             });
         }
         return $query;
-    }
-
-    /**
-     * Scope untuk mengambil galeri dengan foto utama (agar bisa ditampilkan di frontend)
-     */
-    public function scopeWithFotoUtama(Builder $query): Builder
-    {
-        return $query->with(['media' => function($q) {
-            $q->where('sort_order', 1)->where('mime_type', 'like', 'image/%');
-        }]);
-    }
-
-    /**
-     * Scope untuk mengambil galeri dengan semua foto
-     */
-    public function scopeWithAllMedia(Builder $query): Builder
-    {
-        return $query->with(['media' => function($q) {
-            $q->orderBy('sort_order');
-        }]);
     }
 }

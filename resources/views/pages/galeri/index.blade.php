@@ -39,17 +39,17 @@
                 {{-- Form Filter dan Search --}}
                 <form method="GET" action="{{ route('galeri.index') }}" class="mb-4">
                     <div class="row g-3">
-                        {{-- Filter Foto --}}
+                        {{-- Filter Huruf Pertama Judul --}}
                         <div class="col-md-6">
-                            <label class="form-label-universal">Filter Foto</label>
+                            <label class="form-label-universal">Filter Huruf Awal Judul</label>
                             <div class="filter-container">
-                                <select name="filter_foto" class="form-select-universal" onchange="this.form.submit()">
+                                <select name="filter_galeri" class="form-select-universal" onchange="this.form.submit()">
                                     <option value="">Semua Galeri</option>
-                                    <option value="with_photos" {{ request('filter_foto') == 'with_photos' ? 'selected' : '' }}>
-                                        Dengan Foto
+                                    <option value="a" {{ request('filter_galeri') == 'a' ? 'selected' : '' }}>
+                                        A - M
                                     </option>
-                                    <option value="without_photos" {{ request('filter_foto') == 'without_photos' ? 'selected' : '' }}>
-                                        Tanpa Foto
+                                    <option value="n" {{ request('filter_galeri') == 'n' ? 'selected' : '' }}>
+                                        N - Z
                                     </option>
                                 </select>
                             </div>
@@ -67,7 +67,7 @@
                                             <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                                         </svg>
                                     </button>
-                                    @if(request('search') || request('filter_foto'))
+                                    @if(request('search') || request('filter_galeri'))
                                         <a href="{{ route('galeri.index') }}" class="btn btn-clear-universal" title="Clear All">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                                 <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -81,19 +81,19 @@
                 </form>
 
                 {{-- Info Filter Aktif --}}
-                @if(request('search') || request('filter_foto'))
+                @if(request('search') || request('filter_galeri'))
                 <div class="alert alert-info mb-3">
                     <strong>Filter Aktif:</strong>
                     @if(request('search'))
                         Pencarian: "{{ request('search') }}"
                     @endif
-                    @if(request('filter_foto'))
+                    @if(request('filter_galeri'))
                         {{ request('search') ? ' | ' : '' }}
                         Filter:
-                        @if(request('filter_foto') == 'with_photos')
-                            Dengan Foto
-                        @elseif(request('filter_foto') == 'without_photos')
-                            Tanpa Foto
+                        @if(request('filter_galeri') == 'a')
+                            Judul dimulai huruf A - M
+                        @elseif(request('filter_galeri') == 'n')
+                            Judul dimulai huruf N - Z
                         @endif
                     @endif
                 </div>
@@ -215,7 +215,7 @@
                                                 <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
                                             </svg>
                                         </span>
-                                        @if(request('search') || request('filter_foto'))
+                                        @if(request('search') || request('filter_galeri'))
                                             Data galeri tidak ditemukan dengan filter yang dipilih.
                                         @else
                                             Belum ada data galeri.

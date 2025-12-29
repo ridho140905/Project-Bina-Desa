@@ -63,14 +63,16 @@
           <div class="col-md-6">
             <div class="field">
               <label class="label">Judul Galeri <span class="text-danger">*</span></label>
-              <div class="control icons-left">
+              <div class="control has-icons-left">
                 <input class="input @error('judul') is-danger @enderror"
                        type="text"
                        name="judul"
                        value="{{ old('judul') }}"
                        placeholder="Masukkan judul galeri"
                        required>
-                <span class="icon left"><i class="mdi mdi-format-title"></i></span>
+                <span class="icon is-left">
+                  <i class="mdi mdi-format-title"></i>
+                </span>
               </div>
               @error('judul')
                 <p class="help is-danger">{{ $message }}</p>
@@ -79,11 +81,14 @@
 
             <div class="field">
               <label class="label">Deskripsi</label>
-              <div class="control">
+              <div class="control has-icons-left">
                 <textarea class="textarea @error('deskripsi') is-danger @enderror"
                           name="deskripsi"
                           rows="4"
                           placeholder="Masukkan deskripsi galeri (opsional)">{{ old('deskripsi') }}</textarea>
+                <span class="icon is-left">
+                  <i class="mdi mdi-text"></i>
+                </span>
               </div>
               @error('deskripsi')
                 <p class="help is-danger">{{ $message }}</p>
@@ -96,40 +101,22 @@
             <!-- Foto Utama -->
             <div class="field">
               <label class="label">Foto Utama <span class="text-danger">*</span></label>
-              <div class="control">
+              <div class="control has-icons-left">
                 <input class="input @error('foto_utama') is-danger @enderror"
                        type="file"
                        name="foto_utama"
                        id="fotoUtama"
                        accept=".jpg,.jpeg,.png,.gif,.webp"
                        required>
+                <span class="icon is-left">
+                  <i class="mdi mdi-image"></i>
+                </span>
               </div>
               <p class="help">Format: JPG, JPEG, PNG, GIF, WEBP. Maksimal 5MB. <strong>Foto utama akan menjadi tampilan utama galeri</strong>.</p>
               @error('foto_utama')
                 <p class="help is-danger">{{ $message }}</p>
               @enderror
               <div id="previewFotoUtama" class="mt-2"></div>
-            </div>
-
-            <!-- Foto Pendukung -->
-            <div class="field">
-              <label class="label">Foto Pendukung (Opsional)</label>
-              <div class="control">
-                <input class="input @error('foto_pendukung') is-danger @enderror"
-                       type="file"
-                       name="foto_pendukung[]"
-                       id="fotoPendukung"
-                       multiple
-                       accept=".jpg,.jpeg,.png,.gif,.webp">
-              </div>
-              <p class="help">Format: JPG, JPEG, PNG, GIF, WEBP. Maksimal 5MB per file. Dapat memilih multiple file.</p>
-              @error('foto_pendukung')
-                <p class="help is-danger">{{ $message }}</p>
-              @enderror
-              @error('foto_pendukung.*')
-                <p class="help is-danger">{{ $message }}</p>
-              @enderror
-              <div id="previewFotoPendukung" class="mt-2"></div>
             </div>
           </div>
 
@@ -189,6 +176,22 @@
     font-family: inherit;
   }
 
+  /* Input file khusus */
+  .input[type="file"] {
+    padding: 0.75rem 1rem 0.75rem 3.5rem;
+    background-color: #f8f9fa;
+    border: 1px dashed #dee2e6;
+    cursor: pointer;
+    height: auto;
+    line-height: 1.5;
+    position: relative;
+  }
+
+  .input[type="file"]:focus {
+    border-color: #3b82f6;
+    border-style: solid;
+  }
+
   .input:focus,
   .textarea:focus,
   select:focus {
@@ -197,30 +200,19 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 
-  /* Style khusus untuk input file */
-  input[type="file"] {
-    padding: 0.5rem;
-    background-color: #f8f9fa;
-    border: 1px dashed #dee2e6;
-  }
-
-  input[type="file"]:focus {
-    border-color: #3b82f6;
-    border-style: solid;
-  }
-
   /* Textarea styling */
   .textarea {
     min-height: 120px;
     resize: vertical;
+    padding-left: 3.5rem;
   }
 
-  /* Icons styling untuk input */
-  .control.icons-left {
+  /* Icons styling untuk input - Mengikuti style dari form profil */
+  .control.has-icons-left {
     position: relative;
   }
 
-  .control.icons-left .icon.left {
+  .control.has-icons-left .icon.is-left {
     position: absolute;
     left: 1rem;
     top: 50%;
@@ -228,10 +220,20 @@
     color: #6b7280;
     z-index: 2;
     pointer-events: none;
+    height: 1.5rem;
+    width: 1.5rem;
   }
 
-  .control.icons-left input {
-    padding-left: 3rem;
+  /* Untuk textarea, atur icon di atas */
+  .control.has-icons-left textarea + .icon.is-left {
+    top: 1.5rem;
+    transform: none;
+    align-items: flex-start;
+  }
+
+  /* Input dengan icon */
+  .control.has-icons-left input {
+    padding-left: 3.5rem;
   }
 
   /* Error styling */
@@ -356,13 +358,6 @@
   }
 
   /* Preview styling */
-  .preview-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
-  }
-
   .file-preview {
     position: relative;
     display: inline-block;
@@ -372,28 +367,19 @@
   }
 
   .file-preview img {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-  }
-
-  .file-preview .file-name {
-    font-size: 10px;
-    margin-top: 2px;
-    color: #666;
-    word-break: break-all;
-    max-width: 80px;
-  }
-
-  /* Foto utama preview khusus */
-  #previewFotoUtama img {
     width: 150px;
     height: 150px;
     object-fit: cover;
     border-radius: 8px;
     border: 2px solid #3b82f6;
+  }
+
+  .file-preview .file-name {
+    font-size: 12px;
+    margin-top: 5px;
+    color: #666;
+    word-break: break-all;
+    max-width: 150px;
   }
 
   /* Notification styling */
@@ -402,6 +388,9 @@
     padding: 1rem 1.5rem;
     border-radius: 8px;
     font-weight: 500;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
   }
 
   .notification.is-danger {
@@ -417,7 +406,8 @@
   }
 
   .notification.is-success i {
-    margin-right: 0.5rem;
+    margin-top: 2px;
+    flex-shrink: 0;
   }
 
   /* Responsive design */
@@ -445,12 +435,17 @@
       padding: 1rem;
     }
 
-    .control.icons-left input {
-      padding-left: 2.5rem;
+    .control.has-icons-left input,
+    .control.has-icons-left textarea {
+      padding-left: 3rem;
     }
 
-    .control.icons-left .icon.left {
+    .control.has-icons-left .icon.is-left {
       left: 0.75rem;
+    }
+
+    .input[type="file"] {
+      padding-left: 3rem;
     }
   }
 </style>
@@ -459,13 +454,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Validasi file untuk foto utama
     const fotoUtamaInput = document.getElementById('fotoUtama');
-    const fotoPendukungInput = document.getElementById('fotoPendukung');
+    const previewContainer = document.getElementById('previewFotoUtama');
 
     if (fotoUtamaInput) {
         fotoUtamaInput.addEventListener('change', function() {
             const file = this.files[0];
             const maxSize = 5 * 1024 * 1024; // 5MB
-            const previewContainer = document.getElementById('previewFotoUtama');
 
             // Clear previous preview
             previewContainer.innerHTML = '';
@@ -498,70 +492,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     const name = document.createElement('div');
                     name.className = 'file-name';
-                    name.textContent = file.name.length > 20 ? file.name.substring(0, 20) + '...' : file.name;
+                    name.textContent = file.name.length > 25 ? file.name.substring(0, 25) + '...' : file.name;
 
                     preview.appendChild(img);
                     preview.appendChild(name);
                     previewContainer.appendChild(preview);
                 };
                 reader.readAsDataURL(file);
-            }
-        });
-    }
-
-    // Validasi file untuk foto pendukung
-    if (fotoPendukungInput) {
-        fotoPendukungInput.addEventListener('change', function() {
-            const files = this.files;
-            const maxSize = 5 * 1024 * 1024; // 5MB per file
-            const maxFiles = 20; // Maksimal 20 file
-            const previewContainer = document.getElementById('previewFotoPendukung');
-
-            // Clear previous preview
-            previewContainer.innerHTML = '';
-
-            if (files.length > maxFiles) {
-                alert(`Maksimal ${maxFiles} gambar yang dapat diupload sebagai foto pendukung`);
-                this.value = '';
-                return;
-            }
-
-            for (let file of files) {
-                if (file.size > maxSize) {
-                    alert(`Gambar ${file.name} melebihi ukuran maksimal 5MB`);
-                    this.value = '';
-                    return;
-                }
-
-                // Validasi tipe file
-                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-                if (!allowedTypes.includes(file.type)) {
-                    alert(`File ${file.name} bukan format yang diperbolehkan. Hanya JPG, JPEG, PNG, GIF, WEBP yang diperbolehkan`);
-                    this.value = '';
-                    return;
-                }
-
-                // Create preview untuk setiap file
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const preview = document.createElement('div');
-                        preview.className = 'file-preview';
-
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.alt = 'Preview Foto Pendukung';
-
-                        const name = document.createElement('div');
-                        name.className = 'file-name';
-                        name.textContent = file.name.length > 15 ? file.name.substring(0, 15) + '...' : file.name;
-
-                        preview.appendChild(img);
-                        preview.appendChild(name);
-                        previewContainer.appendChild(preview);
-                    };
-                    reader.readAsDataURL(file);
-                }
             }
         });
     }
@@ -593,8 +530,10 @@ document.addEventListener('DOMContentLoaded', function() {
 // Function to reset form
 function resetForm() {
     // Clear previews
-    document.getElementById('previewFotoUtama').innerHTML = '';
-    document.getElementById('previewFotoPendukung').innerHTML = '';
+    const previewContainer = document.getElementById('previewFotoUtama');
+    if (previewContainer) {
+        previewContainer.innerHTML = '';
+    }
 
     // Reset submit button state
     const submitBtn = document.querySelector('button[type="submit"]');

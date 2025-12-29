@@ -76,8 +76,19 @@
                                 @endif
                             </div>
 
-                            <!-- Tombol Edit & Hapus DI BAWAH POSTER -->
-                            <div class="photo-action-bottom">
+                            <!-- Informasi Foto Utama -->
+                            @if($fotoUtama)
+                                <div class="photo-info mt-2">
+                                    <small class="text-muted d-block">Foto Utama</small>
+                                    <small class="text-muted">File: {{ $fotoUtama->file_name }}</small>
+                                    @if($fotoUtama->file_size)
+                                        <small class="text-muted"> | Size: {{ round($fotoUtama->file_size / 1024, 2) }} KB</small>
+                                    @endif
+                                </div>
+                            @endif
+
+                            <!-- Tombol Edit & Hapus Foto Utama -->
+                            <div class="photo-action-bottom mt-3">
                                 <a href="{{ route('galeri.edit', $dataGaleri->galeri_id) }}"
                                    class="btn-edit-bottom"
                                    title="Edit Galeri">
@@ -86,20 +97,23 @@
                                     </svg>
                                     Edit Galeri
                                 </a>
-                                <form action="{{ route('galeri.destroy', $dataGaleri->galeri_id) }}"
+
+                                @if($fotoUtama)
+                                <form action="{{ route('galeri.delete-file', ['galeri' => $dataGaleri->galeri_id, 'file' => $fotoUtama->media_id]) }}"
                                       method="POST">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
                                             class="btn-delete-bottom"
-                                            onclick="return confirm('Hapus galeri {{ $dataGaleri->judul }}?')"
-                                            title="Hapus Galeri">
+                                            onclick="return confirm('Hapus foto utama galeri?')"
+                                            title="Hapus Foto Utama">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                                         </svg>
-                                        Hapus Galeri
+                                        Hapus Foto Utama
                                     </button>
                                 </form>
+                                @endif
                             </div>
                         </div>
 
@@ -110,7 +124,7 @@
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Jumlah Foto</span>
-                                <span class="info-value">{{ $dataGaleri->jumlah_foto }} foto</span>
+                                <span class="info-value">{{ $dataGaleri->media->count() }} foto</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Foto Utama</span>
@@ -186,7 +200,7 @@
                             Tambah Foto Pendukung Baru
                         </h5>
                         <div class="card-header-info">
-                            <small>Hanya untuk menambahkan foto pendukung. Foto utama dapat diganti di halaman edit.</small>
+                            <small>Hanya untuk menambahkan foto pendukung. Foto utama dapat dihapus dengan tombol di atas.</small>
                         </div>
                     </div>
                     <div class="card-body-universal">
@@ -198,20 +212,20 @@
                                     <div class="field-group">
                                         <label class="form-label-universal">Pilih Foto Pendukung</label>
                                         <div class="control">
-                                            <input class="input-universal @error('foto') is-danger @enderror"
+                                            <input class="input-universal @error('foto_pendukung') is-danger @enderror"
                                                    type="file"
-                                                   name="foto[]"
-                                                   id="fotoInput"
+                                                   name="foto_pendukung[]"
+                                                   id="fotoPendukungInput"
                                                    multiple
                                                    accept="image/*">
                                         </div>
                                         <small class="form-text text-muted">
                                             Format: JPG, JPEG, PNG, GIF, WebP. Maksimal 5 file, 5MB per file.
                                         </small>
-                                        @error('foto')
+                                        @error('foto_pendukung')
                                             <p class="help is-danger">{{ $message }}</p>
                                         @enderror
-                                        @error('foto.*')
+                                        @error('foto_pendukung.*')
                                             <p class="help is-danger">{{ $message }}</p>
                                         @enderror
                                         <div id="fileListPreview" class="mt-2"></div>
@@ -234,7 +248,7 @@
             </div>
         </div>
 
-        <!-- Daftar Foto Pendukung -->
+        <!-- Daftar Foto Pendukung - TABEL -->
         <div class="row">
             <div class="col-12">
                 <div class="card-universal">
@@ -286,9 +300,6 @@
                                                         <div>
                                                             <div class="fw-semibold">{{ $foto->file_name }}</div>
                                                             <small class="text-muted">Uploaded: {{ $foto->created_at->format('d/m/Y H:i') }}</small>
-                                                            @if($foto->sort_order == 1)
-                                                                <span class="badge badge-primary ms-2">Foto Utama</span>
-                                                            @endif
                                                         </div>
                                                     </div>
                                                 </td>
@@ -307,7 +318,6 @@
                                                                 <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                                                             </svg>
                                                         </a>
-                                                        @if($foto->sort_order != 1) {{-- Cegah hapus foto utama --}}
                                                         <form action="{{ route('galeri.delete-file', ['galeri' => $dataGaleri->galeri_id, 'file' => $foto->media_id]) }}"
                                                               method="POST"
                                                               class="d-inline">
@@ -322,13 +332,6 @@
                                                                 </svg>
                                                             </button>
                                                         </form>
-                                                        @else
-                                                        <span class="btn-delete-near disabled" title="Foto utama tidak dapat dihapus di sini">
-                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                                                <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm4.3 14.3c-.39.39-1.02.39-1.41 0L12 13.41 9.11 16.3c-.39.39-1.02.39-1.41 0-.39-.39-.39-1.02 0-1.41L10.59 12 7.7 9.11c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0L12 10.59l2.89-2.89c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41L13.41 12l2.89 2.89c.38.38.38 1.02 0 1.41z"/>
-                                                            </svg>
-                                                        </span>
-                                                        @endif
                                                     </div>
                                                 </td>
                                             </tr>
@@ -353,7 +356,127 @@
     </div>
 </div>
 
+<!-- CSS untuk bagian tabel -->
 <style>
+/* Table Styles */
+.table-responsive-universal {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.universal-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.universal-table th {
+    background-color: #f8fafc;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.universal-table td {
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.universal-table tr:last-child td {
+    border-bottom: none;
+}
+
+.file-thumbnail-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.file-thumbnail {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+}
+
+.file-icon {
+    display: inline-flex;
+    align-items: center;
+    color: #6b7280;
+}
+
+/* Action Buttons */
+.action-buttons-near {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100%;
+    flex-wrap: nowrap;
+    margin: 0;
+    padding: 0;
+}
+
+.action-buttons-near form {
+    display: flex;
+    margin: 0;
+    align-items: center;
+}
+
+.btn-primary-near, .btn-delete-near {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.btn-primary-near {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.btn-primary-near:hover {
+    background-color: #2563eb;
+    transform: translateY(-1px);
+}
+
+.btn-delete-near {
+    background-color: var(--danger-color);
+    color: #fff;
+}
+
+.btn-delete-near:hover {
+    background-color: #dc2626;
+    transform: translateY(-1px);
+}
+
+/* Badge */
+.universal-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge-info {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+/* CSS lainnya tetap sama seperti sebelumnya */
 :root {
     --primary-color: #3b82f6;
     --secondary-color: #64748b;
@@ -466,23 +589,15 @@
     object-fit: cover;
     border-radius: 12px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    position: relative;
 }
 
-.no-poster-detail {
-    width: 100%;
-    max-width: 300px;
-    height: 200px;
-    background-color: #f8f9fa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6c757d;
-    border: 2px dashed #dee2e6;
-    margin: 0 auto;
-    border-radius: 12px;
+/* Informasi Foto Utama */
+.photo-info {
+    font-size: 0.8rem;
 }
 
-/* Photo Action Buttons - DI BAWAH POSTER */
+/* Tombol Edit & Hapus Foto Utama */
 .photo-action-bottom {
     display: flex;
     gap: 8px;
@@ -528,7 +643,21 @@
     transform: translateY(-1px);
 }
 
-/* Info List - Improved Layout */
+.no-poster-detail {
+    width: 100%;
+    max-width: 300px;
+    height: 200px;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    border: 2px dashed #dee2e6;
+    margin: 0 auto;
+    border-radius: 12px;
+}
+
+/* Info List */
 .info-list {
     display: grid;
     grid-template-columns: 1fr;
@@ -571,13 +700,6 @@
 .badge-warning {
     background-color: #fef3c7;
     color: #92400e;
-}
-
-.badge-primary {
-    background-color: #dbeafe;
-    color: #1e40af;
-    font-size: 0.7rem;
-    padding: 2px 6px;
 }
 
 /* Content Box */
@@ -691,136 +813,6 @@
     max-width: 60px;
 }
 
-/* File List Table */
-.table-responsive-universal {
-    border-radius: var(--border-radius);
-    overflow: hidden;
-}
-
-.universal-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.universal-table th {
-    background-color: #f8fafc;
-    padding: 12px 16px;
-    text-align: left;
-    font-weight: 600;
-    color: #374151;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.universal-table td {
-    padding: 16px;
-    border-bottom: 1px solid #f1f5f9;
-    vertical-align: middle;
-}
-
-.universal-table tr:last-child td {
-    border-bottom: none;
-}
-
-.file-thumbnail-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.file-thumbnail {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 6px;
-    border: 1px solid #e2e8f0;
-}
-
-.file-icon {
-    display: inline-flex;
-    align-items: center;
-    color: #6b7280;
-}
-
-/* Action Buttons - DEKAT DENGAN TULISAN AKSI */
-.action-buttons-near {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-start;
-    align-items: center;
-    height: 100%;
-    flex-wrap: nowrap;
-    margin: 0;
-    padding: 0;
-}
-
-.action-buttons-near form {
-    display: flex;
-    margin: 0;
-    align-items: center;
-}
-
-.btn-primary-near, .btn-delete-near, .btn-delete-near.disabled {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    padding: 0;
-    border: none;
-    border-radius: 6px;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-}
-
-.btn-primary-near {
-    background-color: var(--primary-color);
-    color: #fff;
-}
-
-.btn-primary-near:hover {
-    background-color: #2563eb;
-    transform: translateY(-1px);
-}
-
-.btn-delete-near {
-    background-color: var(--danger-color);
-    color: #fff;
-}
-
-.btn-delete-near:hover {
-    background-color: #dc2626;
-    transform: translateY(-1px);
-}
-
-.btn-delete-near.disabled {
-    background-color: #9ca3af;
-    color: #fff;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-.btn-delete-near.disabled:hover {
-    transform: none;
-    background-color: #9ca3af;
-}
-
-/* Badge */
-.universal-badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.badge-info {
-    background-color: #dbeafe;
-    color: #1e40af;
-}
-
 /* Empty State */
 .empty-state-universal {
     display: flex;
@@ -869,17 +861,6 @@
         grid-template-columns: 1fr;
     }
 
-    .action-buttons-near {
-        flex-direction: row;
-        gap: 6px;
-        justify-content: flex-start;
-    }
-
-    .btn-primary-near, .btn-delete-near, .btn-delete-near.disabled {
-        width: 32px;
-        height: 32px;
-    }
-
     .photo-action-bottom {
         flex-direction: column;
         gap: 6px;
@@ -909,6 +890,11 @@
         max-width: 200px;
         height: 150px;
     }
+
+    .btn-primary-near, .btn-delete-near {
+        width: 32px;
+        height: 32px;
+    }
 }
 
 @media (min-width: 992px) {
@@ -926,11 +912,11 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Validasi file untuk foto pendukung
-    const fotoInput = document.getElementById('fotoInput');
+    const fotoPendukungInput = document.getElementById('fotoPendukungInput');
     const fileListPreview = document.getElementById('fileListPreview');
 
-    if (fotoInput) {
-        fotoInput.addEventListener('change', function() {
+    if (fotoPendukungInput) {
+        fotoPendukungInput.addEventListener('change', function() {
             const files = this.files;
             const maxSize = 5 * 1024 * 1024; // 5MB per file
             const maxFiles = 5; // Maksimal 5 file
@@ -989,7 +975,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const uploadForm = document.getElementById('uploadForm');
     if (uploadForm) {
         uploadForm.addEventListener('submit', function(e) {
-            const files = document.getElementById('fotoInput').files;
+            const files = document.getElementById('fotoPendukungInput').files;
             const uploadBtn = document.getElementById('uploadBtn');
 
             // Validasi minimal satu file
@@ -1011,20 +997,6 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         });
     }
-
-    // Validasi hapus foto utama
-    const deleteButtons = document.querySelectorAll('.btn-delete-near:not(.disabled)');
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            const form = this.closest('form');
-            if (form) {
-                const filename = this.closest('tr').querySelector('.fw-semibold').textContent;
-                if (!confirm(`Yakin ingin menghapus foto "${filename}"?`)) {
-                    e.preventDefault();
-                }
-            }
-        });
-    });
 });
 </script>
 @endsection
