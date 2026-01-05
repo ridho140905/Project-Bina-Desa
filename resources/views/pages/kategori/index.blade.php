@@ -43,7 +43,7 @@
         <div class="card-universal">
             <div class="card-body-universal">
                 {{-- Form Filter dan Search --}}
-                <form method="GET" action="{{ route('kategoriberita.index') }}" class="mb-4">
+                <form method="GET" action="{{ route('kategori.index') }}" class="mb-4">
                     <div class="row g-3">
                         {{-- Filter Slug --}}
                         <div class="col-md-6">

@@ -27,8 +27,8 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('auth.sho
 Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
 Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
-Route::resource('dashboard', DashboardController::class)
-->middleware('checkislogin');
+Route::resource('dashboard', DashboardController::class);
+
 
 Route::resource('profil', ProfilController::class);
 Route::resource('berita', BeritaController::class);
@@ -70,17 +70,8 @@ Route::post('agenda/{agenda}/upload-images', [AgendaController::class, 'uploadIm
 Route::delete('/galeri/{galeri}/files/{file}', [GaleriController::class, 'deleteFile'])->name('galeri.delete-file');
 Route::post('/galeri/{galeri}/upload-files', [GaleriController::class, 'uploadFiles'])->name('galeri.upload-files');
 
-Route::group(['middleware' => ['checkrole:Super Admin']], function () {
-    Route::get('user', [UserController::class, 'index'])->name('user.index');
-    route::get('warga', [WargaController::class, 'index'])->name('warga.index');
-    route::get('berita', [BeritaController::class, 'index'])->name('berita.index');
-    route::get('profil', [ProfilController::class, 'index'])->name('profil.index');
-    route::get('galeri', [GaleriController::class, 'index'])->name('galeri.index');
-    route::get('agenda', [AgendaController::class, 'index'])->name('agenda.index');
-    route::get('kategoriberita', [KategoriBeritaController::class, 'index'])->name('kategori.index');
-});
 
-Route::group(['middleware' => ['checkrole:Admin']], function () {
+Route::group(['middleware' => ['checkislogin','checkrole:Admin']], function () {
     route::get('warga', [WargaController::class, 'index'])->name('warga.index');
     route::get('berita', [BeritaController::class, 'index'])->name('berita.index');
     route::get('profil', [ProfilController::class, 'index'])->name('profil.index');
@@ -88,7 +79,9 @@ Route::group(['middleware' => ['checkrole:Admin']], function () {
     route::get('agenda', [AgendaController::class, 'index'])->name('agenda.index');
      route::get('kategoriberita', [KategoriBeritaController::class, 'index'])->name('kategori.index');
 });
-
+Route::group(['middleware' => ['checkislogin','checkrole:Super Admin']], function () {
+    Route::get('user', [UserController::class, 'index'])->name('user.index');
+});
 //  Route::group(['middleware' => ['checkislogin']], function () {
 //     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 //     route::get('user', [UserController::class, 'index'])->name('user.index');
