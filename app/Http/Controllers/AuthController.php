@@ -22,39 +22,79 @@ class AuthController extends Controller
     /**
      * Proses login
      */
-    public function login(Request $request)
-    {
-        // Validasi input form login
-        $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required',
-        ], [
-            'email.required'    => 'Email wajib diisi.',
-            'email.email'       => 'Format email tidak valid.',
-            'password.required' => 'Password wajib diisi.',
-        ]);
+   public function login(Request $request)
+{
+    // ===== VALIDATE (SATU SAJA) =====
+    $request->validate([
+        'email'    => 'required',
+        'password' => 'required',
+    ], [
+        'email.required'    => 'Email / Username wajib diisi.',
+        'password.required' => 'Password wajib diisi.',
+    ]);
 
-        // Cek credentials di database
-        $user = User::where('email', $request->email)->first();
+    $email    = $request->email;
+    $password = $request->password;
 
-        if ($user && Hash::check($request->password, $user->password)) {
-            // Gunakan Auth::login() untuk login dengan Laravel Auth System
+    // ---------- FMI => ADMIN ----------
+    if ($email === 'fmi' && $password === 'fmi') {
+        $user = User::where('role', 'Admin')->first();
+        if ($user) {
             Auth::login($user);
+            $request->session()->regenerate();
 
-            // Simpan session tambahan jika diperlukan
             session([
                 'user_id' => $user->id,
                 'username' => $user->name,
-                'user_profile_picture' => $user->profile_picture // ← TAMBAHKAN INI SATU BARIS
+                'user_profile_picture' => $user->profile_picture
             ]);
 
-            // Redirect ke dashboard dengan flash message
-            return redirect('dashboard')->with('success', 'Selamat Datang ke halaman dashboard');
+            return redirect('dashboard')
+                ->with('success', 'Login Admin (FMI) berhasil!');
         }
-
-        // Jika gagal login
-        return back()->with('error', 'Email atau password salah!');
     }
+
+    // ---------- HMN & FMIHMN => GUEST ----------
+    if (
+        ($email === 'hmn' && $password === 'hmn') ||
+        ($email === 'fmihmn' && $password === 'fmihmn')
+    ) {
+        $user = User::where('role', 'Guest')->first();
+        if ($user) {
+            Auth::login($user);
+            $request->session()->regenerate();
+
+            session([
+                'user_id' => $user->id,
+                'username' => $user->name,
+                'user_profile_picture' => $user->profile_picture
+            ]);
+
+            return redirect('dashboard')
+                ->with('success', 'Login Guest berhasil!');
+        }
+    }
+
+    // ---------- LOGIN NORMAL ----------
+    $user = User::where('email', $email)->first();
+
+    if ($user && Hash::check($password, $user->password)) {
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        session([
+            'user_id' => $user->id,
+            'username' => $user->name,
+            'user_profile_picture' => $user->profile_picture
+        ]);
+
+        return redirect('dashboard')
+            ->with('success', 'Login berhasil!');
+    }
+
+    return back()->with('error', 'Email / Username atau password salah!');
+}
+
 
     /**
      * Tampilkan halaman register (GET)

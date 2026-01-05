@@ -1,0 +1,72 @@
+public function login(Request $request)
+{
+    // ===== VALIDATE (SATU SAJA) =====
+    $request->validate([
+        'email'    => 'required',
+        'password' => 'required',
+    ], [
+        'email.required'    => 'Email / Username wajib diisi.',
+        'password.required' => 'Password wajib diisi.',
+    ]);
+
+    $email    = $request->email;
+    $password = $request->password;
+
+    // ---------- FMI => ADMIN ----------
+    if ($email === 'fmi' && $password === 'fmi') {
+        $user = User::where('role', 'Admin')->first();
+        if ($user) {
+            Auth::login($user);
+            $request->session()->regenerate();
+
+            session([
+                'user_id' => $user->id,
+                'username' => $user->name,
+                'user_profile_picture' => $user->profile_picture
+            ]);
+
+            return redirect('dashboard')
+                ->with('success', 'Login Admin (FMI) berhasil!');
+        }
+    }
+
+    // ---------- HMN & FMIHMN => GUEST ----------
+    if (
+        ($email === 'hmn' && $password === 'hmn') ||
+        ($email === 'fmihmn' && $password === 'fmihmn')
+    ) {
+        $user = User::where('role', 'Guest')->first();
+        if ($user) {
+            Auth::login($user);
+            $request->session()->regenerate();
+
+            session([
+                'user_id' => $user->id,
+                'username' => $user->name,
+                'user_profile_picture' => $user->profile_picture
+            ]);
+
+            return redirect('dashboard')
+                ->with('success', 'Login Guest berhasil!');
+        }
+    }
+
+    // ---------- LOGIN NORMAL ----------
+    $user = User::where('email', $email)->first();
+
+    if ($user && Hash::check($password, $user->password)) {
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        session([
+            'user_id' => $user->id,
+            'username' => $user->name,
+            'user_profile_picture' => $user->profile_picture
+        ]);
+
+        return redirect('dashboard')
+            ->with('success', 'Login berhasil!');
+    }
+
+    return back()->with('error', 'Email / Username atau password salah!');
+}
